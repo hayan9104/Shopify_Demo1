@@ -613,14 +613,18 @@
   {% endif %}
 {% endcapture %}
 
-<div
-  id="Hero-{{ section.id }}"
-  class="hero color-{{ section.settings.color_scheme }}{% if section.blocks.size == 0 and section.settings.section_height == 'auto' %} hero--no-blocks-auto-height{% endif %}{% if section.settings.stack_media_on_mobile %} hero--stack-mobile{% endif %}"
-  style="
+  <div
+    id="Hero-{{ section.id }}"
+    class="hero color-{{ section.settings.color_scheme }}{% if section.blocks.size == 0 and section.settings.section_height == 'auto' %} hero--no-blocks-auto-height{% endif %}{% if section.settings.stack_media_on_mobile %} hero--stack-mobile{% endif %}"
+    style="
     --hero-border-style: {{ section.settings.border }};
     --hero-border-width: {{ section.settings.border_width }}px;
     --hero-border-opacity: {{ section.settings.border_opacity }}%;
     --blur-opacity: {{ section.settings.reflection_opacity | divided_by: 100.0 }};
+    --desktop-offset-top: {{ section.settings.desktop_offset_top }}px;
+    --desktop-offset-bottom: {{ section.settings.desktop_offset_bottom }}px;
+    --mobile-offset-top: {{ section.settings.mobile_offset_top }}px;
+    --mobile-offset-bottom: {{ section.settings.mobile_offset_bottom }}px;
     {% if section.settings.section_height == 'custom' %}
       --hero-min-height: {{ section.settings.section_height_custom }}svh;
     {% elsif section.settings.section_height == "full-screen" %}
@@ -731,9 +735,13 @@
     align-items: var(--vertical-alignment-mobile);
     justify-content: var(--horizontal-alignment);
     z-index: var(--layer-base);
+    margin-top: var(--mobile-offset-top, 0);
+    margin-bottom: var(--mobile-offset-bottom, 0);
 
     @media screen and (min-width: 750px) {
       align-items: var(--vertical-alignment);
+      margin-top: var(--desktop-offset-top, 0);
+      margin-bottom: var(--desktop-offset-bottom, 0);
     }
   }
 
@@ -1389,6 +1397,46 @@
       "default": 50,
       "unit": "%",
       "visible_if": "{{ section.settings.section_height == 'custom' }}"
+    },
+    {
+      "type": "range",
+      "id": "desktop_offset_top",
+      "label": "Desktop offset top",
+      "min": -50,
+      "max": 50,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "desktop_offset_bottom",
+      "label": "Desktop offset bottom",
+      "min": -50,
+      "max": 50,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "mobile_offset_top",
+      "label": "Mobile offset top",
+      "min": -50,
+      "max": 50,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "mobile_offset_bottom",
+      "label": "Mobile offset bottom",
+      "min": -50,
+      "max": 50,
+      "step": 1,
+      "unit": "px",
+      "default": 0
     },
     {
       "type": "header",
