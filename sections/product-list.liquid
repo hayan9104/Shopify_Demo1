@@ -24,6 +24,39 @@
     {%- content_for 'block', type: '_product-list-content', id: 'static-header' -%}
   </div>
 
+  {% if section.settings.show_banner and section.settings.banner_image != blank %}
+    <div class="product-list__banner-wrapper">
+      <div class="product-list__banner">
+        {% if section.settings.banner_image != blank %}
+          <div class="product-list__banner-image">
+            {{
+              section.settings.banner_image
+              | image_url: width: 1500
+              | image_tag:
+                loading: 'lazy',
+                width: section.settings.banner_image.width,
+                height: section.settings.banner_image.height,
+                alt: section.settings.banner_image.alt | default: section.settings.banner_heading
+            }}
+          </div>
+        {% endif %}
+        <div class="product-list__banner-content">
+          {% if section.settings.banner_heading != blank %}
+            <h2 class="product-list__banner-heading">{{ section.settings.banner_heading }}</h2>
+          {% endif %}
+          {% if section.settings.banner_subheading != blank %}
+            <p class="product-list__banner-subheading">{{ section.settings.banner_subheading }}</p>
+          {% endif %}
+          {% if section.settings.banner_button_link != blank and section.settings.banner_button_text != blank %}
+            <a href="{{ section.settings.banner_button_link }}" class="product-list__banner-button button">
+              {{ section.settings.banner_button_text }}
+            </a>
+          {% endif %}
+        </div>
+      </div>
+      <div class="product-list__products-wrapper">
+  {% endif %}
+
   {% capture list_items %}
     {% if section.settings.collection != blank and shop.products_count != 0 %}
       {% paginate section.settings.collection.products by max_items %}
@@ -72,6 +105,11 @@
     test_id: 'resource-list-grid'
   %}
 
+  {% if section.settings.show_banner and section.settings.banner_image != blank %}
+      </div>
+    </div>
+  {% endif %}
+
   <div
     class="section-resource-list__content"
     style="--horizontal-alignment: {{ section.settings.horizontal_alignment }};"
@@ -79,6 +117,93 @@
     {%- content_for 'blocks' -%}
   </div>
 </div>
+
+{% stylesheet %}
+  .product-list__banner-wrapper {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: var(--gap, 24px);
+    margin-bottom: var(--gap, 24px);
+    align-items: start;
+  }
+
+  .product-list__banner {
+    position: relative;
+    overflow: hidden;
+    border-radius: var(--border-radius, 0);
+    height: 100%;
+    min-height: 500px;
+  }
+
+  .product-list__banner-image {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+  }
+
+  .product-list__banner-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .product-list__banner-content {
+    position: relative;
+    z-index: 1;
+    padding: 48px;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    color: var(--color-foreground);
+  }
+
+  .product-list__banner-heading {
+    font-size: 2rem;
+    font-weight: bold;
+    margin-bottom: 16px;
+    color: inherit;
+  }
+
+  .product-list__banner-subheading {
+    font-size: 1rem;
+    margin-bottom: 24px;
+    color: inherit;
+    opacity: 0.9;
+    line-height: 1.5;
+  }
+
+  .product-list__banner-button {
+    margin-top: auto;
+  }
+
+  .product-list__products-wrapper {
+    display: block;
+  }
+
+  .product-list__products-wrapper .resource-list {
+    height: 100%;
+  }
+
+  @media screen and (max-width: 749px) {
+    .product-list__banner-wrapper {
+      grid-template-columns: 1fr;
+    }
+
+    .product-list__banner {
+      min-height: 300px;
+    }
+
+    .product-list__banner-content {
+      padding: 32px;
+    }
+
+    .product-list__banner-heading {
+      font-size: 1.5rem;
+    }
+  }
+{% endstylesheet %}
 
 {% schema %}
 {
@@ -260,6 +385,50 @@
       ],
       "default": "none",
       "visible_if": "{{ section.settings.icons_style != 'none' and section.settings.layout_type == 'carousel' or section.settings.carousel_on_mobile == true }}"
+    },
+    {
+      "type": "header",
+      "content": "Banner"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_banner",
+      "label": "Show banner",
+      "default": false
+    },
+    {
+      "type": "image_picker",
+      "id": "banner_image",
+      "label": "Image",
+      "info": "722 x 1328px recommended",
+      "visible_if": "{{ section.settings.show_banner }}"
+    },
+    {
+      "type": "text",
+      "id": "banner_heading",
+      "label": "Heading",
+      "default": "Fresh Gems",
+      "visible_if": "{{ section.settings.show_banner }}"
+    },
+    {
+      "type": "textarea",
+      "id": "banner_subheading",
+      "label": "Subheading",
+      "default": "Discover our newest jewelry treasures just added",
+      "visible_if": "{{ section.settings.show_banner }}"
+    },
+    {
+      "type": "text",
+      "id": "banner_button_text",
+      "label": "Button text",
+      "default": "Shop Now",
+      "visible_if": "{{ section.settings.show_banner }}"
+    },
+    {
+      "type": "url",
+      "id": "banner_button_link",
+      "label": "Button link",
+      "visible_if": "{{ section.settings.show_banner }}"
     },
     {
       "type": "header",
