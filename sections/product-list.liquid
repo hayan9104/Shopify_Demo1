@@ -30,7 +30,10 @@
   {% capture list_items %}
     {% if section.settings.show_banner and section.settings.banner_image != blank %}
       <div class="resource-list__item resource-list__item--banner">
-        <div class="product-list__banner">
+        <div
+          class="product-list__banner"
+          style="{% if section.settings.banner_text_color != blank %}--banner-text-color: {{ section.settings.banner_text_color }};{% endif %}{% if section.settings.banner_overlay_color != blank %}--banner-overlay-color: {{ section.settings.banner_overlay_color }};{% endif %}{% if section.settings.banner_button_color != blank %}--banner-button-color: {{ section.settings.banner_button_color }};{% endif %}{% if section.settings.banner_button_background != blank %}--banner-button-background: {{ section.settings.banner_button_background }};{% endif %}{% if section.settings.banner_button_border != blank %}--banner-button-border: {{ section.settings.banner_button_border }};{% endif %}{% if section.settings.banner_button_color_hover != blank %}--banner-button-color-hover: {{ section.settings.banner_button_color_hover }};{% endif %}{% if section.settings.banner_button_background_hover != blank %}--banner-button-background-hover: {{ section.settings.banner_button_background_hover }};{% endif %}{% if section.settings.banner_button_border_hover != blank %}--banner-button-border-hover: {{ section.settings.banner_button_border_hover }};{% endif %}"
+        >
           {% if section.settings.banner_image != blank %}
             <div class="product-list__banner-image">
               {{
@@ -43,6 +46,9 @@
                   alt: section.settings.banner_image.alt | default: section.settings.banner_heading
               }}
             </div>
+          {% endif %}
+          {% if section.settings.banner_overlay_color != blank %}
+            <div class="product-list__banner-overlay"></div>
           {% endif %}
           <div class="product-list__banner-content">
             {% if section.settings.banner_heading != blank %}
@@ -153,9 +159,17 @@
     object-fit: cover;
   }
 
+  .product-list__banner-overlay {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    background-color: var(--banner-overlay-color);
+    pointer-events: none;
+  }
+
   .product-list__banner-content {
     position: relative;
-    z-index: 1;
+    z-index: 2;
     padding: 24px;
     width: 100%;
     height: 100%;
@@ -163,26 +177,38 @@
     flex-direction: column;
     justify-content: flex-start;
     align-items: flex-start;
-    color: var(--color-foreground);
+    color: var(--banner-text-color, var(--color-foreground));
   }
 
   .product-list__banner-heading {
     font-size: 2rem;
     font-weight: bold;
     margin-bottom: 16px;
-    color: inherit;
+    color: var(--banner-text-color, inherit);
   }
 
   .product-list__banner-subheading {
     font-size: 1rem;
     margin-bottom: 24px;
-    color: inherit;
+    color: var(--banner-text-color, inherit);
     opacity: 0.9;
     line-height: 1.5;
   }
 
   .product-list__banner-button {
     margin-top: auto;
+    color: var(--banner-button-color, #FFFFFF);
+    background-color: var(--banner-button-background, #1F3D2B);
+    border-color: var(--banner-button-border, #1F3D2B);
+    border-width: 1px;
+    border-style: solid;
+    transition: all 0.3s ease;
+  }
+
+  .product-list__banner-button:hover {
+    color: var(--banner-button-color-hover, #000000);
+    background-color: var(--banner-button-background-hover, #FFFFFF);
+    border-color: var(--banner-button-border-hover, #FFFFFF);
   }
 
   /* Ensure product cards have consistent image heights */
@@ -460,6 +486,68 @@
       "type": "url",
       "id": "banner_button_link",
       "label": "Button link",
+      "visible_if": "{{ section.settings.show_banner }}"
+    },
+    {
+      "type": "header",
+      "content": "Colors",
+      "visible_if": "{{ section.settings.show_banner }}"
+    },
+    {
+      "type": "color",
+      "id": "banner_text_color",
+      "label": "Text color",
+      "default": "#1F3D2B",
+      "visible_if": "{{ section.settings.show_banner }}"
+    },
+    {
+      "type": "color",
+      "id": "banner_overlay_color",
+      "label": "Overlay color",
+      "alpha": true,
+      "default": "#00000000",
+      "visible_if": "{{ section.settings.show_banner }}"
+    },
+    {
+      "type": "color",
+      "id": "banner_button_color",
+      "label": "Button color",
+      "default": "#FFFFFF",
+      "visible_if": "{{ section.settings.show_banner }}"
+    },
+    {
+      "type": "color",
+      "id": "banner_button_background",
+      "label": "Button background",
+      "default": "#1F3D2B",
+      "visible_if": "{{ section.settings.show_banner }}"
+    },
+    {
+      "type": "color",
+      "id": "banner_button_border",
+      "label": "Button border",
+      "default": "#1F3D2B",
+      "visible_if": "{{ section.settings.show_banner }}"
+    },
+    {
+      "type": "color",
+      "id": "banner_button_color_hover",
+      "label": "Button color (hover)",
+      "default": "#000000",
+      "visible_if": "{{ section.settings.show_banner }}"
+    },
+    {
+      "type": "color",
+      "id": "banner_button_background_hover",
+      "label": "Button background (hover)",
+      "default": "#FFFFFF",
+      "visible_if": "{{ section.settings.show_banner }}"
+    },
+    {
+      "type": "color",
+      "id": "banner_button_border_hover",
+      "label": "Button border (hover)",
+      "default": "#FFFFFF",
       "visible_if": "{{ section.settings.show_banner }}"
     },
     {
