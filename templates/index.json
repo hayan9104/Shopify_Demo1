@@ -518,7 +518,7 @@
         "banner_heading": "Fresh Gems",
         "banner_subheading": "Discover our newest jewelry treasures just added",
         "banner_button_text": "Shop Now",
-        "banner_button_link": "",
+        "banner_button_link": "shopify://collections/all",
         "section_width": "page-width",
         "horizontal_alignment": "flex-start",
         "gap": 28,
