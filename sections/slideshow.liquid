@@ -64,7 +64,47 @@
 <div class="section-background color-{{ section.settings.color_scheme }}"></div>
 <div
   class="slideshow-section spacing-style section {{ section_width_class }} color-{{ section.settings.color_scheme }} disable-section-top-offset"
-  style="{% render 'spacing-padding', settings: section.settings %}; --slideshow-gap: {{ section.settings.slideshow_gap }}px;{% if rounded_slide_corners %} --corner-radius: {{ section.settings.corner_radius }}px;{% endif %}{% if section.settings.background_color != blank %} --slideshow-background: {{ section.settings.background_color }};{% endif %}{% if section.settings.pagination_color != blank %} --slideshow-pagination-color: {{ section.settings.pagination_color }};{% endif %}{% if section.settings.arrows_background != blank %} --slideshow-arrows-background: {{ section.settings.arrows_background }};{% endif %}{% if section.settings.arrows_color != blank %} --slideshow-arrows-color: {{ section.settings.arrows_color }};{% endif %}{% if section.settings.arrows_border != blank %} --slideshow-arrows-border: {{ section.settings.arrows_border }};{% endif %}{% if section.settings.arrows_background_hover != blank %} --slideshow-arrows-background-hover: {{ section.settings.arrows_background_hover }};{% endif %}{% if section.settings.arrows_color_hover != blank %} --slideshow-arrows-color-hover: {{ section.settings.arrows_color_hover }};{% endif %}{% if section.settings.arrows_border_hover != blank %} --slideshow-arrows-border-hover: {{ section.settings.arrows_border_hover }};{% endif %}"
+  style="
+        {% render 'spacing-padding', settings: section.settings %}
+
+        --slideshow-gap: {{ section.settings.slideshow_gap }}px;
+
+        {% if rounded_slide_corners %}
+          --corner-radius: {{ section.settings.corner_radius }}px;
+        {% endif %}
+
+        {% if section.settings.background_color != blank %}
+          --slideshow-background: {{ section.settings.background_color }};
+        {% endif %}
+
+        {% if section.settings.pagination_color != blank %}
+          --slideshow-pagination-color: {{ section.settings.pagination_color }};
+        {% endif %}
+
+        {% if section.settings.arrows_background != blank %}
+          --slideshow-arrows-background: {{ section.settings.arrows_background }};
+        {% endif %}
+
+        {% if section.settings.arrows_color != blank %}
+          --slideshow-arrows-color: {{ section.settings.arrows_color }};
+        {% endif %}
+
+        {% if section.settings.arrows_border != blank %}
+          --slideshow-arrows-border: {{ section.settings.arrows_border }};
+        {% endif %}
+
+        {% if section.settings.arrows_background_hover != blank %}
+          --slideshow-arrows-background-hover: {{ section.settings.arrows_background_hover }};
+        {% endif %}
+
+        {% if section.settings.arrows_color_hover != blank %}
+          --slideshow-arrows-color-hover: {{ section.settings.arrows_color_hover }};
+        {% endif %}
+
+        {% if section.settings.arrows_border_hover != blank %}
+          --slideshow-arrows-border-hover: {{ section.settings.arrows_border_hover }};
+        {% endif %}
+      "
 >
   {% render 'slideshow',
     class: slideshow_class,
