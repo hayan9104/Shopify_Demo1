@@ -104,6 +104,34 @@
         {% if section.settings.arrows_border_hover != blank %}
           --slideshow-arrows-border-hover: {{ section.settings.arrows_border_hover }};
         {% endif %}
+
+        {% if section.settings.slideshow_text_color != blank %}
+          --slideshow-text-color: {{ section.settings.slideshow_text_color }};
+        {% endif %}
+
+        {% if section.settings.slideshow_button_color != blank %}
+          --slideshow-button-color: {{ section.settings.slideshow_button_color }};
+        {% endif %}
+
+        {% if section.settings.slideshow_button_background != blank %}
+          --slideshow-button-background: {{ section.settings.slideshow_button_background }};
+        {% endif %}
+
+        {% if section.settings.slideshow_button_border != blank %}
+          --slideshow-button-border: {{ section.settings.slideshow_button_border }};
+        {% endif %}
+
+        {% if section.settings.slideshow_button_color_hover != blank %}
+          --slideshow-button-color-hover: {{ section.settings.slideshow_button_color_hover }};
+        {% endif %}
+
+        {% if section.settings.slideshow_button_background_hover != blank %}
+          --slideshow-button-background-hover: {{ section.settings.slideshow_button_background_hover }};
+        {% endif %}
+
+        {% if section.settings.slideshow_button_border_hover != blank %}
+          --slideshow-button-border-hover: {{ section.settings.slideshow_button_border_hover }};
+        {% endif %}
       "
 >
   {% render 'slideshow',
@@ -176,6 +204,52 @@
         {% endif %}
         {% if section.settings.arrows_border_hover != blank %}
           border-color: var(--slideshow-arrows-border-hover);
+        {% endif %}
+      }
+    {% endif %}
+
+    /* Text color styling */
+    {% if section.settings.slideshow_text_color != blank %}
+      slideshow-slide .slide__content,
+      slideshow-slide .slide__content h1,
+      slideshow-slide .slide__content h2,
+      slideshow-slide .slide__content h3,
+      slideshow-slide .slide__content h4,
+      slideshow-slide .slide__content h5,
+      slideshow-slide .slide__content h6,
+      slideshow-slide .slide__content p {
+        color: var(--slideshow-text-color);
+      }
+    {% endif %}
+
+    /* Button styling */
+    {% if section.settings.slideshow_button_color != blank or section.settings.slideshow_button_background != blank or section.settings.slideshow_button_border != blank %}
+      slideshow-slide .slide__content .button {
+        {% if section.settings.slideshow_button_color != blank %}
+          color: var(--slideshow-button-color);
+        {% endif %}
+        {% if section.settings.slideshow_button_background != blank %}
+          background-color: var(--slideshow-button-background);
+        {% endif %}
+        {% if section.settings.slideshow_button_border != blank %}
+          border-color: var(--slideshow-button-border);
+          border-width: 1px;
+          border-style: solid;
+        {% endif %}
+      }
+    {% endif %}
+
+    /* Button hover styling */
+    {% if section.settings.slideshow_button_color_hover != blank or section.settings.slideshow_button_background_hover != blank or section.settings.slideshow_button_border_hover != blank %}
+      slideshow-slide .slide__content .button:hover {
+        {% if section.settings.slideshow_button_color_hover != blank %}
+          color: var(--slideshow-button-color-hover);
+        {% endif %}
+        {% if section.settings.slideshow_button_background_hover != blank %}
+          background-color: var(--slideshow-button-background-hover);
+        {% endif %}
+        {% if section.settings.slideshow_button_border_hover != blank %}
+          border-color: var(--slideshow-button-border-hover);
         {% endif %}
       }
     {% endif %}
@@ -527,6 +601,48 @@
       "id": "arrows_border_hover",
       "label": "Arrows border (hover)",
       "default": "#273C2C"
+    },
+    {
+      "type": "color",
+      "id": "slideshow_text_color",
+      "label": "Text color",
+      "default": "#1F3D2B"
+    },
+    {
+      "type": "color",
+      "id": "slideshow_button_color",
+      "label": "Button color",
+      "default": "#FFFFFF"
+    },
+    {
+      "type": "color",
+      "id": "slideshow_button_background",
+      "label": "Button background",
+      "default": "#1F3D2B"
+    },
+    {
+      "type": "color",
+      "id": "slideshow_button_border",
+      "label": "Button border",
+      "default": "#1F3D2B"
+    },
+    {
+      "type": "color",
+      "id": "slideshow_button_color_hover",
+      "label": "Button color (hover)",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "slideshow_button_background_hover",
+      "label": "Button background (hover)",
+      "default": "#FFFFFF"
+    },
+    {
+      "type": "color",
+      "id": "slideshow_button_border_hover",
+      "label": "Button border (hover)",
+      "default": "#FFFFFF"
     },
     {
       "type": "header",
