@@ -2,6 +2,9 @@
 
 {% liquid
   assign max_items = section.settings.max_products
+  if section.settings.show_banner and section.settings.banner_image != blank
+    # Don't count banner as a product, so we show the full product count
+  endif
 %}
 
 <div class="section-background color-{{ section.settings.color_scheme }}"></div>
@@ -24,40 +27,40 @@
     {%- content_for 'block', type: '_product-list-content', id: 'static-header' -%}
   </div>
 
-  {% if section.settings.show_banner and section.settings.banner_image != blank %}
-    <div class="product-list__banner-wrapper">
-      <div class="product-list__banner">
-        {% if section.settings.banner_image != blank %}
-          <div class="product-list__banner-image">
-            {{
-              section.settings.banner_image
-              | image_url: width: 1500
-              | image_tag:
-                loading: 'lazy',
-                width: section.settings.banner_image.width,
-                height: section.settings.banner_image.height,
-                alt: section.settings.banner_image.alt | default: section.settings.banner_heading
-            }}
+  {% capture list_items %}
+    {% if section.settings.show_banner and section.settings.banner_image != blank %}
+      <div class="resource-list__item resource-list__item--banner">
+        <div class="product-list__banner">
+          {% if section.settings.banner_image != blank %}
+            <div class="product-list__banner-image">
+              {{
+                section.settings.banner_image
+                | image_url: width: 1500
+                | image_tag:
+                  loading: 'lazy',
+                  width: section.settings.banner_image.width,
+                  height: section.settings.banner_image.height,
+                  alt: section.settings.banner_image.alt | default: section.settings.banner_heading
+              }}
+            </div>
+          {% endif %}
+          <div class="product-list__banner-content">
+            {% if section.settings.banner_heading != blank %}
+              <h2 class="product-list__banner-heading">{{ section.settings.banner_heading }}</h2>
+            {% endif %}
+            {% if section.settings.banner_subheading != blank %}
+              <p class="product-list__banner-subheading">{{ section.settings.banner_subheading }}</p>
+            {% endif %}
+            {% if section.settings.banner_button_link != blank and section.settings.banner_button_text != blank %}
+              <a href="{{ section.settings.banner_button_link }}" class="product-list__banner-button button">
+                {{ section.settings.banner_button_text }}
+              </a>
+            {% endif %}
           </div>
-        {% endif %}
-        <div class="product-list__banner-content">
-          {% if section.settings.banner_heading != blank %}
-            <h2 class="product-list__banner-heading">{{ section.settings.banner_heading }}</h2>
-          {% endif %}
-          {% if section.settings.banner_subheading != blank %}
-            <p class="product-list__banner-subheading">{{ section.settings.banner_subheading }}</p>
-          {% endif %}
-          {% if section.settings.banner_button_link != blank and section.settings.banner_button_text != blank %}
-            <a href="{{ section.settings.banner_button_link }}" class="product-list__banner-button button">
-              {{ section.settings.banner_button_text }}
-            </a>
-          {% endif %}
         </div>
       </div>
-      <div class="product-list__products-wrapper">
-  {% endif %}
-
-  {% capture list_items %}
+      <!--@list/split-->
+    {% endif %}
     {% if section.settings.collection != blank and shop.products_count != 0 %}
       {% paginate section.settings.collection.products by max_items %}
         {% for product in section.settings.collection.products limit: max_items %}
@@ -105,11 +108,6 @@
     test_id: 'resource-list-grid'
   %}
 
-  {% if section.settings.show_banner and section.settings.banner_image != blank %}
-      </div>
-    </div>
-  {% endif %}
-
   <div
     class="section-resource-list__content"
     style="--horizontal-alignment: {{ section.settings.horizontal_alignment }};"
@@ -119,12 +117,9 @@
 </div>
 
 {% stylesheet %}
-  .product-list__banner-wrapper {
-    display: grid;
-    grid-template-columns: 1fr 2fr;
-    gap: var(--gap, 24px);
-    margin-bottom: var(--gap, 24px);
-    align-items: start;
+  .resource-list__item--banner {
+    grid-row: span 2;
+    align-self: stretch;
   }
 
   .product-list__banner {
@@ -133,6 +128,8 @@
     border-radius: var(--border-radius, 0);
     height: 100%;
     min-height: 500px;
+    display: flex;
+    align-items: stretch;
   }
 
   .product-list__banner-image {
@@ -151,7 +148,7 @@
     position: relative;
     z-index: 1;
     padding: 48px;
-    height: 100%;
+    width: 100%;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -178,17 +175,9 @@
     margin-top: auto;
   }
 
-  .product-list__products-wrapper {
-    display: block;
-  }
-
-  .product-list__products-wrapper .resource-list {
-    height: 100%;
-  }
-
   @media screen and (max-width: 749px) {
-    .product-list__banner-wrapper {
-      grid-template-columns: 1fr;
+    .resource-list__item--banner {
+      grid-row: span 1;
     }
 
     .product-list__banner {
