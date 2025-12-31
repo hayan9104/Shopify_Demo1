@@ -154,25 +154,25 @@
     width: 50%;
     }
 
-    
-    .lbproduct-slider {
-    display: flex;
-    gap: 16px;
-    overflow-x: auto;
-    scroll-snap-type: x mandatory;
-    padding-bottom: 10px;
+    .lbproduct-wrapper {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
     }
 
-    .lbproduct-slider::-webkit-scrollbar {
-    height: 6px;
+    .lbproduct-slider {
+    display: flex;
+    transition: transform 0.4s ease;
+    gap: 0;
     }
 
     .lbproduct-card {
-    min-width: 200px;
-    scroll-snap-align: start;
+    min-width: 100%;
+    max-width: 100%;
+    flex: 0 0 100%;
     background: #f6f6f6;
-    padding: 12px;
-    border-radius: 10px;
+    padding: 16px;
+    border-radius: 12px;
     text-align: center;
     }
 
@@ -199,28 +199,6 @@
     text-decoration: none;
     color: inherit;
     display: block;
-    }
-
-    .lbproduct-wrapper {
-    position: relative;
-    width: 100%;
-    overflow: hidden;
-    }
-
-    .lbproduct-slider {
-    display: flex;
-    transition: transform 0.4s ease;
-    gap: 0;
-    }
-
-    .lbproduct-card {
-    min-width: 100%;
-    max-width: 100%;
-    flex: 0 0 100%;
-    background: #f6f6f6;
-    padding: 16px;
-    border-radius: 12px;
-    text-align: center;
     }
 
     .lb-arrow {
