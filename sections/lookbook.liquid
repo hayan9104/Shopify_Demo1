@@ -106,22 +106,27 @@
     border-radius: 12px;
     }
 
-    .lbbanner-overlay h3 {
-    margin: 0;
-    font-size: 22px;
-    font-weight: 600;
-    color: #111;
+    .lbbanner-overlay {
+    position: absolute;
+    bottom: 20px;
+    left: 20px;
+    background: #fff;
+    padding: 14px 20px;
+    border-radius: 12px;
+    display: flex;              
+    align-items: center;         
+    gap: 16px;                   
     }
 
     .lb-button {
-    padding: 10px 22px;
+    display: inline-block;
+    padding: 10px 18px;
     background-color: #1f3d2b;
     color: #ffffff;
-    font-size: 14px;
-    font-weight: 500;
-    border-radius: 30px;
     text-decoration: none;
-    white-space: nowrap;
+    font-size: 14px;
+    border-radius: 25px;
+    transition: background-color 0.3s ease;
     }
 
     .lb-button:hover {
@@ -191,10 +196,10 @@
     }
 
     .lbbanner-overlay {
-    flex-direction: column;
-    gap: 12px;
-    align-items: flex-start;
-  }
+        bottom: 12px;
+        left: 12px;
+        padding: 12px 14px;
+    }
 
     .lbbanner-overlay h3 {
         font-size: 16px;
