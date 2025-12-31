@@ -7,13 +7,19 @@
     {% for block in section.blocks %}
         <div class="lbblock" {{ block.shopify_attributes }}>
 
-            {% if block.settings.lbbanner!=blank %}
-                <img src="{{ block.settings.lbbanner | image_url }}" alt="LB Banner">
-            {% endif %}
+            <div class="lbbanner">
+                {% if block.settings.lbbanner!=blank %}
+                    <img src="{{ block.settings.lbbanner | image_url }}" alt="LB Banner">
+                {% endif %}
+            </div>
 
-            {% if block.settings.lbproducts!=blank %}
-                <p>{{ block.settings.lbproducts.title }}</p>
-            {% endif %}
+            <div class="lbproducts">
+                {% if block.settings.lbproducts!=blank %}
+                    <img src="{{ block.settings.lbproducts | image_url }}" alt="LB Products">
+                    <h3>{{ product.title }}</h3>
+                    <p>{{ product.price | money }}</p>
+                {% endif %}
+            </div>
         </div>
     {% endfor %}
     </div>
