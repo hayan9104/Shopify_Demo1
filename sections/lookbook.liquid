@@ -43,78 +43,85 @@
 
 <style>
    .lbsection {
-    width: 100%;
-    max-width: 100%;
-    margin: 0;
-    padding: 60px 0;
-    min-height: 300px;
+  padding: 60px 0;
 }
 
 .lbheading {
-    font-size: 30px;
-    margin-bottom: 40px;
-    padding: 0 20px;
+  text-align: center;
+  font-size: 30px;
+  margin-bottom: 40px;
 }
 
-.lbblocks {
-    display: flex;
-    flex-wrap: wrap; 
-
-}
-
+/* MAIN BLOCK */
 .lbblock {
-    display: flex;
-    flex: 1 1 100%;
-    align-items: center;
-
+  display: flex;
+  gap: 30px;
+  padding: 0 20px;
+  margin-bottom: 60px;
 }
 
+/* BANNER */
 .lbbanner {
-    position: relative;
-    width: 100%;
+  width: 50%;
+  position: relative;
 }
 
 .lbbanner img {
-    width: 100%;
-    height: auto;
-    display: block;
+  width: 100%;
+  border-radius: 12px;
 }
 
 .lbbanner-overlay {
-    position: absolute;
-    bottom: 20px;
-    left: 20px;
-    background: rgba(255, 255, 255, 0.9);
-    padding: 16px 20px;
-    border-radius: 8px;
-    max-width: 80%;
+  position: absolute;
+  bottom: 20px;
+  left: 20px;
+  background: #fff;
+  padding: 14px 20px;
+  border-radius: 8px;
 }
 
-.lbbanner-overlay h3 {
-    margin: 0 0 10px 0;
-    font-size: 20px;
-    font-weight: 600;
-    color: #000;
+/* PRODUCTS */
+.lbproducts {
+  width: 50%;
 }
 
-.lb-button {
-    display: inline-block;
-    padding: 10px 18px;
-    background: #1f3d2b;
-    color: #fff;
-    text-decoration: none;
-    font-size: 14px;
-    border-radius: 25px;
-    transition: background 0.3s ease;
+/* SLIDER */
+.lbproduct-slider {
+  display: flex;
+  gap: 16px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  padding-bottom: 10px;
 }
 
-.lb-button:hover {
-    background: #163021;
+.lbproduct-slider::-webkit-scrollbar {
+  height: 6px;
 }
-.lbproducts p {
-    font-size: 16px;
-    color: #555;
+
+.lbproduct-card {
+  min-width: 200px;
+  scroll-snap-align: start;
+  background: #f6f6f6;
+  padding: 12px;
+  border-radius: 10px;
+  text-align: center;
 }
+
+.lbproduct-card img {
+  width: 100%;
+  border-radius: 8px;
+}
+
+.lbproduct-title {
+  font-size: 14px;
+  margin: 10px 0 4px;
+}
+
+.lbproduct-price {
+  font-weight: bold;
+  font-size: 14px;
+}
+
 
 /* Mobile */
 @media (max-width: 768px) {
@@ -158,6 +165,10 @@
     .lbproducts p {
         font-size: 14px;
     }
+
+    .lbproduct-card {
+    min-width: 160px;
+  }
 }
 
 </style>
