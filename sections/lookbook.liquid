@@ -29,9 +29,6 @@
                             {% assign product = block.settings.product_1 %}
                             <div class="lbproduct-card">
                                 <a href="{{ product.url }}">
-                                    {% unless product.available %}
-                                        <span class="sold-out-badge">Sold Out</span>
-                                    {% endunless %}
                                     <div class="product-image-wrapper">
                                         <img src="{{ product.featured_image | image_url: width: 400 }}" alt="{{ product.title }}">
                                     </div>
@@ -45,9 +42,6 @@
                             {% assign product = block.settings.product_2 %}
                             <div class="lbproduct-card">
                                 <a href="{{ product.url }}">
-                                    {% unless product.available %}
-                                        <span class="sold-out-badge">Sold Out</span>
-                                    {% endunless %}
                                     <div class="product-image-wrapper">
                                         <img src="{{ product.featured_image | image_url: width: 400 }}" alt="{{ product.title }}">
                                     </div>
@@ -61,9 +55,6 @@
                             {% assign product = block.settings.product_3 %}
                             <div class="lbproduct-card">
                                 <a href="{{ product.url }}">
-                                    {% unless product.available %}
-                                        <span class="sold-out-badge">Sold Out</span>
-                                    {% endunless %}
                                     <div class="product-image-wrapper">
                                         <img src="{{ product.featured_image | image_url: width: 400 }}" alt="{{ product.title }}">
                                     </div>
@@ -77,9 +68,6 @@
                             {% assign product = block.settings.product_4 %}
                             <div class="lbproduct-card">
                                 <a href="{{ product.url }}">
-                                    {% unless product.available %}
-                                        <span class="sold-out-badge">Sold Out</span>
-                                    {% endunless %}
                                     <div class="product-image-wrapper">
                                         <img src="{{ product.featured_image | image_url: width: 400 }}" alt="{{ product.title }}">
                                     </div>
@@ -116,7 +104,6 @@
     margin-left: -40px;
     margin-right: -40px;
     width: calc(100% + 80px);
-    align-items: flex-start;
     }
 
     
@@ -124,7 +111,6 @@
     width: 50%;
     position: relative;
     flex-shrink: 0;
-    align-self: flex-start;
     }
 
     .lbbanner img {
@@ -132,7 +118,6 @@
     height: auto;
     border-radius: 12px;
     display: block;
-    vertical-align: top;
     }
 
     .lbbanner-overlay {
@@ -146,7 +131,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    z-index: 2;
+    z-index: 1;
     }
 
     .lbbanner-overlay h3 {
@@ -306,7 +291,7 @@
     }
 
 
-/* Mobile */
+/* for mobile */
 @media (max-width: 768px) {
     .lbsection {
         padding: 30px 0;
@@ -366,12 +351,12 @@
     }
 
     .lbproducts {
-        width: 100%;
+        width: 80%;
         padding: 16px;
     }
 
     .lbproduct-card {
-        padding: 12px;
+        padding: 8px;
     }
 
     .sold-out-badge {
@@ -424,8 +409,8 @@
 </style>
 
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-  document.querySelectorAll('.lbproduct-wrapper').forEach(wrapper => {
+    document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('.lbproduct-wrapper').forEach(wrapper => {
     const slider = wrapper.querySelector('.lbproduct-slider');
     const slides = slider.querySelectorAll('.lbproduct-card');
     const prev = wrapper.querySelector('.lb-prev');
@@ -436,7 +421,6 @@ document.addEventListener('DOMContentLoaded', function() {
     
     let currentIndex = 0;
     
-    // Create pagination dots
     slides.forEach((_, index) => {
       const dot = document.createElement('div');
       dot.className = 'pagination-dot' + (index === 0 ? ' active' : '');
@@ -449,12 +433,12 @@ document.addEventListener('DOMContentLoaded', function() {
     function updateSlider() {
       slider.style.transform = `translateX(-${currentIndex * 100}%)`;
       
-      // Update pagination dots
+
       dots.forEach((dot, index) => {
         dot.classList.toggle('active', index === currentIndex);
       });
       
-      // Update arrow states
+
       if (prev) {
         prev.style.opacity = currentIndex === 0 ? '0.5' : '1';
         prev.style.cursor = currentIndex === 0 ? 'not-allowed' : 'pointer';
@@ -489,7 +473,6 @@ document.addEventListener('DOMContentLoaded', function() {
     if (prev) prev.addEventListener('click', prevSlide);
     if (next) next.addEventListener('click', nextSlide);
     
-    // Initialize
     updateSlider();
   });
 });
