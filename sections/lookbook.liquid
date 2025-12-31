@@ -16,8 +16,6 @@
             <div class="lbproducts">
                 {% if block.settings.lbproducts!=blank %}
                     <img src="{{ block.settings.lbproducts | image_url }}" alt="LB Products">
-                    <h3>{{ lbproducts.title }}</h3>
-                    <p>{{ lbproducts.price | money }}</p>
                 {% endif %}
             </div>
         </div>
@@ -41,20 +39,20 @@
 
 .lbblocks {
     display: flex;
-    flex-wrap: wrap; /* Allow wrapping on smaller screens */
-    gap: 20px; /* Space between each block */
+    flex-wrap: wrap; 
+    gap: 20px; 
 }
 
 .lbblock {
     display: flex;
-    flex: 1 1 100%; /* Each block takes full width by default */
+    flex: 1 1 100%;
     align-items: center;
     gap: 20px;
     margin-bottom: 40px;
 }
 
 .lbbanner, .lbproducts {
-    flex: 1; /* Each side takes 50% of row */
+    flex: 1; 
 }
 
 .lbbanner img, .lbproducts img {
@@ -87,7 +85,7 @@
     }
 
     .lbblock {
-        flex-direction: column; /* Stack banner and product on mobile */
+        flex-direction: column; 
         gap: 10px;
         margin-bottom: 30px;
     }
