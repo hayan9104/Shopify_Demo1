@@ -22,19 +22,54 @@
             </div>
 
             <div class="lbproducts">
-                <div class="lbproduct-slider">
+               <div class="lbproduct-slider">
 
-                {% for product in block.settings.products %}
+                {% if block.settings.product_1 != blank %}
+                    {% assign product = block.settings.product_1 %}
                     <div class="lbproduct-card">
                     <a href="{{ product.url }}">
-                        <img src="{{ product.featured_image | image_url: width: 400 }}" alt="{{ product.title }}">
-                        <p class="lbproduct-title">{{ product.title }}</p>
-                        <p class="lbproduct-price">{{ product.price | money }}</p>
+                        <img src="{{ product.featured_image | image_url: width: 400 }}">
+                        <p class="title">{{ product.title }}</p>
+                        <p class="price">{{ product.price | money }}</p>
                     </a>
                     </div>
-                {% endfor %}
+                {% endif %}
+
+                {% if block.settings.product_2 != blank %}
+                    {% assign product = block.settings.product_2 %}
+                    <div class="lbproduct-card">
+                    <a href="{{ product.url }}">
+                        <img src="{{ product.featured_image | image_url: width: 400 }}">
+                        <p class="title">{{ product.title }}</p>
+                        <p class="price">{{ product.price | money }}</p>
+                    </a>
+                    </div>
+                {% endif %}
+
+                {% if block.settings.product_3 != blank %}
+                    {% assign product = block.settings.product_3 %}
+                    <div class="lbproduct-card">
+                    <a href="{{ product.url }}">
+                        <img src="{{ product.featured_image | image_url: width: 400 }}">
+                        <p class="title">{{ product.title }}</p>
+                        <p class="price">{{ product.price | money }}</p>
+                    </a>
+                    </div>
+                {% endif %}
+
+                {% if block.settings.product_4 != blank %}
+                    {% assign product = block.settings.product_4 %}
+                    <div class="lbproduct-card">
+                    <a href="{{ product.url }}">
+                        <img src="{{ product.featured_image | image_url: width: 400 }}">
+                        <p class="title">{{ product.title }}</p>
+                        <p class="price">{{ product.price | money }}</p>
+                    </a>
+                    </div>
+                {% endif %}
 
                 </div>
+
             </div>
         </div>
     {% endfor %}
@@ -226,10 +261,24 @@
                 "label":"LB Button"
             },
             {
-                "type": "product_list",
-                "id": "products",
-                "label": "Select products",
-                "limit": 4
+                "type": "product",
+                "id": "product_1",
+                "label": "Product 1"
+            },
+            {
+                "type": "product",
+                "id": "product_2",
+                "label": "Product 2"
+            },
+            {
+                "type": "product",
+                "id": "product_3",
+                "label": "Product 3"
+            },
+            {
+                "type": "product",
+                "id": "product_4",
+                "label": "Product 4"
             }
         ]
     }
