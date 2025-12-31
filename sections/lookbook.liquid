@@ -10,6 +10,14 @@
             <div class="lbbanner">
                 {% if block.settings.lbbanner!=blank %}
                     <img src="{{ block.settings.lbbanner | image_url }}" alt="LB Banner">
+                    <div class="lbbanner-overlay">
+                        {% if block.settings.lbbanner_heading!=blank %}
+                            <h3>{{ block.settings.lbbanner_heading }}</h3>
+                        {% endif %}
+                        {% if block.settings.lbbutton!=blank %}
+                            <a href="{{ block.settings.lbbuttonlink }}" class="lb-button">{{ block.settings.lbbutton }}</a>
+                        {%  endif %}
+                    </div>
                 {% endif %}
             </div>
 
@@ -51,21 +59,48 @@
     margin-bottom: 40px;
 }
 
-.lbbanner, .lbproducts {
-    flex: 1; 
+.lbbanner {
+    position: relative;
+    width: 100%;
 }
 
-.lbbanner img, .lbproducts img {
+.lbbanner img {
     width: 100%;
     height: auto;
     display: block;
 }
 
-.lbproducts h3 {
-    font-size: 20px;
-    margin: 10px 0 5px 0;
+.lbbanner-overlay {
+    position: absolute;
+    bottom: 20px;
+    left: 20px;
+    background: rgba(255, 255, 255, 0.9);
+    padding: 16px 20px;
+    border-radius: 8px;
+    max-width: 80%;
 }
 
+.lbbanner-overlay h3 {
+    margin: 0 0 10px 0;
+    font-size: 20px;
+    font-weight: 600;
+    color: #000;
+}
+
+.lb-button {
+    display: inline-block;
+    padding: 10px 18px;
+    background: #1f3d2b;
+    color: #fff;
+    text-decoration: none;
+    font-size: 14px;
+    border-radius: 25px;
+    transition: background 0.3s ease;
+}
+
+.lb-button:hover {
+    background: #163021;
+}
 .lbproducts p {
     font-size: 16px;
     color: #555;
@@ -88,6 +123,21 @@
         flex-direction: column; 
         gap: 10px;
         margin-bottom: 30px;
+    }
+
+    .lbbanner-overlay {
+        bottom: 12px;
+        left: 12px;
+        padding: 12px 14px;
+    }
+
+    .lbbanner-overlay h3 {
+        font-size: 16px;
+    }
+
+    .lb-button {
+        padding: 8px 14px;
+        font-size: 13px;
     }
 
     .lbproducts h3 {
@@ -123,6 +173,21 @@
                 "type": "image_picker",
                 "id":"lbbanner",
                 "label":"lbbanner"
+            },
+            {
+                "type":"text",
+                "id":"lbbanner_heading",
+                "label":"LB Banner Heading"
+            },
+            {
+                "type":"url",
+                "id":"lbbuttonlink",
+                "label":"LB Button link"
+            },
+            {
+                "type":"text",
+                "id":"lbbutton",
+                "label":"LB Button"
             },
             {
                 "type": "product",
