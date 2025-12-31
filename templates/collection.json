@@ -6,7 +6,8 @@
  * or related systems. Please exercise caution as any changes
  * made to this file may be overwritten.
  * ------------------------------------------------------------
- */{
+ */
+{
   "sections": {
     "section": {
       "type": "section",
@@ -214,6 +215,8 @@
         "layout_type": "grid",
         "product_card_size": "medium",
         "mobile_product_card_size": "small",
+        "enable_infinite_scroll": true,
+        "products_per_page": 24,
         "product_grid_width": "centered",
         "full_width_on_mobile": true,
         "columns_gap_horizontal": 16,
@@ -224,10 +227,33 @@
         "padding-block-start": 0,
         "padding-block-end": 32
       }
+    },
+    "lookbook_Ept4iE": {
+      "type": "lookbook",
+      "blocks": {
+        "item_ybYdQq": {
+          "type": "item",
+          "settings": {
+            "lbbanner": "shopify://shop_images/71vS6L1H2sL._AC_UY1100.jpg",
+            "lbbanner_heading": "Selected Look",
+            "lbbuttonlink": "shopify://collections/all",
+            "lbbutton": "Buy The Look",
+            "lbproducts": "mopsi-oxidized-red-stones-golden-polish-ring-for-women-and-girls"
+          }
+        }
+      },
+      "block_order": [
+        "item_ybYdQq"
+      ],
+      "name": "Lookbook",
+      "settings": {
+        "heading": "Lookbook"
+      }
     }
   },
   "order": [
     "section",
-    "main"
+    "main",
+    "lookbook_Ept4iE"
   ]
 }

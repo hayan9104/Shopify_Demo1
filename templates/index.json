@@ -544,6 +544,21 @@
     },
     "lookbook_Fy83r7": {
       "type": "lookbook",
+      "blocks": {
+        "item_JCePjq": {
+          "type": "item",
+          "settings": {
+            "lbbanner": "shopify://shop_images/71vS6L1H2sL._AC_UY1100.jpg",
+            "lbbanner_heading": "Neckles",
+            "lbbuttonlink": "shopify://collections/all",
+            "lbbutton": "Shop",
+            "lbproducts": "stone-amethyst-plated-ring"
+          }
+        }
+      },
+      "block_order": [
+        "item_JCePjq"
+      ],
       "name": "Lookbook",
       "settings": {
         "heading": "Lookbook"
