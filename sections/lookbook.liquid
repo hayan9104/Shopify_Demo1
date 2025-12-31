@@ -90,14 +90,9 @@
     margin-bottom: 40px;
     }
 
-    .lbblocks {
-    width: 100%;
-    }
-
     .lbblock {
     display: flex;
     gap: 30px;
-    padding: 0;
     margin-left: -40px;
     margin-right: -40px;
     width: calc(100% + 80px);
@@ -120,58 +115,46 @@
     left: 20px;
     right: 20px;
     background: #fff;
-    padding: 10px 30px;
+    padding: 12px 24px;
     border-radius: 12px;
-    display: flex;              
+    display: flex;
+    justify-content: space-between;
     align-items: center;
-    justify-content: space-between;         
-    gap: 16px;                   
     }
 
     .lbbanner-overlay h3 {
-    font-size: 15px;    
+    font-size: 15px;
     margin: 0;
-    font-weight: 500;
-    line-height: 1.2;
     }
 
     .lb-button {
-    display: inline-block;
     padding: 10px 18px;
-    background-color: #1f3d2b;
-    color: #ffffff;
+    background: #1f3d2b;
+    color: #fff;
+    border-radius: 25px;
     text-decoration: none;
     font-size: 14px;
-    border-radius: 25px;
-    transition: background-color 0.3s ease;
     }
 
-    .lb-button:hover {
-    background-color: #163021;
-    }
-
+    
     .lbproducts {
     width: 50%;
     }
 
     .lbproduct-wrapper {
     position: relative;
-    width: 100%;
     overflow: hidden;
     }
 
     .lbproduct-slider {
     display: flex;
     transition: transform 0.4s ease;
-    gap: 0;
     }
 
     .lbproduct-card {
-    min-width: 100%;
-    max-width: 100%;
     flex: 0 0 100%;
-    background: #f6f6f6;
     padding: 16px;
+    background: #f6f6f6;
     border-radius: 12px;
     text-align: center;
     }
@@ -184,23 +167,14 @@
     .lbproduct-card .title {
     font-size: 14px;
     margin: 10px 0 4px;
-    color: #333;
-    line-height: 1.4;
     }
 
     .lbproduct-card .price {
-    font-weight: bold;
     font-size: 14px;
-    color: #000;
-    margin: 0;
+    font-weight: bold;
     }
 
-    .lbproduct-card a {
-    text-decoration: none;
-    color: inherit;
-    display: block;
-    }
-
+    
     .lb-arrow {
     position: absolute;
     top: 50%;
@@ -214,22 +188,10 @@
     cursor: pointer;
     z-index: 2;
     font-size: 22px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
     }
 
-    .lb-prev {
-    left: 10px;
-    }
-
-    .lb-next {
-    right: 10px;
-    }
-
-    .lb-arrow:hover {
-    background: #163021;
-    }
+    .lb-prev { left: 10px; }
+    .lb-next { right: 10px; }
 
 
 /* Mobile */
