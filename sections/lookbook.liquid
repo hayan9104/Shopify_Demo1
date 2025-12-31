@@ -22,79 +22,54 @@
             </div>
 
             <div class="lbproducts">
-               <div class="lbproduct-slider-wrapper" data-slider-id="slider-{{ block.id }}">
-                   <div class="lbproduct-slider">
-                       {% if block.settings.product_1 != blank %}
-                           {% assign product = block.settings.product_1 %}
-                           <div class="lbproduct-card">
-                               <a href="{{ product.url }}">
-                                   {% if product.available == false %}
-                                       <span class="sold-out-badge">Sold Out</span>
-                                   {% endif %}
-                                   <div class="product-image-wrapper">
-                                       <img src="{{ product.featured_image | image_url: width: 400 }}" alt="{{ product.title }}">
-                                   </div>
-                                   <p class="title">{{ product.title }}</p>
-                                   <p class="price">{{ product.price | money }}</p>
-                               </a>
-                           </div>
-                       {% endif %}
+               <div class="lbproduct-slider">
 
-                       {% if block.settings.product_2 != blank %}
-                           {% assign product = block.settings.product_2 %}
-                           <div class="lbproduct-card">
-                               <a href="{{ product.url }}">
-                                   {% if product.available == false %}
-                                       <span class="sold-out-badge">Sold Out</span>
-                                   {% endif %}
-                                   <div class="product-image-wrapper">
-                                       <img src="{{ product.featured_image | image_url: width: 400 }}" alt="{{ product.title }}">
-                                   </div>
-                                   <p class="title">{{ product.title }}</p>
-                                   <p class="price">{{ product.price | money }}</p>
-                               </a>
-                           </div>
-                       {% endif %}
+                {% if block.settings.product_1 != blank %}
+                    {% assign product = block.settings.product_1 %}
+                    <div class="lbproduct-card">
+                    <a href="{{ product.url }}">
+                        <img src="{{ product.featured_image | image_url: width: 400 }}">
+                        <p class="title">{{ product.title }}</p>
+                        <p class="price">{{ product.price | money }}</p>
+                    </a>
+                    </div>
+                {% endif %}
 
-                       {% if block.settings.product_3 != blank %}
-                           {% assign product = block.settings.product_3 %}
-                           <div class="lbproduct-card">
-                               <a href="{{ product.url }}">
-                                   {% if product.available == false %}
-                                       <span class="sold-out-badge">Sold Out</span>
-                                   {% endif %}
-                                   <div class="product-image-wrapper">
-                                       <img src="{{ product.featured_image | image_url: width: 400 }}" alt="{{ product.title }}">
-                                   </div>
-                                   <p class="title">{{ product.title }}</p>
-                                   <p class="price">{{ product.price | money }}</p>
-                               </a>
-                           </div>
-                       {% endif %}
+                {% if block.settings.product_2 != blank %}
+                    {% assign product = block.settings.product_2 %}
+                    <div class="lbproduct-card">
+                    <a href="{{ product.url }}">
+                        <img src="{{ product.featured_image | image_url: width: 400 }}">
+                        <p class="title">{{ product.title }}</p>
+                        <p class="price">{{ product.price | money }}</p>
+                    </a>
+                    </div>
+                {% endif %}
 
-                       {% if block.settings.product_4 != blank %}
-                           {% assign product = block.settings.product_4 %}
-                           <div class="lbproduct-card">
-                               <a href="{{ product.url }}">
-                                   {% if product.available == false %}
-                                       <span class="sold-out-badge">Sold Out</span>
-                                   {% endif %}
-                                   <div class="product-image-wrapper">
-                                       <img src="{{ product.featured_image | image_url: width: 400 }}" alt="{{ product.title }}">
-                                   </div>
-                                   <p class="title">{{ product.title }}</p>
-                                   <p class="price">{{ product.price | money }}</p>
-                               </a>
-                           </div>
-                       {% endif %}
-                   </div>
-                   
-                   <div class="slider-navigation">
-                       <button class="slider-btn prev-btn" aria-label="Previous product">‹</button>
-                       <div class="slider-pagination"></div>
-                       <button class="slider-btn next-btn" aria-label="Next product">›</button>
-                   </div>
-               </div>
+                {% if block.settings.product_3 != blank %}
+                    {% assign product = block.settings.product_3 %}
+                    <div class="lbproduct-card">
+                    <a href="{{ product.url }}">
+                        <img src="{{ product.featured_image | image_url: width: 400 }}">
+                        <p class="title">{{ product.title }}</p>
+                        <p class="price">{{ product.price | money }}</p>
+                    </a>
+                    </div>
+                {% endif %}
+
+                {% if block.settings.product_4 != blank %}
+                    {% assign product = block.settings.product_4 %}
+                    <div class="lbproduct-card">
+                    <a href="{{ product.url }}">
+                        <img src="{{ product.featured_image | image_url: width: 400 }}">
+                        <p class="title">{{ product.title }}</p>
+                        <p class="price">{{ product.price | money }}</p>
+                    </a>
+                    </div>
+                {% endif %}
+
+                </div>
+
             </div>
         </div>
     {% endfor %}
@@ -176,71 +151,42 @@
     width: 50%;
     }
 
-    .lbproduct-slider-wrapper {
-    position: relative;
-    width: 100%;
-    }
-
+    
     .lbproduct-slider {
     display: flex;
-    gap: 0;
-    overflow: hidden;
-    position: relative;
-    transition: transform 0.4s ease-in-out;
+    gap: 16px;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    padding-bottom: 10px;
+    }
+
+    .lbproduct-slider::-webkit-scrollbar {
+    height: 6px;
     }
 
     .lbproduct-card {
-    min-width: 100%;
-    flex-shrink: 0;
-    background: #fff;
-    padding: 16px;
-    border-radius: 8px;
-    text-align: left;
-    position: relative;
-    }
-
-    .sold-out-badge {
-    position: absolute;
-    top: 20px;
-    left: 20px;
-    background: #f5f5f5;
-    color: #000;
-    padding: 4px 12px;
-    font-size: 12px;
-    border-radius: 4px;
-    z-index: 2;
-    font-weight: 500;
-    }
-
-    .product-image-wrapper {
-    width: 100%;
-    background: #f5f5f5;
-    border-radius: 8px;
-    overflow: hidden;
-    margin-bottom: 12px;
-    aspect-ratio: 1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    min-width: 200px;
+    scroll-snap-align: start;
+    background: #f6f6f6;
+    padding: 12px;
+    border-radius: 10px;
+    text-align: center;
     }
 
     .lbproduct-card img {
     width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: block;
+    border-radius: 8px;
     }
 
     .lbproduct-card .title {
     font-size: 14px;
-    margin: 0 0 8px 0;
-    color: #000;
+    margin: 10px 0 4px;
+    color: #333;
     line-height: 1.4;
-    font-weight: 400;
     }
 
     .lbproduct-card .price {
-    font-weight: 600;
+    font-weight: bold;
     font-size: 14px;
     color: #000;
     margin: 0;
@@ -250,55 +196,6 @@
     text-decoration: none;
     color: inherit;
     display: block;
-    }
-
-    .slider-navigation {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 16px;
-    margin-top: 20px;
-    }
-
-    .slider-btn {
-    background: transparent;
-    border: 1px solid #ddd;
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
-    cursor: pointer;
-    font-size: 24px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.3s ease;
-    color: #333;
-    }
-
-    .slider-btn:hover {
-    background: #f5f5f5;
-    border-color: #333;
-    }
-
-    .slider-pagination {
-    display: flex;
-    gap: 8px;
-    align-items: center;
-    }
-
-    .pagination-dot {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    background: #ddd;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    }
-
-    .pagination-dot.active {
-    background: #000;
-    width: 24px;
-    border-radius: 4px;
     }
 
 
@@ -365,20 +262,19 @@
         padding: 16px;
     }
 
-    .lbproduct-card {
-        padding: 12px;
+    .lbproduct-slider {
+        gap: 12px;
+        padding-bottom: 8px;
     }
 
-    .sold-out-badge {
-        top: 16px;
-        left: 16px;
-        font-size: 11px;
-        padding: 3px 10px;
+    .lbproduct-card {
+        min-width: 180px;
+        padding: 10px;
     }
 
     .lbproduct-card .title {
         font-size: 13px;
-        margin: 0 0 6px 0;
+        margin: 8px 0 4px;
         line-height: 1.3;
     }
 
@@ -387,109 +283,12 @@
         font-weight: 600;
     }
 
-    .slider-navigation {
-        margin-top: 16px;
-        gap: 12px;
-    }
-
-    .slider-btn {
-        width: 32px;
-        height: 32px;
-        font-size: 20px;
-    }
-
-    .pagination-dot {
-        width: 6px;
-        height: 6px;
-    }
-
-    .pagination-dot.active {
-        width: 20px;
+    .lbproduct-card img {
+        border-radius: 6px;
     }
 }
 
 </style>
-
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    const sliderWrappers = document.querySelectorAll('.lbproduct-slider-wrapper');
-    
-    sliderWrappers.forEach(wrapper => {
-        const slider = wrapper.querySelector('.lbproduct-slider');
-        const cards = wrapper.querySelectorAll('.lbproduct-card');
-        const prevBtn = wrapper.querySelector('.prev-btn');
-        const nextBtn = wrapper.querySelector('.next-btn');
-        const pagination = wrapper.querySelector('.slider-pagination');
-        
-        if (cards.length === 0) return;
-        
-        let currentIndex = 0;
-        
-        // Create pagination dots
-        cards.forEach((_, index) => {
-            const dot = document.createElement('div');
-            dot.className = 'pagination-dot' + (index === 0 ? ' active' : '');
-            dot.addEventListener('click', () => goToSlide(index));
-            pagination.appendChild(dot);
-        });
-        
-        const dots = pagination.querySelectorAll('.pagination-dot');
-        
-        function updateSlider() {
-            slider.style.transform = `translateX(-${currentIndex * 100}%)`;
-            
-            // Update pagination dots
-            dots.forEach((dot, index) => {
-                dot.classList.toggle('active', index === currentIndex);
-            });
-            
-            // Update button states
-            if (prevBtn) {
-                prevBtn.style.opacity = currentIndex === 0 ? '0.5' : '1';
-                prevBtn.style.cursor = currentIndex === 0 ? 'not-allowed' : 'pointer';
-            }
-            if (nextBtn) {
-                nextBtn.style.opacity = currentIndex === cards.length - 1 ? '0.5' : '1';
-                nextBtn.style.cursor = currentIndex === cards.length - 1 ? 'not-allowed' : 'pointer';
-            }
-        }
-        
-        function goToSlide(index) {
-            if (index < 0) index = 0;
-            if (index >= cards.length) index = cards.length - 1;
-            currentIndex = index;
-            updateSlider();
-        }
-        
-        function nextSlide() {
-            if (currentIndex < cards.length - 1) {
-                currentIndex++;
-                updateSlider();
-            }
-        }
-        
-        function prevSlide() {
-            if (currentIndex > 0) {
-                currentIndex--;
-                updateSlider();
-            }
-        }
-        
-        if (prevBtn) prevBtn.addEventListener('click', prevSlide);
-        if (nextBtn) nextBtn.addEventListener('click', nextSlide);
-        
-        // Initialize
-        updateSlider();
-        
-        // Auto-play (optional - uncomment if needed)
-        // let autoPlayInterval = setInterval(nextSlide, 5000);
-        // wrapper.addEventListener('mouseenter', () => clearInterval(autoPlayInterval));
-        // wrapper.addEventListener('mouseleave', () => {
-        //     autoPlayInterval = setInterval(nextSlide, 5000);
-        // });
-    });
-});
-</script>
 
 {% schema %}
 {
