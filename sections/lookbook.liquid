@@ -16,8 +16,8 @@
             <div class="lbproducts">
                 {% if block.settings.lbproducts!=blank %}
                     <img src="{{ block.settings.lbproducts | image_url }}" alt="LB Products">
-                    <h3>{{ product.title }}</h3>
-                    <p>{{ product.price | money }}</p>
+                    <h3>{{ lbproducts.title }}</h3>
+                    <p>{{ lbproducts.price | money }}</p>
                 {% endif %}
             </div>
         </div>
@@ -26,29 +26,100 @@
 </section>
 
 <style>
-    .lbsection{
-        width:100%;
-        max-width:1200px;
-        margin:0 auto;
-        padding:60px 20px;
-        min-height:300px;
-    }
+   .lbsection {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 60px 20px;
+    min-height: 300px;
+    box-sizing: border-box;
+}
 
-    .lbheading{
-        font-size:30px
+.lbheading {
+    font-size: 30px;
+    font-weight: 600;
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+/* Container for blocks */
+.lbblocks {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px; /* space between blocks */
+    justify-content: center;
+}
+
+/* Each individual block */
+.lbblock {
+    flex: 1 1 280px; /* responsive width, min 280px */
+    max-width: 350px;
+    border: 1px solid #e0e0e0;
+    padding: 15px;
+    box-sizing: border-box;
+    text-align: center;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.lbblock:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+}
+
+/* Banner image styling */
+.lbbanner img {
+    width: 100%;
+    height: auto;
+    display: block;
+    border-radius: 8px;
+    margin-bottom: 15px;
+}
+
+/* Product image */
+.lbproducts img {
+    width: 100%;
+    height: auto;
+    display: block;
+    border-radius: 8px;
+    margin-bottom: 10px;
+}
+
+/* Product title & price */
+.lbproducts h3 {
+    font-size: 18px;
+    font-weight: 500;
+    margin: 5px 0;
+}
+
+.lbproducts p {
+    font-size: 16px;
+    font-weight: 400;
+    color: #555;
+}
+
+/* Responsive design */
+@media (max-width: 1024px) {
+    .lbblock {
+        flex: 1 1 45%;
     }
-   
-    /*mobile*/
-    @media (max-width: 768px) {
+}
+
+@media (max-width: 768px) {
     .lbsection {
-        max-width: 100%;
         padding: 40px 16px;
-        min-height: auto;
     }
 
     .lbheading {
         font-size: 22px;
+        margin-bottom: 30px;
     }
+
+    .lbblock {
+        flex: 1 1 100%;
+        max-width: 100%;
+    }
+}
+
 </style>
 
 {% schema %}
