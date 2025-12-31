@@ -323,6 +323,13 @@
         "arrows_background_hover": "#ffffff",
         "arrows_color_hover": "#000000",
         "arrows_border_hover": "#273c2c",
+        "slideshow_text_color": "#1f3d2b",
+        "slideshow_button_color": "#ffffff",
+        "slideshow_button_background": "#1f3d2b",
+        "slideshow_button_border": "#1f3d2b",
+        "slideshow_button_color_hover": "#000000",
+        "slideshow_button_background_hover": "#ffffff",
+        "slideshow_button_border_hover": "#ffffff",
         "padding-block-start": 0,
         "padding-block-end": 0
       }
@@ -519,6 +526,14 @@
         "banner_subheading": "Discover our newest jewelry treasures just added",
         "banner_button_text": "Shop Now",
         "banner_button_link": "shopify://collections/all",
+        "banner_text_color": "#1f3d2b",
+        "banner_overlay_color": "rgba(0,0,0,0)",
+        "banner_button_color": "#ffffff",
+        "banner_button_background": "#1f3d2b",
+        "banner_button_border": "#1f3d2b",
+        "banner_button_color_hover": "#000000",
+        "banner_button_background_hover": "#ffffff",
+        "banner_button_border_hover": "#ffffff",
         "section_width": "page-width",
         "horizontal_alignment": "flex-start",
         "gap": 28,
@@ -526,11 +541,19 @@
         "padding-block-start": 48,
         "padding-block-end": 48
       }
+    },
+    "lookbook_Fy83r7": {
+      "type": "lookbook",
+      "name": "Lookbook",
+      "settings": {
+        "heading": "Lookbook"
+      }
     }
   },
   "order": [
     "hero_jVaWmY",
     "slideshow_CyC7dW",
-    "product_list_fa6P9H"
+    "product_list_fa6P9H",
+    "lookbook_Fy83r7"
   ]
 }
