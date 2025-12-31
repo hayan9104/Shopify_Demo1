@@ -2,6 +2,21 @@
    {% if section.settings.heading!=blank %}
     <h2 class="lbheading">{{ section.settings.heading}}</h2>
    {% endif %}
+
+   <div class="lbblocks">
+    {% for block in section.blocks %}
+        <div class="lbblock" {{ block.shopify_attributes }}>
+
+            {% if block.settings.lbbanner!=blank %}
+                <img src="{{ block.settings.lbbanner | image_url }}" alt="LB Banner">
+            {% endif %}
+
+            {% if block.settings.lbproducts!=blank %}
+                <p>{{ block.settings.lbproducts.title }}</p>
+            {% endif %}
+        </div>
+    {% endfor %}
+    </div>
 </section>
 
 <style>
@@ -41,6 +56,24 @@
       "id": "heading",
       "label": "section heading",
       "default": "Lookbook"
+    }
+  ],
+  "blocks": [
+    {
+        "type": "item",
+        "name":"lbitem",
+        "settings": [
+            {
+                "type": "image_picker",
+                "id":"lbbanner",
+                "label":"lbbanner"
+            },
+            {
+                "type": "product",
+                "id":"lbproducts",
+                "label":"lbProducts"
+            }
+        ]
     }
   ],
   "presets": [
