@@ -22,9 +22,19 @@
             </div>
 
             <div class="lbproducts">
-                {% if block.settings.lbproducts!=blank %}
-                    <img src="{{ block.settings.lbproducts | image_url }}" alt="LB Products">
-                {% endif %}
+                <div class="lbproduct-slider">
+
+                {% for product in block.settings.products %}
+                    <div class="lbproduct-card">
+                    <a href="{{ product.url }}">
+                        <img src="{{ product.featured_image | image_url: width: 400 }}" alt="{{ product.title }}">
+                        <p class="lbproduct-title">{{ product.title }}</p>
+                        <p class="lbproduct-price">{{ product.price | money }}</p>
+                    </a>
+                    </div>
+                {% endfor %}
+
+                </div>
             </div>
         </div>
     {% endfor %}
@@ -191,9 +201,10 @@
                 "label":"LB Button"
             },
             {
-                "type": "product",
-                "id":"lbproducts",
-                "label":"lbProducts"
+                "type": "product_list",
+                "id": "products",
+                "label": "Select products",
+                "limit": 4
             }
         ]
     }
