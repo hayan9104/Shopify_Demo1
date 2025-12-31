@@ -26,20 +26,55 @@
 </section>
 
 <style>
-    .lbsection{
-        width:100%;
-        max-width:1200px;
-        margin:0 auto;
-        padding:60px 20px;
-        min-height:300px;
-    }
+   .lbsection {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 60px 20px;
+    min-height: 300px;
+}
 
-    .lbheading{
-        font-size:30px
-    }
-   
-    /*mobile*/
-    @media (max-width: 768px) {
+.lbheading {
+    font-size: 30px;
+    margin-bottom: 40px;
+}
+
+.lbblocks {
+    display: flex;
+    flex-wrap: wrap; /* Allow wrapping on smaller screens */
+    gap: 20px; /* Space between each block */
+}
+
+.lbblock {
+    display: flex;
+    flex: 1 1 100%; /* Each block takes full width by default */
+    align-items: center;
+    gap: 20px;
+    margin-bottom: 40px;
+}
+
+.lbbanner, .lbproducts {
+    flex: 1; /* Each side takes 50% of row */
+}
+
+.lbbanner img, .lbproducts img {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+.lbproducts h3 {
+    font-size: 20px;
+    margin: 10px 0 5px 0;
+}
+
+.lbproducts p {
+    font-size: 16px;
+    color: #555;
+}
+
+/* Mobile */
+@media (max-width: 768px) {
     .lbsection {
         max-width: 100%;
         padding: 40px 16px;
@@ -48,7 +83,24 @@
 
     .lbheading {
         font-size: 22px;
+        margin-bottom: 20px;
     }
+
+    .lbblock {
+        flex-direction: column; /* Stack banner and product on mobile */
+        gap: 10px;
+        margin-bottom: 30px;
+    }
+
+    .lbproducts h3 {
+        font-size: 18px;
+    }
+
+    .lbproducts p {
+        font-size: 14px;
+    }
+}
+
 </style>
 
 {% schema %}
