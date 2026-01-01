@@ -7,7 +7,11 @@
   endif
   
   # Try to fetch meta object list first (for list of meta objects)
+  # Try different possible metafield keys
   assign product_details_list = current_product.metafields.custom.product_details.value
+  if product_details_list == blank
+    assign product_details_list = current_product.metafields.custom.product_detail.value
+  endif
   
   # Check if it's a list of meta objects
   if product_details_list != blank and product_details_list.size > 0
@@ -18,16 +22,6 @@
     
     if product_detail_meta != blank
       assign has_single_meta_object = true
-    else
-      # Fallback: Try individual metafields with numbered pattern
-      assign product_detail_text_1 = current_product.metafields.custom.product_detail_text_1
-      assign product_detail_icon_1 = current_product.metafields.custom.product_detail_icon_1
-      
-      # If no numbered fields, try single fields
-      if product_detail_text_1 == blank and product_detail_icon_1 == blank
-        assign product_detail_text = current_product.metafields.custom.product_detail_text
-        assign product_detail_icon = current_product.metafields.custom.product_detail_icon
-      endif
     endif
   endif
 %}
@@ -42,9 +36,33 @@
             {% comment %} Handle list of meta objects {% endcomment %}
             {% for detail in product_details_list %}
                 <div class="pd-item">
-                    {% comment %} Meta object properties can be accessed directly {% endcomment %}
-                    {% assign detail_icon = detail.icon | default: detail.product_detail_icon | default: detail.image %}
-                    {% assign detail_text = detail.text | default: detail.product_detail_text | default: detail.title %}
+                    {% comment %} Access meta object fields - try all possible key variations {% endcomment %}
+                    {% liquid
+                        assign detail_icon = blank
+                        assign detail_text = blank
+                        
+                        # Try different key formats for icon
+                        if detail.product_detail_icon != blank
+                            assign detail_icon = detail.product_detail_icon
+                        elsif detail['product_detail_icon'] != blank
+                            assign detail_icon = detail['product_detail_icon']
+                        elsif detail.icon != blank
+                            assign detail_icon = detail.icon
+                        elsif detail.image != blank
+                            assign detail_icon = detail.image
+                        endif
+                        
+                        # Try different key formats for text
+                        if detail.product_detail_text != blank
+                            assign detail_text = detail.product_detail_text
+                        elsif detail['product_detail_text'] != blank
+                            assign detail_text = detail['product_detail_text']
+                        elsif detail.text != blank
+                            assign detail_text = detail.text
+                        elsif detail.title != blank
+                            assign detail_text = detail.title
+                        endif
+                    %}
                     
                     {% if detail_icon != blank %}
                         <div class="pd-icon">
@@ -60,8 +78,32 @@
         {% elsif has_single_meta_object %}
             {% comment %} Handle single meta object {% endcomment %}
             <div class="pd-item">
-                {% assign detail_icon = product_detail_meta.icon | default: product_detail_meta.product_detail_icon | default: product_detail_meta.image %}
-                {% assign detail_text = product_detail_meta.text | default: product_detail_meta.product_detail_text | default: product_detail_meta.title %}
+                {% liquid
+                    assign detail_icon = blank
+                    assign detail_text = blank
+                    
+                    # Try different key formats for icon
+                    if product_detail_meta.product_detail_icon != blank
+                        assign detail_icon = product_detail_meta.product_detail_icon
+                    elsif product_detail_meta['product_detail_icon'] != blank
+                        assign detail_icon = product_detail_meta['product_detail_icon']
+                    elsif product_detail_meta.icon != blank
+                        assign detail_icon = product_detail_meta.icon
+                    elsif product_detail_meta.image != blank
+                        assign detail_icon = product_detail_meta.image
+                    endif
+                    
+                    # Try different key formats for text
+                    if product_detail_meta.product_detail_text != blank
+                        assign detail_text = product_detail_meta.product_detail_text
+                    elsif product_detail_meta['product_detail_text'] != blank
+                        assign detail_text = product_detail_meta['product_detail_text']
+                    elsif product_detail_meta.text != blank
+                        assign detail_text = product_detail_meta.text
+                    elsif product_detail_meta.title != blank
+                        assign detail_text = product_detail_meta.title
+                    endif
+                %}
                 
                 {% if detail_icon != blank %}
                     <div class="pd-icon">
@@ -71,41 +113,6 @@
 
                 {% if detail_text != blank %}
                     <p class="pd-text">{{ detail_text }}</p>
-                {% endif %}
-            </div>
-        {% elsif product_detail_text_1 != blank or product_detail_icon_1 != blank %}
-            {% comment %} Handle numbered metafields pattern {% endcomment %}
-            {% for i in (1..10) %}
-                {% assign text_key = 'product_detail_text_' | append: i %}
-                {% assign icon_key = 'product_detail_icon_' | append: i %}
-                {% assign detail_text = current_product.metafields.custom[text_key] %}
-                {% assign detail_icon = current_product.metafields.custom[icon_key] %}
-                
-                {% if detail_text != blank or detail_icon != blank %}
-                    <div class="pd-item">
-                        {% if detail_icon != blank %}
-                            <div class="pd-icon">
-                                <img src="{{ detail_icon | image_url: width: 40 }}" alt="Icon">
-                            </div>
-                        {% endif %}
-
-                        {% if detail_text != blank %}
-                            <p class="pd-text">{{ detail_text }}</p>
-                        {% endif %}
-                    </div>
-                {% endif %}
-            {% endfor %}
-        {% elsif product_detail_text != blank or product_detail_icon != blank %}
-            {% comment %} Handle single metafields {% endcomment %}
-            <div class="pd-item">
-                {% if product_detail_icon != blank %}
-                    <div class="pd-icon">
-                        <img src="{{ product_detail_icon | image_url: width: 40 }}" alt="Icon">
-                    </div>
-                {% endif %}
-
-                {% if product_detail_text != blank %}
-                    <p class="pd-text">{{ product_detail_text }}</p>
                 {% endif %}
             </div>
         {% endif %}
