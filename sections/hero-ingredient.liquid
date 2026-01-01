@@ -33,43 +33,107 @@
       {% if is_list %}
         {% for ingredient in ingredients %}
           <div class="hi-item">
-            {% if ingredient.image != blank %}
+            {% liquid
+              assign ingredient_image = blank
+              assign ingredient_heading = blank
+              assign ingredient_text = blank
+              
+              if ingredient.image != blank
+                assign ingredient_image = ingredient.image
+              elsif ingredient.Image != blank
+                assign ingredient_image = ingredient.Image
+              elsif ingredient['image'] != blank
+                assign ingredient_image = ingredient['image']
+              elsif ingredient['Image'] != blank
+                assign ingredient_image = ingredient['Image']
+              endif
+              
+              if ingredient.heading != blank
+                assign ingredient_heading = ingredient.heading
+              elsif ingredient.Heading != blank
+                assign ingredient_heading = ingredient.Heading
+              elsif ingredient['heading'] != blank
+                assign ingredient_heading = ingredient['heading']
+              elsif ingredient['Heading'] != blank
+                assign ingredient_heading = ingredient['Heading']
+              endif
+              
+              if ingredient.text != blank
+                assign ingredient_text = ingredient.text
+              elsif ingredient.Text != blank
+                assign ingredient_text = ingredient.Text
+              elsif ingredient['text'] != blank
+                assign ingredient_text = ingredient['text']
+              elsif ingredient['Text'] != blank
+                assign ingredient_text = ingredient['Text']
+              endif
+            %}
+            
+            {% if ingredient_image != blank %}
               <div class="hi-image">
-                <img src="{{ ingredient.image | image_url: width: 140 }}" alt="{{ ingredient.heading | default: 'Ingredient' }}" width="140" height="140">
+                <img src="{{ ingredient_image | image_url: width: 140 }}" alt="{{ ingredient_heading | default: 'Ingredient' }}" width="140" height="140">
               </div>
             {% endif %}
 
-            {% if ingredient.heading != blank %}
-              <h3 class="hi-item-heading">{{ ingredient.heading }}</h3>
+            {% if ingredient_heading != blank %}
+              <h3 class="hi-item-heading">{{ ingredient_heading }}</h3>
             {% endif %}
 
-            {% if ingredient.text != blank %}
-              <p class="hi-item-text">{{ ingredient.text }}</p>
-            {% endif %}
-
-            {% if ingredient.detail != blank %}
-              <p class="hi-item-detail">{{ ingredient.detail }}</p>
+            {% if ingredient_text != blank %}
+              <p class="hi-item-text">{{ ingredient_text }}</p>
             {% endif %}
           </div>
         {% endfor %}
       {% elsif ingredients != blank %}
         <div class="hi-item">
-          {% if ingredients.image != blank %}
+          {% liquid
+            assign ingredient_image = blank
+            assign ingredient_heading = blank
+            assign ingredient_text = blank
+            
+            if ingredients.image != blank
+              assign ingredient_image = ingredients.image
+            elsif ingredients.Image != blank
+              assign ingredient_image = ingredients.Image
+            elsif ingredients['image'] != blank
+              assign ingredient_image = ingredients['image']
+            elsif ingredients['Image'] != blank
+              assign ingredient_image = ingredients['Image']
+            endif
+            
+            if ingredients.heading != blank
+              assign ingredient_heading = ingredients.heading
+            elsif ingredients.Heading != blank
+              assign ingredient_heading = ingredients.Heading
+            elsif ingredients['heading'] != blank
+              assign ingredient_heading = ingredients['heading']
+            elsif ingredients['Heading'] != blank
+              assign ingredient_heading = ingredients['Heading']
+            endif
+            
+            if ingredients.text != blank
+              assign ingredient_text = ingredients.text
+            elsif ingredients.Text != blank
+              assign ingredient_text = ingredients.Text
+            elsif ingredients['text'] != blank
+              assign ingredient_text = ingredients['text']
+            elsif ingredients['Text'] != blank
+              assign ingredient_text = ingredients['Text']
+            endif
+          %}
+          
+          {% if ingredient_image != blank %}
             <div class="hi-image">
-              <img src="{{ ingredients.image | image_url: width: 140 }}" alt="{{ ingredients.heading | default: 'Ingredient' }}" width="140" height="140">
+              <img src="{{ ingredient_image | image_url: width: 140 }}" alt="{{ ingredient_heading | default: 'Ingredient' }}" width="140" height="140">
             </div>
           {% endif %}
 
-          {% if ingredients.heading != blank %}
-            <h3 class="hi-item-heading">{{ ingredients.heading }}</h3>
+          {% if ingredient_heading != blank %}
+            <h3 class="hi-item-heading">{{ ingredient_heading }}</h3>
           {% endif %}
 
-          {% if ingredients.text != blank %}
-            <p class="hi-item-text">{{ ingredients.text }}</p>
-          {% endif %}
-
-          {% if ingredients.detail != blank %}
-            <p class="hi-item-detail">{{ ingredients.detail }}</p>
+          {% if ingredient_text != blank %}
+            <p class="hi-item-text">{{ ingredient_text }}</p>
           {% endif %}
         </div>
       {% endif %}
