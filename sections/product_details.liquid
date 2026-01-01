@@ -1,23 +1,33 @@
 {% liquid
-
+  # Get the product object
   if closest.product != blank
     assign current_product = closest.product
   else
     assign current_product = product
   endif
   
+  # Try to fetch meta object list first (for list of meta objects)
   assign product_details_list = current_product.metafields.custom.product_details.value
-
+  
+  # Check if it's a list of meta objects
   if product_details_list != blank and product_details_list.size > 0
     assign has_list_metafield = true
   else
-
-    assign product_detail_text_1 = current_product.metafields.custom.product_detail_text_1
-    assign product_detail_icon_1 = current_product.metafields.custom.product_detail_icon_1
+    # Try single meta object reference
+    assign product_detail_meta = current_product.metafields.custom.product_detail.value
     
-    if product_detail_text_1 == blank and product_detail_icon_1 == blank
-      assign product_detail_text = current_product.metafields.custom.product_detail_text
-      assign product_detail_icon = current_product.metafields.custom.product_detail_icon
+    if product_detail_meta != blank
+      assign has_single_meta_object = true
+    else
+      # Fallback: Try individual metafields with numbered pattern
+      assign product_detail_text_1 = current_product.metafields.custom.product_detail_text_1
+      assign product_detail_icon_1 = current_product.metafields.custom.product_detail_icon_1
+      
+      # If no numbered fields, try single fields
+      if product_detail_text_1 == blank and product_detail_icon_1 == blank
+        assign product_detail_text = current_product.metafields.custom.product_detail_text
+        assign product_detail_icon = current_product.metafields.custom.product_detail_icon
+      endif
     endif
   endif
 %}
@@ -29,10 +39,12 @@
 
     <div class="pd-grid">
         {% if has_list_metafield %}
+            {% comment %} Handle list of meta objects {% endcomment %}
             {% for detail in product_details_list %}
                 <div class="pd-item">
-                    {% assign detail_icon = detail.icon | default: detail.product_detail_icon %}
-                    {% assign detail_text = detail.text | default: detail.product_detail_text %}
+                    {% comment %} Meta object properties can be accessed directly {% endcomment %}
+                    {% assign detail_icon = detail.icon | default: detail.product_detail_icon | default: detail.image %}
+                    {% assign detail_text = detail.text | default: detail.product_detail_text | default: detail.title %}
                     
                     {% if detail_icon != blank %}
                         <div class="pd-icon">
@@ -45,6 +57,22 @@
                     {% endif %}
                 </div>
             {% endfor %}
+        {% elsif has_single_meta_object %}
+            {% comment %} Handle single meta object {% endcomment %}
+            <div class="pd-item">
+                {% assign detail_icon = product_detail_meta.icon | default: product_detail_meta.product_detail_icon | default: product_detail_meta.image %}
+                {% assign detail_text = product_detail_meta.text | default: product_detail_meta.product_detail_text | default: product_detail_meta.title %}
+                
+                {% if detail_icon != blank %}
+                    <div class="pd-icon">
+                        <img src="{{ detail_icon | image_url: width: 40 }}" alt="Icon">
+                    </div>
+                {% endif %}
+
+                {% if detail_text != blank %}
+                    <p class="pd-text">{{ detail_text }}</p>
+                {% endif %}
+            </div>
         {% elsif product_detail_text_1 != blank or product_detail_icon_1 != blank %}
             {% comment %} Handle numbered metafields pattern {% endcomment %}
             {% for i in (1..10) %}
