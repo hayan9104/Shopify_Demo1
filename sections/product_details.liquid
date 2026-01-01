@@ -1,22 +1,93 @@
+{% liquid
+  # Get the product object
+  if closest.product != blank
+    assign current_product = closest.product
+  else
+    assign current_product = product
+  endif
+  
+  # Fetch product details from metafields
+  # Try list metafield first (for multiple details)
+  assign product_details_list = current_product.metafields.custom.product_details.value
+  
+  # If list metafield exists, use it
+  if product_details_list != blank and product_details_list.size > 0
+    assign has_list_metafield = true
+  else
+    # Fallback: Try individual metafields with numbered pattern (product_detail_text_1, product_detail_icon_1, etc.)
+    assign product_detail_text_1 = current_product.metafields.custom.product_detail_text_1
+    assign product_detail_icon_1 = current_product.metafields.custom.product_detail_icon_1
+    
+    # If no numbered fields, try single fields (exact names from admin)
+    if product_detail_text_1 == blank and product_detail_icon_1 == blank
+      assign product_detail_text = current_product.metafields.custom.product_detail_text
+      assign product_detail_icon = current_product.metafields.custom.product_detail_icon
+    endif
+  endif
+%}
+
 <section class="pd-section">
     {%  if section.settings.heading!=blank %}
         <h2 class="pd-heading">{{ section.settings.heading }}</h2>
     {% endif %}
 
     <div class="pd-grid">
-        {%  for block in section.blocks %}
-            <div class="pd-item" {{ block.shopify_attributes }}>
-                {% if block.settings.icon != blank %}
+        {% if has_list_metafield %}
+            {% for detail in product_details_list %}
+                <div class="pd-item">
+                    {% if detail.icon != blank %}
+                        <div class="pd-icon">
+                            <img src="{{ detail.icon | image_url: width: 40 }}" alt="Icon">
+                        </div>
+                    {% elsif detail.product_detail_icon != blank %}
+                        <div class="pd-icon">
+                            <img src="{{ detail.product_detail_icon | image_url: width: 40 }}" alt="Icon">
+                        </div>
+                    {% endif %}
+
+                    {% if detail.text != blank %}
+                        <p class="pd-text">{{ detail.text }}</p>
+                    {% elsif detail.product_detail_text != blank %}
+                        <p class="pd-text">{{ detail.product_detail_text }}</p>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        {% elsif product_detail_text_1 != blank or product_detail_icon_1 != blank %}
+            {% comment %} Handle numbered metafields pattern {% endcomment %}
+            {% for i in (1..10) %}
+                {% assign text_key = 'product_detail_text_' | append: i %}
+                {% assign icon_key = 'product_detail_icon_' | append: i %}
+                {% assign detail_text = current_product.metafields.custom[text_key] %}
+                {% assign detail_icon = current_product.metafields.custom[icon_key] %}
+                
+                {% if detail_text != blank or detail_icon != blank %}
+                    <div class="pd-item">
+                        {% if detail_icon != blank %}
+                            <div class="pd-icon">
+                                <img src="{{ detail_icon | image_url: width: 40 }}" alt="Icon">
+                            </div>
+                        {% endif %}
+
+                        {% if detail_text != blank %}
+                            <p class="pd-text">{{ detail_text }}</p>
+                        {% endif %}
+                    </div>
+                {% endif %}
+            {% endfor %}
+        {% elsif product_detail_text != blank or product_detail_icon != blank %}
+            {% comment %} Handle single metafields {% endcomment %}
+            <div class="pd-item">
+                {% if product_detail_icon != blank %}
                     <div class="pd-icon">
-                    <img src="{{ block.settings.icon | image_url: width: 40 }}" alt="Icon">
+                        <img src="{{ product_detail_icon | image_url: width: 40 }}" alt="Icon">
                     </div>
                 {% endif %}
 
-                {% if block.settings.text != blank %}
-                    <p class="pd-text">{{ block.settings.text }}</p>
+                {% if product_detail_text != blank %}
+                    <p class="pd-text">{{ product_detail_text }}</p>
                 {% endif %}
             </div>
-        {%  endfor %}
+        {% endif %}
     </div>
 </section>
 
