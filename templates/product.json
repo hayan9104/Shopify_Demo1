@@ -277,6 +277,20 @@
         "heading": "Product Detail"
       }
     },
+    "hero_ingredient_nNcBGR": {
+      "type": "hero-ingredient",
+      "name": "Hero Ingredient",
+      "settings": {
+        "heading": "Hero Ingredients"
+      }
+    },
+    "product_benefits_daEekB": {
+      "type": "product-benefits",
+      "name": "ProductBenefits",
+      "settings": {
+        "heading": "Product Benefits"
+      }
+    },
     "product_recommendations_qggXJq": {
       "type": "product-recommendations",
       "blocks": {
@@ -417,19 +431,13 @@
         "padding-block-start": 48,
         "padding-block-end": 48
       }
-    },
-    "hero_ingredient_nNcBGR": {
-      "type": "hero-ingredient",
-      "name": "Hero Ingredient",
-      "settings": {
-        "heading": "Hero Ingredients"
-      }
     }
   },
   "order": [
     "main",
     "product_details_9Q3HbP",
     "hero_ingredient_nNcBGR",
+    "product_benefits_daEekB",
     "product_recommendations_qggXJq"
   ]
 }
