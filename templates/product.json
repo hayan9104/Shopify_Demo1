@@ -291,6 +291,13 @@
         "heading": "Product Benefits"
       }
     },
+    "product_use_wRezRC": {
+      "type": "product-use",
+      "name": "How to use",
+      "settings": {
+        "heading": "How To Use"
+      }
+    },
     "product_recommendations_qggXJq": {
       "type": "product-recommendations",
       "blocks": {
@@ -438,6 +445,7 @@
     "product_details_9Q3HbP",
     "hero_ingredient_nNcBGR",
     "product_benefits_daEekB",
+    "product_use_wRezRC",
     "product_recommendations_qggXJq"
   ]
 }
