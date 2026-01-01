@@ -5,9 +5,16 @@
     assign current_product = product
   endif
 
+  # Try different metafield key variations
   assign ingredients = current_product.metafields.custom.hero_ingredients.value
   if ingredients == blank
     assign ingredients = current_product.metafields.custom.hero_ingredient.value
+  endif
+  if ingredients == blank
+    assign ingredients = current_product.metafields.custom['hero_ingredients'].value
+  endif
+  if ingredients == blank
+    assign ingredients = current_product.metafields.custom['hero_ingredient'].value
   endif
 
   if ingredients != blank and ingredients.size > 0
@@ -34,38 +41,20 @@
         {% for ingredient in ingredients %}
           <div class="hi-item">
             {% liquid
-              assign ingredient_image = blank
-              assign ingredient_heading = blank
-              assign ingredient_text = blank
+              # Try lowercase first (most common in Shopify)
+              assign ingredient_image = ingredient.image
+              assign ingredient_heading = ingredient.heading
+              assign ingredient_text = ingredient.text
               
-              if ingredient.image != blank
-                assign ingredient_image = ingredient.image
-              elsif ingredient.Image != blank
+              # Fallback to capitalized if lowercase is blank
+              if ingredient_image == blank
                 assign ingredient_image = ingredient.Image
-              elsif ingredient['image'] != blank
-                assign ingredient_image = ingredient['image']
-              elsif ingredient['Image'] != blank
-                assign ingredient_image = ingredient['Image']
               endif
-              
-              if ingredient.heading != blank
-                assign ingredient_heading = ingredient.heading
-              elsif ingredient.Heading != blank
+              if ingredient_heading == blank
                 assign ingredient_heading = ingredient.Heading
-              elsif ingredient['heading'] != blank
-                assign ingredient_heading = ingredient['heading']
-              elsif ingredient['Heading'] != blank
-                assign ingredient_heading = ingredient['Heading']
               endif
-              
-              if ingredient.text != blank
-                assign ingredient_text = ingredient.text
-              elsif ingredient.Text != blank
+              if ingredient_text == blank
                 assign ingredient_text = ingredient.Text
-              elsif ingredient['text'] != blank
-                assign ingredient_text = ingredient['text']
-              elsif ingredient['Text'] != blank
-                assign ingredient_text = ingredient['Text']
               endif
             %}
             
@@ -87,38 +76,20 @@
       {% elsif ingredients != blank %}
         <div class="hi-item">
           {% liquid
-            assign ingredient_image = blank
-            assign ingredient_heading = blank
-            assign ingredient_text = blank
+            # Try lowercase first (most common in Shopify)
+            assign ingredient_image = ingredients.image
+            assign ingredient_heading = ingredients.heading
+            assign ingredient_text = ingredients.text
             
-            if ingredients.image != blank
-              assign ingredient_image = ingredients.image
-            elsif ingredients.Image != blank
+            # Fallback to capitalized if lowercase is blank
+            if ingredient_image == blank
               assign ingredient_image = ingredients.Image
-            elsif ingredients['image'] != blank
-              assign ingredient_image = ingredients['image']
-            elsif ingredients['Image'] != blank
-              assign ingredient_image = ingredients['Image']
             endif
-            
-            if ingredients.heading != blank
-              assign ingredient_heading = ingredients.heading
-            elsif ingredients.Heading != blank
+            if ingredient_heading == blank
               assign ingredient_heading = ingredients.Heading
-            elsif ingredients['heading'] != blank
-              assign ingredient_heading = ingredients['heading']
-            elsif ingredients['Heading'] != blank
-              assign ingredient_heading = ingredients['Heading']
             endif
-            
-            if ingredients.text != blank
-              assign ingredient_text = ingredients.text
-            elsif ingredients.Text != blank
+            if ingredient_text == blank
               assign ingredient_text = ingredients.Text
-            elsif ingredients['text'] != blank
-              assign ingredient_text = ingredients['text']
-            elsif ingredients['Text'] != blank
-              assign ingredient_text = ingredients['Text']
             endif
           %}
           
