@@ -276,13 +276,15 @@
         "detail_K4Q8Lr": {
           "type": "detail",
           "settings": {
-            "text": ""
+            "icon": "shopify://shop_images/10347873.png",
+            "text": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
           }
         },
         "detail_UUq7bQ": {
           "type": "detail",
           "settings": {
-            "text": ""
+            "icon": "shopify://shop_images/images.png",
+            "text": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
           }
         },
         "detail_amAAN8": {
