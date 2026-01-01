@@ -5,15 +5,15 @@
 
     <div class="pd-grid">
         {%  for block in section.blocks %}
-            <div class="pd-tem" {{ block.shopify_attributes }}>
-                {% if block.settings.icon!=blank %}
-                    <div class="p-icon">
-                        <img src="{{block.settings.icon | image_url:width:40 }}" alt="Icon">
+            <div class="pd-item" {{ block.shopify_attributes }}>
+                {% if block.settings.icon != blank %}
+                    <div class="pd-icon">
+                    <img src="{{ block.settings.icon | image_url: width: 40 }}" alt="Icon">
                     </div>
                 {% endif %}
 
-                {%  if block.settings.text!=blank %}
-                    <p class="pd-text">{{block.settings.text }}</p>
+                {% if block.settings.text != blank %}
+                    <p class="pd-text">{{ block.settings.text }}</p>
                 {% endif %}
             </div>
         {%  endfor %}
@@ -22,47 +22,62 @@
 
 <style>
     .pd-section {
-    background: #fff;
+    background: #ffffff;
     border-radius: 16px;
     padding: 40px 48px;
-    box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
     }
 
+    
     .pd-heading {
     font-size: 26px;
     font-weight: 600;
-    margin-bottom: 32px;
+    margin: 0 0 32px 0;
+    color: #222;
     }
 
-    /* Grid layout */
+  
     .pd-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
-    gap: 24px 48px;
+    column-gap: 48px;
+    row-gap: 24px;
     }
 
-    /* Each item */
     .pd-item {
     display: flex;
     align-items: center;
     gap: 14px;
     }
 
-    /* Icon */
-    .pd-icon img {
+
+    .pd-icon {
     width: 28px;
     height: 28px;
-    object-fit: contain;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     }
 
-    /* Text */
+   
+    .pd-icon img {
+    width: 24px;
+    height: 24px;
+    object-fit: contain;
+    display: block;
+    }
+
+ 
     .pd-text {
     font-size: 18px;
     line-height: 1.4;
     margin: 0;
+    color: #222;
     }
 
-    /* Mobile */
+/* Mobile Styles */
+
     @media (max-width: 768px) {
     .pd-section {
         padding: 24px;
@@ -75,13 +90,28 @@
 
     .pd-grid {
         grid-template-columns: 1fr;
-        gap: 16px;
+        row-gap: 16px;
+    }
+
+    .pd-item {
+        gap: 10px;
+    }
+
+    .pd-icon {
+        width: 24px;
+        height: 24px;
+    }
+
+    .pd-icon img {
+        width: 20px;
+        height: 20px;
     }
 
     .pd-text {
         font-size: 15px;
     }
     }
+
 
 </style>
 
