@@ -144,6 +144,12 @@
     padding: 0;
     cursor: pointer;
     text-align: left;
+    position: relative;
+    z-index: 1;
+    }
+
+    .pd-header:hover {
+    opacity: 0.8;
     }
 
     .pd-heading {
@@ -264,48 +270,69 @@
 
 <script>
 (function() {
-    function initProductDetails() {
-        const pdHeaders = document.querySelectorAll('.pd-header');
+    function toggleProductDetails(e) {
+        const header = e.target.closest('.pd-header');
+        if (!header) return;
         
-        pdHeaders.forEach(function(header) {
-            const content = header.nextElementSibling;
-            if (!content || !content.classList.contains('pd-content')) return;
-            
-            // Ensure content is hidden initially
+        e.preventDefault();
+        e.stopPropagation();
+        
+        const section = header.closest('.pd-section');
+        if (!section) return;
+        
+        const content = section.querySelector('.pd-content');
+        if (!content) return;
+        
+        const isExpanded = header.getAttribute('aria-expanded') === 'true';
+        
+        if (isExpanded) {
+            // Collapse
+            content.classList.remove('pd-content-visible');
+            content.classList.add('pd-content-hidden');
+            header.setAttribute('aria-expanded', 'false');
+        } else {
+            // Expand
+            content.classList.remove('pd-content-hidden');
+            content.classList.add('pd-content-visible');
+            header.setAttribute('aria-expanded', 'true');
+        }
+    }
+    
+    function hideAllContent() {
+        const allContent = document.querySelectorAll('.pd-content');
+        allContent.forEach(function(content) {
             if (!content.classList.contains('pd-content-visible')) {
                 content.classList.add('pd-content-hidden');
+                content.style.display = 'none';
             }
-            
-            header.addEventListener('click', function(e) {
-                e.preventDefault();
-                e.stopPropagation();
-                
-                const isExpanded = header.getAttribute('aria-expanded') === 'true';
-                
-                if (isExpanded) {
-                    // Collapse
-                    content.classList.remove('pd-content-visible');
-                    content.classList.add('pd-content-hidden');
-                    header.setAttribute('aria-expanded', 'false');
-                } else {
-                    // Expand
-                    content.classList.remove('pd-content-hidden');
-                    content.classList.add('pd-content-visible');
-                    header.setAttribute('aria-expanded', 'true');
-                }
-            });
         });
     }
     
-    // Run immediately and also on DOMContentLoaded
+    function initProductDetails() {
+        // Hide all content first
+        hideAllContent();
+        
+        // Use event delegation - only add once
+        if (!document.pdDetailsInitialized) {
+            document.addEventListener('click', toggleProductDetails);
+            document.pdDetailsInitialized = true;
+        }
+    }
+    
+    // Initialize immediately
+    hideAllContent();
+    
+    // Initialize on DOM ready
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', initProductDetails);
     } else {
         initProductDetails();
     }
     
-    // Also run after a short delay to catch dynamically loaded content
-    setTimeout(initProductDetails, 100);
+    // Also run on window load as backup
+    window.addEventListener('load', function() {
+        hideAllContent();
+    });
 })();
 </script>
 
