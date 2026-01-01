@@ -1,81 +1,22 @@
-{% liquid
-  # Get the current product
-  assign current_product = product
-  if current_product == blank
-    assign current_product = closest.product
-  endif
-
-  # Determine which metafield namespace and key to use
-  assign metafield_namespace = section.settings.metafield_namespace | default: 'custom'
-  assign metafield_key = section.settings.metafield_key | default: 'product_details'
-  
-  # Check if product has metafield with product details
-  # Try to access metafield based on namespace
-  assign product_details_metafield = null
-  if metafield_namespace == 'custom'
-    assign product_details_metafield = current_product.metafields.custom[metafield_key]
-  endif
-  
-  # If not found in custom, try other common namespaces
-  if product_details_metafield == blank and metafield_namespace != 'custom'
-    case metafield_namespace
-      when 'global'
-        assign product_details_metafield = current_product.metafields.global[metafield_key]
-      when 'shopify'
-        assign product_details_metafield = current_product.metafields.shopify[metafield_key]
-    endcase
-  endif
-  
-  assign use_metafields = false
-  if section.settings.content_source == 'metafields' or section.settings.content_source == 'auto'
-    if product_details_metafield != blank and product_details_metafield.list_value != blank
-      assign use_metafields = true
-    endif
-  endif
-  
-  # If content_source is 'blocks', force use of blocks
-  if section.settings.content_source == 'blocks'
-    assign use_metafields = false
-  endif
-%}
-
 <section class="pd-section">
     {%  if section.settings.heading!=blank %}
         <h2 class="pd-heading">{{ section.settings.heading }}</h2>
     {% endif %}
 
     <div class="pd-grid">
-        {% if use_metafields %}
-            {% comment %} Use product metafields for content {% endcomment %}
-            {% for item in product_details_metafield.list_value %}
-                <div class="pd-item">
-                    {% if item.icon != blank %}
-                        <div class="pd-icon">
-                            <img src="{{ item.icon | image_url: width: 40 }}" alt="Icon">
-                        </div>
-                    {% endif %}
+        {%  for block in section.blocks %}
+            <div class="pd-item" {{ block.shopify_attributes }}>
+                {% if block.settings.icon != blank %}
+                    <div class="pd-icon">
+                    <img src="{{ block.settings.icon | image_url: width: 40 }}" alt="Icon">
+                    </div>
+                {% endif %}
 
-                    {% if item.text != blank %}
-                        <p class="pd-text">{{ item.text }}</p>
-                    {% endif %}
-                </div>
-            {% endfor %}
-        {% else %}
-            {% comment %} Fall back to section blocks {% endcomment %}
-            {%  for block in section.blocks %}
-                <div class="pd-item" {{ block.shopify_attributes }}>
-                    {% if block.settings.icon != blank %}
-                        <div class="pd-icon">
-                        <img src="{{ block.settings.icon | image_url: width: 40 }}" alt="Icon">
-                        </div>
-                    {% endif %}
-
-                    {% if block.settings.text != blank %}
-                        <p class="pd-text">{{ block.settings.text }}</p>
-                    {% endif %}
-                </div>
-            {%  endfor %}
-        {% endif %}
+                {% if block.settings.text != blank %}
+                    <p class="pd-text">{{ block.settings.text }}</p>
+                {% endif %}
+            </div>
+        {%  endfor %}
     </div>
 </section>
 
@@ -187,41 +128,6 @@
             "type": "text",
             "id": "heading",
             "label":"Heading"
-        },
-        {
-            "type": "select",
-            "id": "content_source",
-            "label": "Content Source",
-            "options": [
-                {
-                    "value": "auto",
-                    "label": "Auto (Metafields if available, else Blocks)"
-                },
-                {
-                    "value": "metafields",
-                    "label": "Product Metafields Only"
-                },
-                {
-                    "value": "blocks",
-                    "label": "Section Blocks Only"
-                }
-            ],
-            "default": "auto",
-            "info": "Choose where to get product details from. 'Auto' will use metafields if available, otherwise use section blocks."
-        },
-        {
-            "type": "text",
-            "id": "metafield_namespace",
-            "label": "Metafield Namespace",
-            "default": "custom",
-            "info": "The namespace of the product metafield (usually 'custom')"
-        },
-        {
-            "type": "text",
-            "id": "metafield_key",
-            "label": "Metafield Key",
-            "default": "product_details",
-            "info": "The key of the product metafield that contains the list of details"
         }
     ],
     "blocks": [
