@@ -109,8 +109,8 @@
 <style>
     .lbsection {
     padding: 60px 0;
-    padding-top:var(--dekstop-top);
-    padding-bottom:var(--dekstop-bottom);
+    padding-top:var(--dekstop-top,0);
+    padding-bottom:var(--dekstop-bottom,0);
     }
 
     .lbheading {
@@ -320,8 +320,8 @@
 @media (max-width: 768px) {
     .lbsection {
         padding: 20px 0;
-        padding-top:var(--mobile-top);
-        padding-bottom:var(--mobile-bottom);
+        padding-top:var(--mobile-top,0);
+        padding-bottom:var(--mobile-bottom,0);
     }
 
     .lbheading {
@@ -585,9 +585,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 "type": "range",
                 "id": "desktop_offset_top",
                 "label": "Desktop offset top",
-                "min": 0,
-                "max": 200,
-                "step": 4,
+                "min": -50,
+                "max": 50,
+                "step": 1,
                 "unit": "px",
                 "default": 0
             },
@@ -595,9 +595,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 "type": "range",
                 "id": "desktop_offset_bottom",
                 "label": "Desktop offset bottom",
-                "min": 0,
-                "max": 200,
-                "step": 4,
+                "min": -50,
+                "max": 50,
+                "step": 1,
                 "unit": "px",
                 "default": 0
             },
@@ -605,9 +605,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 "type": "range",
                 "id": "mobile_offset_top",
                 "label": "Mobile offset top",
-                "min": 0,
-                "max": 200,
-                "step": 4,
+                "min": -50,
+                "max": 50,
+                "step": 1,
                 "unit": "px",
                 "default": 0
             },
@@ -615,9 +615,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 "type": "range",
                 "id": "mobile_offset_bottom",
                 "label": "Mobile offset bottom",
-                "min": 0,
-                "max": 200,
-                "step": 4,
+                "min": -50,
+                "max": 50,
+                "step": 1,
                 "unit": "px",
                 "default": 0
             }
