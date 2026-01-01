@@ -28,10 +28,10 @@
                     {% liquid
                       assign how_to_use_text = blank
               
-                      if how_to_use_text.text != blank
-                        assign how_to_use_text = how_to_use_text.text
-                      elsif how_to_use_text['text'] != blank
-                        assign how_to_use_text = how_to_use_text['text']
+                      if benefit.text != blank
+                        assign how_to_use_text = benefit.text
+                      elsif benefit['text'] != blank
+                        assign how_to_use_text = benefit['text']
                       endif
                     %}
               
@@ -40,7 +40,8 @@
                     {% endif %}
                   </div>
                 {% endfor %}
-              {% endif %}
+            {% endif %}
+              
               
           </div>
       </div>
