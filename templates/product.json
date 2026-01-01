@@ -272,40 +272,6 @@
     },
     "product_details_9Q3HbP": {
       "type": "product_details",
-      "blocks": {
-        "detail_K4Q8Lr": {
-          "type": "detail",
-          "settings": {
-            "icon": "shopify://shop_images/10347873.png",
-            "text": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
-          }
-        },
-        "detail_UUq7bQ": {
-          "type": "detail",
-          "settings": {
-            "icon": "shopify://shop_images/images.png",
-            "text": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
-          }
-        },
-        "detail_amAAN8": {
-          "type": "detail",
-          "settings": {
-            "text": ""
-          }
-        },
-        "detail_nDUVBG": {
-          "type": "detail",
-          "settings": {
-            "text": ""
-          }
-        }
-      },
-      "block_order": [
-        "detail_K4Q8Lr",
-        "detail_UUq7bQ",
-        "detail_amAAN8",
-        "detail_nDUVBG"
-      ],
       "name": "Product Detail",
       "settings": {
         "heading": "Product Detail"
@@ -451,11 +417,19 @@
         "padding-block-start": 48,
         "padding-block-end": 48
       }
+    },
+    "hero_ingredient_nNcBGR": {
+      "type": "hero-ingredient",
+      "name": "Hero Ingredient",
+      "settings": {
+        "heading": "Hero Ingredients"
+      }
     }
   },
   "order": [
     "main",
     "product_details_9Q3HbP",
+    "hero_ingredient_nNcBGR",
     "product_recommendations_qggXJq"
   ]
 }
