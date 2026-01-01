@@ -5,17 +5,17 @@
 
   <div class="pd-grid">
 
-    {% if product.metafields.custom.pd_text != blank %}
+    {% if product.metafields.custom.pd_text.value != blank %}
       <div class="pd-item">
 
-        {% if product.metafields.custom.pd_icon != blank %}
+        {% if product.metafields.custom.pd_icon.value != blank %}
           <div class="pd-icon">
-            <img src="{{ product.metafields.custom.pd_icon | image_url: width: 40 }}" alt="Icon">
+            <img src="{{ product.metafields.custom.pd_icon.value | image_url: width: 40 }}" alt="Icon">
           </div>
         {% endif %}
 
         <p class="pd-text">
-          {{ product.metafields.custom.pd_text }}
+          {{ product.metafields.custom.pd_text.value }}
         </p>
 
       </div>
@@ -23,6 +23,7 @@
 
   </div>
 </section>
+
 
 <style>
     .pd-section {
