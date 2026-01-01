@@ -1,5 +1,4 @@
 {% liquid
-  # Get the product object
   if closest.product != blank
     assign current_product = closest.product
   else
@@ -78,43 +77,7 @@
                 </div>
             {% endfor %}
         {% elsif has_single_meta_object %}
-            {% comment %} Handle single meta object {% endcomment %}
-            <div class="pd-item">
-                {% liquid
-                    assign detail_icon = blank
-                    assign detail_text = blank
-                    
-                    if product_detail_meta.product_detail_icon != blank
-                        assign detail_icon = product_detail_meta.product_detail_icon
-                    elsif product_detail_meta['product_detail_icon'] != blank
-                        assign detail_icon = product_detail_meta['product_detail_icon']
-                    elsif product_detail_meta.icon != blank
-                        assign detail_icon = product_detail_meta.icon
-                    elsif product_detail_meta.image != blank
-                        assign detail_icon = product_detail_meta.image
-                    endif
-                    
-                    if product_detail_meta.product_detail_text != blank
-                        assign detail_text = product_detail_meta.product_detail_text
-                    elsif product_detail_meta['product_detail_text'] != blank
-                        assign detail_text = product_detail_meta['product_detail_text']
-                    elsif product_detail_meta.text != blank
-                        assign detail_text = product_detail_meta.text
-                    elsif product_detail_meta.title != blank
-                        assign detail_text = product_detail_meta.title
-                    endif
-                %}
-                
-                {% if detail_icon != blank %}
-                    <div class="pd-icon">
-                        <img src="{{ detail_icon | image_url: width: 40 }}" alt="Icon">
-                    </div>
-                {% endif %}
-
-                {% if detail_text != blank %}
-                    <p class="pd-text">{{ detail_text }}</p>
-                {% endif %}
-            </div>
+          
         {% endif %}
         </div>
     </div>
