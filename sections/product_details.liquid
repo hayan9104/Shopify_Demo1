@@ -26,9 +26,9 @@
   endif
 %}
 
-<section class="pd-section">
+<section class="pd-section" id="pd-section-{{ section.id }}">
     {%  if section.settings.heading!=blank %}
-        <button class="pd-header" type="button" aria-expanded="false">
+        <button class="pd-header" type="button" aria-expanded="false" id="pd-toggle-{{ section.id }}">
             <h2 class="pd-heading">{{ section.settings.heading }}</h2>
             <svg class="pd-chevron" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M4 6L8 10L12 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -36,7 +36,7 @@
         </button>
     {% endif %}
 
-    <div class="pd-content" style="display: none;">
+    <div class="pd-content pd-content-hidden" id="pd-content-{{ section.id }}">
         <div class="pd-grid">
         {% if has_list_metafield %}
             {% comment %} Handle list of meta objects {% endcomment %}
@@ -169,7 +169,11 @@
     transition: max-height 0.3s ease, opacity 0.3s ease;
     }
 
-    .pd-content[style*="display: block"] {
+    .pd-content.pd-content-hidden {
+    display: none !important;
+    }
+
+    .pd-content.pd-content-visible {
     display: block !important;
     }
 
@@ -260,28 +264,48 @@
 
 <script>
 (function() {
-    document.addEventListener('DOMContentLoaded', function() {
+    function initProductDetails() {
         const pdHeaders = document.querySelectorAll('.pd-header');
         
         pdHeaders.forEach(function(header) {
             const content = header.nextElementSibling;
             if (!content || !content.classList.contains('pd-content')) return;
             
-            header.addEventListener('click', function() {
+            // Ensure content is hidden initially
+            if (!content.classList.contains('pd-content-visible')) {
+                content.classList.add('pd-content-hidden');
+            }
+            
+            header.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                
                 const isExpanded = header.getAttribute('aria-expanded') === 'true';
                 
                 if (isExpanded) {
                     // Collapse
-                    content.style.display = 'none';
+                    content.classList.remove('pd-content-visible');
+                    content.classList.add('pd-content-hidden');
                     header.setAttribute('aria-expanded', 'false');
                 } else {
                     // Expand
-                    content.style.display = 'block';
+                    content.classList.remove('pd-content-hidden');
+                    content.classList.add('pd-content-visible');
                     header.setAttribute('aria-expanded', 'true');
                 }
             });
         });
-    });
+    }
+    
+    // Run immediately and also on DOMContentLoaded
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initProductDetails);
+    } else {
+        initProductDetails();
+    }
+    
+    // Also run after a short delay to catch dynamically loaded content
+    setTimeout(initProductDetails, 100);
 })();
 </script>
 
