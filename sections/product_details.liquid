@@ -28,7 +28,37 @@
     {% endif %}
 
     <div class="pd-grid">
-        {% if has_list_metafield %}
+        {% comment %} First check if blocks are used (for theme editor editing) {% endcomment %}
+        {% if section.blocks.size > 0 %}
+            {% for block in section.blocks %}
+                {% liquid
+                    assign block_text = block.settings.text
+                    assign block_icon = block.settings.icon
+                    
+                    if block_text == blank
+                        assign block_text = current_product.metafields.custom.product_detail_text
+                    endif
+                    
+                    if block_icon == blank
+                        assign block_icon = current_product.metafields.custom.product_detail_icon
+                    endif
+                %}
+                
+                {% if block_text != blank or block_icon != blank %}
+                    <div class="pd-item" {{ block.shopify_attributes }}>
+                        {% if block_icon != blank %}
+                            <div class="pd-icon">
+                                <img src="{{ block_icon | image_url: width: 40 }}" alt="Icon">
+                            </div>
+                        {% endif %}
+
+                        {% if block_text != blank %}
+                            <p class="pd-text">{{ block_text }}</p>
+                        {% endif %}
+                    </div>
+                {% endif %}
+            {% endfor %}
+        {% elsif has_list_metafield %}
             {% for detail in product_details_list %}
                 <div class="pd-item">
                     {% assign detail_icon = detail.icon | default: detail.product_detail_icon %}
@@ -194,9 +224,29 @@
             "label":"Heading"
         }
     ],
+    "blocks": [
+        {
+            "type": "detail",
+            "name": "Product Detail",
+            "settings": [
+                {
+                    "type": "text",
+                    "id": "text",
+                    "label": "Detail Text",
+                    "info": "Leave blank to use metafield value"
+                },
+                {
+                    "type": "image_picker",
+                    "id": "icon",
+                    "label": "Detail Icon",
+                    "info": "Leave blank to use metafield value"
+                }
+            ]
+        }
+    ],
     "presets": [
         {
-            "name": "Product Detail",
+            "name": "Product Detail"
         }
     ]
 }
