@@ -1,31 +1,25 @@
 {% liquid
-  # Get the product object
+
   if closest.product != blank
     assign current_product = closest.product
   else
     assign current_product = product
   endif
   
-  # Check if we have blocks (editable in theme editor) or need to use metafields
-  assign has_blocks = false
-  if section.blocks.size > 0
-    assign has_blocks = true
-  endif
-  
-  # If no blocks, try to get from metafields
-  unless has_blocks
-    assign product_details_list = current_product.metafields.custom.product_details.value
-    if product_details_list != blank and product_details_list.size > 0
-      assign has_list_metafield = true
-    else
-      assign product_detail_text_1 = current_product.metafields.custom.product_detail_text_1
-      assign product_detail_icon_1 = current_product.metafields.custom.product_detail_icon_1
-      if product_detail_text_1 == blank and product_detail_icon_1 == blank
-        assign product_detail_text = current_product.metafields.custom.product_detail_text
-        assign product_detail_icon = current_product.metafields.custom.product_detail_icon
-      endif
+  assign product_details_list = current_product.metafields.custom.product_details.value
+
+  if product_details_list != blank and product_details_list.size > 0
+    assign has_list_metafield = true
+  else
+
+    assign product_detail_text_1 = current_product.metafields.custom.product_detail_text_1
+    assign product_detail_icon_1 = current_product.metafields.custom.product_detail_icon_1
+    
+    if product_detail_text_1 == blank and product_detail_icon_1 == blank
+      assign product_detail_text = current_product.metafields.custom.product_detail_text
+      assign product_detail_icon = current_product.metafields.custom.product_detail_icon
     endif
-  endunless
+  endif
 %}
 
 <section class="pd-section">
@@ -34,23 +28,7 @@
     {% endif %}
 
     <div class="pd-grid">
-        {% if has_blocks %}
-            {% comment %} Use blocks (editable in theme editor) {% endcomment %}
-            {% for block in section.blocks %}
-                <div class="pd-item" {{ block.shopify_attributes }}>
-                    {% if block.settings.icon != blank %}
-                        <div class="pd-icon">
-                            <img src="{{ block.settings.icon | image_url: width: 40 }}" alt="Icon">
-                        </div>
-                    {% endif %}
-
-                    {% if block.settings.text != blank %}
-                        <p class="pd-text">{{ block.settings.text }}</p>
-                    {% endif %}
-                </div>
-            {% endfor %}
-        {% elsif has_list_metafield %}
-            {% comment %} Fallback to list metafield {% endcomment %}
+        {% if has_list_metafield %}
             {% for detail in product_details_list %}
                 <div class="pd-item">
                     {% assign detail_icon = detail.icon | default: detail.product_detail_icon %}
@@ -68,7 +46,7 @@
                 </div>
             {% endfor %}
         {% elsif product_detail_text_1 != blank or product_detail_icon_1 != blank %}
-            {% comment %} Fallback to numbered metafields {% endcomment %}
+            {% comment %} Handle numbered metafields pattern {% endcomment %}
             {% for i in (1..10) %}
                 {% assign text_key = 'product_detail_text_' | append: i %}
                 {% assign icon_key = 'product_detail_icon_' | append: i %}
@@ -90,7 +68,7 @@
                 {% endif %}
             {% endfor %}
         {% elsif product_detail_text != blank or product_detail_icon != blank %}
-            {% comment %} Fallback to single metafields {% endcomment %}
+            {% comment %} Handle single metafields {% endcomment %}
             <div class="pd-item">
                 {% if product_detail_icon != blank %}
                     <div class="pd-icon">
@@ -216,27 +194,9 @@
             "label":"Heading"
         }
     ],
-    "blocks": [
-        {
-            "type": "detail",
-            "name": "Product Detail",
-            "settings": [
-                {
-                    "type": "image_picker",
-                    "id": "icon",
-                    "label": "Icon"
-                },
-                {
-                    "type": "text",
-                    "id": "text",
-                    "label": "Detail Text"
-                }
-            ]
-        }
-    ],
     "presets": [
         {
-            "name": "Product Detail"
+            "name": "Product Detail",
         }
     ]
 }
