@@ -36,7 +36,7 @@
                     %}
               
                     {% if benefit_text != blank %}
-                      <p class="pd-text">{{ benefit_text }}</p>
+                      <p class="pd-text" class="pd-bullet">{{ benefit_text }}</p>
                     {% endif %}
                   </div>
                 {% endfor %}
@@ -126,6 +126,20 @@
       overflow-wrap: anywhere;
       white-space: normal;
       }
+      .pd-bullet {
+        position: relative;
+        padding-left: 18px;
+      }
+      
+      .pd-bullet::before {
+        content: "•";
+        position: absolute;
+        left: 0;
+        top: 0;
+        font-size: 20px;
+        line-height: 1;
+      }
+      
   
   /* Mobile Styles */
   
