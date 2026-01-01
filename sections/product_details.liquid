@@ -1,358 +1,140 @@
 {% liquid
-  # Get the product object
   if closest.product != blank
     assign current_product = closest.product
   else
     assign current_product = product
   endif
-  
-  # Try to fetch meta object list first (for list of meta objects)
-  # Try different possible metafield keys
+
   assign product_details_list = current_product.metafields.custom.product_details.value
-  if product_details_list == blank
-    assign product_details_list = current_product.metafields.custom.product_detail.value
-  endif
-  
-  # Check if it's a list of meta objects
-  if product_details_list != blank and product_details_list.size > 0
-    assign has_list_metafield = true
-  else
-    # Try single meta object reference
-    assign product_detail_meta = current_product.metafields.custom.product_detail.value
-    
-    if product_detail_meta != blank
-      assign has_single_meta_object = true
-    endif
-  endif
 %}
 
+{% if product_details_list != blank and product_details_list.size > 0 %}
 <section class="pd-section" id="pd-section-{{ section.id }}">
-    {%  if section.settings.heading!=blank %}
-        <button class="pd-header" type="button" aria-expanded="false" id="pd-toggle-{{ section.id }}">
-            <h2 class="pd-heading">{{ section.settings.heading }}</h2>
-            <svg class="pd-chevron" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M4 6L8 10L12 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-        </button>
-    {% endif %}
+  {% if section.settings.heading != blank %}
+    <button class="pd-header" type="button" aria-expanded="false">
+      <h2 class="pd-heading">{{ section.settings.heading }}</h2>
+      <svg class="pd-chevron" width="16" height="16" viewBox="0 0 16 16">
+        <path d="M4 6L8 10L12 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </button>
+  {% endif %}
 
-    <div class="pd-content pd-content-hidden" id="pd-content-{{ section.id }}">
-        <div class="pd-grid">
-        {% if has_list_metafield %}
-            {% comment %} Handle list of meta objects {% endcomment %}
-            {% for detail in product_details_list %}
-                <div class="pd-item">
-                    {% comment %} Access meta object fields - try all possible key variations {% endcomment %}
-                    {% liquid
-                        assign detail_icon = blank
-                        assign detail_text = blank
-                        
-                        # Try different key formats for icon
-                        if detail.product_detail_icon != blank
-                            assign detail_icon = detail.product_detail_icon
-                        elsif detail['product_detail_icon'] != blank
-                            assign detail_icon = detail['product_detail_icon']
-                        elsif detail.icon != blank
-                            assign detail_icon = detail.icon
-                        elsif detail.image != blank
-                            assign detail_icon = detail.image
-                        endif
-                        
-                        # Try different key formats for text
-                        if detail.product_detail_text != blank
-                            assign detail_text = detail.product_detail_text
-                        elsif detail['product_detail_text'] != blank
-                            assign detail_text = detail['product_detail_text']
-                        elsif detail.text != blank
-                            assign detail_text = detail.text
-                        elsif detail.title != blank
-                            assign detail_text = detail.title
-                        endif
-                    %}
-                    
-                    {% if detail_icon != blank %}
-                        <div class="pd-icon">
-                            <img src="{{ detail_icon | image_url: width: 40 }}" alt="Icon">
-                        </div>
-                    {% endif %}
-
-                    {% if detail_text != blank %}
-                        <p class="pd-text">{{ detail_text }}</p>
-                    {% endif %}
-                </div>
-            {% endfor %}
-        {% elsif has_single_meta_object %}
-            {% comment %} Handle single meta object {% endcomment %}
-            <div class="pd-item">
-                {% liquid
-                    assign detail_icon = blank
-                    assign detail_text = blank
-                    
-                    # Try different key formats for icon
-                    if product_detail_meta.product_detail_icon != blank
-                        assign detail_icon = product_detail_meta.product_detail_icon
-                    elsif product_detail_meta['product_detail_icon'] != blank
-                        assign detail_icon = product_detail_meta['product_detail_icon']
-                    elsif product_detail_meta.icon != blank
-                        assign detail_icon = product_detail_meta.icon
-                    elsif product_detail_meta.image != blank
-                        assign detail_icon = product_detail_meta.image
-                    endif
-                    
-                    # Try different key formats for text
-                    if product_detail_meta.product_detail_text != blank
-                        assign detail_text = product_detail_meta.product_detail_text
-                    elsif product_detail_meta['product_detail_text'] != blank
-                        assign detail_text = product_detail_meta['product_detail_text']
-                    elsif product_detail_meta.text != blank
-                        assign detail_text = product_detail_meta.text
-                    elsif product_detail_meta.title != blank
-                        assign detail_text = product_detail_meta.title
-                    endif
-                %}
-                
-                {% if detail_icon != blank %}
-                    <div class="pd-icon">
-                        <img src="{{ detail_icon | image_url: width: 40 }}" alt="Icon">
-                    </div>
-                {% endif %}
-
-                {% if detail_text != blank %}
-                    <p class="pd-text">{{ detail_text }}</p>
-                {% endif %}
+  <div class="pd-content pd-content-hidden">
+    <div class="pd-grid">
+      {% for detail in product_details_list %}
+        <div class="pd-item">
+          {% if detail.icon != blank %}
+            <div class="pd-icon">
+              <img src="{{ detail.icon | image_url: width: 40 }}" alt="">
             </div>
-        {% endif %}
+          {% endif %}
+
+          {% if detail.text != blank %}
+            <p class="pd-text">{{ detail.text }}</p>
+          {% endif %}
         </div>
+      {% endfor %}
     </div>
+  </div>
 </section>
+{% endif %}
 
 <style>
-    .pd-section {
-    background: #ffffff;
-    border-radius: 16px;
-    padding: 40px 48px;
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
-    }
+.pd-section {
+  background: #fff;
+  border-radius: 16px;
+  padding: 40px 48px;
+  box-shadow: 0 8px 20px rgba(0,0,0,.08);
+}
 
-    .pd-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    width: 100%;
-    background: none;
-    border: none;
-    padding: 0;
-    cursor: pointer;
-    text-align: left;
-    position: relative;
-    z-index: 1;
-    }
+.pd-header {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
 
-    .pd-header:hover {
-    opacity: 0.8;
-    }
+.pd-heading {
+  font-size: 26px;
+  font-weight: 600;
+  margin: 0;
+}
 
-    .pd-heading {
-    font-size: 26px;
-    font-weight: 600;
-    margin: 0;
-    color: #222;
-    }
+.pd-chevron {
+  transition: transform .3s ease;
+}
 
-    .pd-chevron {
-    flex-shrink: 0;
-    transition: transform 0.3s ease;
-    color: #222;
-    }
+.pd-header[aria-expanded="true"] .pd-chevron {
+  transform: rotate(180deg);
+}
 
-    .pd-header[aria-expanded="true"] .pd-chevron {
-    transform: rotate(180deg);
-    }
+.pd-content {
+  margin-top: 32px;
+}
 
-    .pd-content {
-    margin-top: 32px;
-    overflow: hidden;
-    transition: max-height 0.3s ease, opacity 0.3s ease;
-    }
+.pd-content-hidden {
+  display: none;
+}
 
-    .pd-content.pd-content-hidden {
-    display: none !important;
-    }
+.pd-grid {
+  display: grid;
+  grid-template-columns: repeat(2,1fr);
+  gap: 24px 48px;
+}
 
-    .pd-content.pd-content-visible {
-    display: block !important;
-    }
+.pd-item {
+  display: flex;
+  gap: 14px;
+}
 
-  
-    .pd-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    column-gap: 48px;
-    row-gap: 24px;
-    }
+.pd-icon img {
+  width: 24px;
+  height: 24px;
+}
 
-    .pd-item {
-    display: flex;
-    align-items: flex-start;
-    gap: 14px;
-    }
+.pd-text {
+  font-size: 18px;
+  margin: 0;
+}
 
-
-    .pd-icon {
-    width: 28px;
-    height: 28px;
-    flex-shrink: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    }
-
-   
-    .pd-icon img {
-    width: 24px;
-    height: 24px;
-    object-fit: contain;
-    display: block;
-    }
-
- 
-    .pd-text {
-    font-size: 18px;
-    line-height: 1.4;
-    margin: 0;
-    color: #222;
-    word-break: break-word;
-    overflow-wrap: anywhere;
-    white-space: normal;
-    }
-
-/* Mobile Styles */
-
-    @media (max-width: 768px) {
-    .pd-section {
-        padding: 24px;
-    }
-
-    .pd-heading {
-        font-size: 20px;
-    }
-
-    .pd-content {
-        margin-top: 20px;
-    }
-
-    .pd-grid {
-        grid-template-columns: 1fr;
-        row-gap: 16px;
-    }
-
-    .pd-item {
-        gap: 10px;
-    }
-
-    .pd-icon {
-        width: 24px;
-        height: 24px;
-    }
-
-    .pd-icon img {
-        width: 20px;
-        height: 20px;
-    }
-
-    .pd-text {
-        font-size: 15px;
-    }
-    }
-
-
+@media (max-width:768px) {
+  .pd-section { padding: 24px; }
+  .pd-heading { font-size: 20px; }
+  .pd-grid { grid-template-columns: 1fr; }
+  .pd-text { font-size: 15px; }
+}
 </style>
 
 <script>
-(function() {
-    function toggleProductDetails(e) {
-        const header = e.target.closest('.pd-header');
-        if (!header) return;
-        
-        e.preventDefault();
-        e.stopPropagation();
-        
-        const section = header.closest('.pd-section');
-        if (!section) return;
-        
-        const content = section.querySelector('.pd-content');
-        if (!content) return;
-        
-        const isExpanded = header.getAttribute('aria-expanded') === 'true';
-        
-        if (isExpanded) {
-            // Collapse
-            content.classList.remove('pd-content-visible');
-            content.classList.add('pd-content-hidden');
-            header.setAttribute('aria-expanded', 'false');
-        } else {
-            // Expand
-            content.classList.remove('pd-content-hidden');
-            content.classList.add('pd-content-visible');
-            header.setAttribute('aria-expanded', 'true');
-        }
-    }
-    
-    function hideAllContent() {
-        const allContent = document.querySelectorAll('.pd-content');
-        allContent.forEach(function(content) {
-            if (!content.classList.contains('pd-content-visible')) {
-                content.classList.add('pd-content-hidden');
-                content.style.display = 'none';
-            }
-        });
-    }
-    
-    function initProductDetails() {
-        // Hide all content first
-        hideAllContent();
-        
-        // Use event delegation - only add once
-        if (!document.pdDetailsInitialized) {
-            document.addEventListener('click', toggleProductDetails);
-            document.pdDetailsInitialized = true;
-        }
-    }
-    
-    // Initialize immediately
-    hideAllContent();
-    
-    // Initialize on DOM ready
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', initProductDetails);
-    } else {
-        initProductDetails();
-    }
-    
-    // Also run on window load as backup
-    window.addEventListener('load', function() {
-        hideAllContent();
-    });
-})();
+document.addEventListener("click", function(e) {
+  const header = e.target.closest(".pd-header");
+  if (!header) return;
+
+  const content = header.nextElementSibling;
+  const expanded = header.getAttribute("aria-expanded") === "true";
+
+  header.setAttribute("aria-expanded", !expanded);
+  content.classList.toggle("pd-content-hidden", expanded);
+});
 </script>
 
 {% schema %}
 {
-    "name": "Product Detail",
-    "tag": "section",
-    "class": "section",
-    "settings": [
-        {
-            "type": "text",
-            "id": "heading",
-            "label":"Heading"
-        }
-    ],
-    "presets": [
-        {
-            "name": "Product Detail",
-        }
-    ]
+  "name": "Product Detail",
+  "tag": "section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Product Detail"
+    }
+  ]
 }
-
-{%  endschema %}
+{% endschema %}
