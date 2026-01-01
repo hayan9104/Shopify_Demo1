@@ -1,22 +1,95 @@
+{% liquid
+  # Get the product object
+  assign current_product = product
+  if current_product == blank
+    assign current_product = closest.product
+  endif
+
+  # Get metafield namespace and key from settings, or use defaults
+  assign metafield_namespace = section.settings.metafield_namespace | default: 'custom'
+  assign metafield_key = section.settings.metafield_key | default: 'product_details'
+
+  # Try to get metafields using configured namespace/key
+  # Shopify Liquid supports bracket notation for metafield access
+  assign product_details_metafield = null
+  
+  # Try common namespaces first
+  if metafield_namespace == 'custom'
+    assign product_details_metafield = current_product.metafields.custom[metafield_key]
+  elsif metafield_namespace == 'product_details'
+    assign product_details_metafield = current_product.metafields.product_details[metafield_key]
+  elsif metafield_namespace == 'product'
+    assign product_details_metafield = current_product.metafields.product[metafield_key]
+  endif
+
+  # Fallback: try common patterns if configured metafield is blank
+  if product_details_metafield == blank
+    assign product_details_metafield = current_product.metafields.custom.product_details
+  endif
+  if product_details_metafield == blank
+    assign product_details_metafield = current_product.metafields.product_details.details
+  endif
+  if product_details_metafield == blank
+    assign product_details_metafield = current_product.metafields.custom.details
+  endif
+
+  # Check if we have metafield data
+  assign has_metafields = false
+  if product_details_metafield != blank
+    if product_details_metafield.value != blank
+      assign has_metafields = true
+    endif
+  endif
+%}
+
 <section class="pd-section">
     {%  if section.settings.heading!=blank %}
         <h2 class="pd-heading">{{ section.settings.heading }}</h2>
     {% endif %}
 
     <div class="pd-grid">
-        {%  for block in section.blocks %}
-            <div class="pd-item" {{ block.shopify_attributes }}>
-                {% if block.settings.icon != blank %}
-                    <div class="pd-icon">
-                    <img src="{{ block.settings.icon | image_url: width: 40 }}" alt="Icon">
-                    </div>
-                {% endif %}
+        {% if has_metafields %}
+            {% comment %} Display from product metafields {% endcomment %}
+            {% assign metafield_value = product_details_metafield.value %}
+            {% if metafield_value != blank %}
+                {% for item in metafield_value %}
+                    <div class="pd-item">
+                        {% comment %} Try different field names for icon/image {% endcomment %}
+                        {% assign item_icon = item.icon | default: item.image | default: item.icon_image %}
+                        {% if item_icon != blank %}
+                            <div class="pd-icon">
+                                {% if item_icon contains 'http' or item_icon contains '//' %}
+                                    <img src="{{ item_icon }}" alt="Icon">
+                                {% else %}
+                                    <img src="{{ item_icon | image_url: width: 40 }}" alt="Icon">
+                                {% endif %}
+                            </div>
+                        {% endif %}
 
-                {% if block.settings.text != blank %}
-                    <p class="pd-text">{{ block.settings.text }}</p>
-                {% endif %}
-            </div>
-        {%  endfor %}
+                        {% comment %} Try different field names for text {% endcomment %}
+                        {% assign item_text = item.text | default: item.value | default: item.description | default: item.title %}
+                        {% if item_text != blank %}
+                            <p class="pd-text">{{ item_text }}</p>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% else %}
+            {% comment %} Fallback to section blocks if metafields are not available {% endcomment %}
+            {%  for block in section.blocks %}
+                <div class="pd-item" {{ block.shopify_attributes }}>
+                    {% if block.settings.icon != blank %}
+                        <div class="pd-icon">
+                        <img src="{{ block.settings.icon | image_url: width: 40 }}" alt="Icon">
+                        </div>
+                    {% endif %}
+
+                    {% if block.settings.text != blank %}
+                        <p class="pd-text">{{ block.settings.text }}</p>
+                    {% endif %}
+                </div>
+            {%  endfor %}
+        {% endif %}
     </div>
 </section>
 
@@ -128,6 +201,28 @@
             "type": "text",
             "id": "heading",
             "label":"Heading"
+        },
+        {
+            "type": "header",
+            "content": "Metafield Settings"
+        },
+        {
+            "type": "paragraph",
+            "content": "Configure the metafield namespace and key to display product details. The metafield should be a list type with items containing 'icon' (file reference) and 'text' (single line text) fields."
+        },
+        {
+            "type": "text",
+            "id": "metafield_namespace",
+            "label": "Metafield Namespace",
+            "default": "custom",
+            "info": "The namespace of your product metafield (e.g., 'custom', 'product_details')"
+        },
+        {
+            "type": "text",
+            "id": "metafield_key",
+            "label": "Metafield Key",
+            "default": "product_details",
+            "info": "The key of your product metafield (e.g., 'product_details', 'details')"
         }
     ],
     "blocks": [
