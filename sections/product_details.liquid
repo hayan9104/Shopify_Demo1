@@ -35,20 +35,17 @@
         {% if has_list_metafield %}
             {% for detail in product_details_list %}
                 <div class="pd-item">
-                    {% if detail.icon != blank %}
+                    {% assign detail_icon = detail.icon | default: detail.product_detail_icon %}
+                    {% assign detail_text = detail.text | default: detail.product_detail_text %}
+                    
+                    {% if detail_icon != blank %}
                         <div class="pd-icon">
-                            <img src="{{ detail.icon | image_url: width: 40 }}" alt="Icon">
-                        </div>
-                    {% elsif detail.product_detail_icon != blank %}
-                        <div class="pd-icon">
-                            <img src="{{ detail.product_detail_icon | image_url: width: 40 }}" alt="Icon">
+                            <img src="{{ detail_icon | image_url: width: 40 }}" alt="Icon">
                         </div>
                     {% endif %}
 
-                    {% if detail.text != blank %}
-                        <p class="pd-text">{{ detail.text }}</p>
-                    {% elsif detail.product_detail_text != blank %}
-                        <p class="pd-text">{{ detail.product_detail_text }}</p>
+                    {% if detail_text != blank %}
+                        <p class="pd-text">{{ detail_text }}</p>
                     {% endif %}
                 </div>
             {% endfor %}
@@ -199,24 +196,6 @@
             "type": "text",
             "id": "heading",
             "label":"Heading"
-        }
-    ],
-    "blocks": [
-        {
-            "type": "detail",
-            "name":"Product Detail",
-            "settings": [
-                {
-                    "type": "image_picker",
-                    "id": "icon",
-                    "label":"Icon",
-                },
-                {
-                    "type": "text",
-                    "id": "text",
-                    "label": "Detail text"
-                }
-            ]
         }
     ],
     "presets": [
