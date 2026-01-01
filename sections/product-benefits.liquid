@@ -36,7 +36,7 @@
                     %}
               
                     {% if benefit_text != blank %}
-                      <p class="pd-text" class="pd-bullet">{{ benefit_text }}</p>
+                      <p class="pd-text pd-bullet">{{ benefit_text }}</p>
                     {% endif %}
                   </div>
                 {% endfor %}
@@ -105,30 +105,30 @@
   
     
       .pd-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      column-gap: 48px;
-      row-gap: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
       }
-  
+
       .pd-item {
       display: flex;
       align-items: flex-start;
-      gap: 14px;
       }
    
       .pd-text {
       font-size: 18px;
-      line-height: 1.4;
+      line-height: 1.5;
       margin: 0;
       color: #222;
       word-break: break-word;
       overflow-wrap: anywhere;
       white-space: normal;
       }
+      
       .pd-bullet {
         position: relative;
-        padding-left: 18px;
+        padding-left: 24px;
+        list-style: none;
       }
       
       .pd-bullet::before {
@@ -136,8 +136,9 @@
         position: absolute;
         left: 0;
         top: 0;
-        font-size: 20px;
-        line-height: 1;
+        font-size: 18px;
+        line-height: 1.5;
+        color: #222;
       }
       
   
@@ -157,12 +158,11 @@
       }
   
       .pd-grid {
-          grid-template-columns: 1fr;
-          row-gap: 16px;
+      gap: 12px;
       }
-  
-      .pd-item {
-          gap: 10px;
+
+      .pd-bullet {
+      padding-left: 20px;
       }
   
   
