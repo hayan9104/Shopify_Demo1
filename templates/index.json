@@ -61,7 +61,6 @@
       "name": "t:names.hero",
       "settings": {
         "media_type_1": "image",
-        "image_1": "shopify://shop_images/il_570xN.1220482080_ac61.avif",
         "media_type_2": "image",
         "image_2": "shopify://shop_images/71vS6L1H2sL._AC_UY1100.jpg",
         "media_type_3": "image",
@@ -548,7 +547,7 @@
         "item_JCePjq": {
           "type": "item",
           "settings": {
-            "lbbanner": "shopify://shop_images/71vS6L1H2sL._AC_UY1100.jpg",
+            "lbbanner": "shopify://shop_images/df5e215e-44a4-4db6-be86-058aeaa6b3c81652883048543ZaveriPearlsWomenSetOf2RoseGoldWhiteRoseGold-PlatedKadaBrace1.webp",
             "lbbanner_heading": "Neckles",
             "lbbuttonlink": "shopify://collections/all",
             "lbbutton": "Shop",
