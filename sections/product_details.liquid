@@ -28,10 +28,16 @@
 
 <section class="pd-section">
     {%  if section.settings.heading!=blank %}
-        <h2 class="pd-heading">{{ section.settings.heading }}</h2>
+        <button class="pd-header" type="button" aria-expanded="false">
+            <h2 class="pd-heading">{{ section.settings.heading }}</h2>
+            <svg class="pd-chevron" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M4 6L8 10L12 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+        </button>
     {% endif %}
 
-    <div class="pd-grid">
+    <div class="pd-content" style="display: none;">
+        <div class="pd-grid">
         {% if has_list_metafield %}
             {% comment %} Handle list of meta objects {% endcomment %}
             {% for detail in product_details_list %}
@@ -116,6 +122,7 @@
                 {% endif %}
             </div>
         {% endif %}
+        </div>
     </div>
 </section>
 
@@ -127,12 +134,43 @@
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
     }
 
-    
+    .pd-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    text-align: left;
+    }
+
     .pd-heading {
     font-size: 26px;
     font-weight: 600;
-    margin: 0 0 32px 0;
+    margin: 0;
     color: #222;
+    }
+
+    .pd-chevron {
+    flex-shrink: 0;
+    transition: transform 0.3s ease;
+    color: #222;
+    }
+
+    .pd-header[aria-expanded="true"] .pd-chevron {
+    transform: rotate(180deg);
+    }
+
+    .pd-content {
+    margin-top: 32px;
+    overflow: hidden;
+    transition: max-height 0.3s ease, opacity 0.3s ease;
+    }
+
+    .pd-content[style*="display: block"] {
+    display: block !important;
     }
 
   
@@ -187,7 +225,10 @@
 
     .pd-heading {
         font-size: 20px;
-        margin-bottom: 20px;
+    }
+
+    .pd-content {
+        margin-top: 20px;
     }
 
     .pd-grid {
@@ -216,6 +257,33 @@
 
 
 </style>
+
+<script>
+(function() {
+    document.addEventListener('DOMContentLoaded', function() {
+        const pdHeaders = document.querySelectorAll('.pd-header');
+        
+        pdHeaders.forEach(function(header) {
+            const content = header.nextElementSibling;
+            if (!content || !content.classList.contains('pd-content')) return;
+            
+            header.addEventListener('click', function() {
+                const isExpanded = header.getAttribute('aria-expanded') === 'true';
+                
+                if (isExpanded) {
+                    // Collapse
+                    content.style.display = 'none';
+                    header.setAttribute('aria-expanded', 'false');
+                } else {
+                    // Expand
+                    content.style.display = 'block';
+                    header.setAttribute('aria-expanded', 'true');
+                }
+            });
+        });
+    });
+})();
+</script>
 
 {% schema %}
 {
