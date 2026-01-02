@@ -1,0 +1,51 @@
+{%- comment -%}
+  This section is used to fetch free gift product information by tag.
+  It returns JSON data that can be fetched via section rendering API.
+{%- endcomment -%}
+
+{%- liquid
+  assign gift_5000 = collections.all.products | where: 'tags', 'free-gift-5000' | first
+  assign gift_8000 = collections.all.products | where: 'tags', 'free-gift-8000' | first
+  
+  if gift_5000
+    assign gift_5000_variant = gift_5000.selected_or_first_available_variant
+  endif
+  
+  if gift_8000
+    assign gift_8000_variant = gift_8000.selected_or_first_available_variant
+  endif
+-%}
+
+{
+  "gift5000": {
+    {% if gift_5000 and gift_5000_variant %}
+    "productId": {{ gift_5000.id }},
+    "variantId": {{ gift_5000_variant.id }},
+    "available": {{ gift_5000_variant.available | json }},
+    "title": {{ gift_5000.title | json }},
+    "price": {{ gift_5000_variant.price | json }}
+    {% else %}
+    "productId": null,
+    "variantId": null,
+    "available": false,
+    "title": null,
+    "price": null
+    {% endif %}
+  },
+  "gift8000": {
+    {% if gift_8000 and gift_8000_variant %}
+    "productId": {{ gift_8000.id }},
+    "variantId": {{ gift_8000_variant.id }},
+    "available": {{ gift_8000_variant.available | json }},
+    "title": {{ gift_8000.title | json }},
+    "price": {{ gift_8000_variant.price | json }}
+    {% else %}
+    "productId": null,
+    "variantId": null,
+    "available": false,
+    "title": null,
+    "price": null
+    {% endif %}
+  }
+}
+
