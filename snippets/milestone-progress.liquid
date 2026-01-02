@@ -7,9 +7,10 @@
   Usage: {% render 'milestone-progress', cart_total: cart.total_price %}
 {% endcomment %}
 
+{% comment %} Load milestone configuration first - must be outside liquid block {% endcomment %}
+{% render 'milestone-config' %}
+
 {% liquid
-  render 'milestone-config'
-  
   comment
     Calculate eligible cart total (excluding free items)
     For now, we'll use the full cart total. Later we'll filter out free items.

@@ -53,44 +53,39 @@
   - order: Display order (1, 2, 3, etc.)
   
   To add/modify milestones, update the assignments below.
+  
+  NOTE: Variables must be assigned outside liquid blocks to be accessible in parent templates
 {% endcomment %}
 
-{% liquid
-  
-  assign milestone_1_threshold = 599900
-  assign milestone_1_product_handle = 'steel-shaker'
-  assign milestone_1_variant_id = ''
-  assign milestone_1_display_name = 'Steel Shaker'
-  assign milestone_1_order = 1
-  
- 
-  assign milestone_2_threshold = 1499900
-  assign milestone_2_product_handle = 'bcaa'
-  assign milestone_2_variant_id = ''
-  assign milestone_2_display_name = '+BCAA'
-  assign milestone_2_order = 2
-  
-  
-  assign milestone_3_threshold = 2499900
-  assign milestone_3_product_handle = 'iso-rich-premium-isolate'
-  assign milestone_3_variant_id = ''
-  assign milestone_3_display_name = '+ISORich'
-  assign milestone_3_order = 3
-  
- 
-  assign milestone_4_threshold = 3000000
-  assign milestone_4_product_handle = 'amazon-e-gift-card'
-  assign milestone_4_variant_id = ''
-  assign milestone_4_display_name = '+GC ₹1K'
-  assign milestone_4_order = 4
-  
-  
-  assign milestone_5_threshold = 100000000
-  assign milestone_5_product_handle = 'amazon-e-gift-card'
-  assign milestone_5_variant_id = ''
-  assign milestone_5_display_name = '+GC ₹10K'
-  assign milestone_5_order = 5
-%}
+{% assign milestone_1_threshold = 599900 %}
+{% assign milestone_1_product_handle = 'steel-shaker' %}
+{% assign milestone_1_variant_id = '' %}
+{% assign milestone_1_display_name = 'Steel Shaker' %}
+{% assign milestone_1_order = 1 %}
+
+{% assign milestone_2_threshold = 1499900 %}
+{% assign milestone_2_product_handle = 'bcaa' %}
+{% assign milestone_2_variant_id = '' %}
+{% assign milestone_2_display_name = '+BCAA' %}
+{% assign milestone_2_order = 2 %}
+
+{% assign milestone_3_threshold = 2499900 %}
+{% assign milestone_3_product_handle = 'iso-rich-premium-isolate' %}
+{% assign milestone_3_variant_id = '' %}
+{% assign milestone_3_display_name = '+ISORich' %}
+{% assign milestone_3_order = 3 %}
+
+{% assign milestone_4_threshold = 3000000 %}
+{% assign milestone_4_product_handle = 'amazon-e-gift-card' %}
+{% assign milestone_4_variant_id = '' %}
+{% assign milestone_4_display_name = '+GC ₹1K' %}
+{% assign milestone_4_order = 4 %}
+
+{% assign milestone_5_threshold = 100000000 %}
+{% assign milestone_5_product_handle = 'amazon-e-gift-card' %}
+{% assign milestone_5_variant_id = '' %}
+{% assign milestone_5_display_name = '+GC ₹10K' %}
+{% assign milestone_5_order = 5 %}
 
 {% comment %}
   Create a JSON-like structure for JavaScript access
@@ -144,4 +139,3 @@
   ]
 }
 </script>
-
