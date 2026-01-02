@@ -33,14 +33,39 @@ class CartFreeGifts {
    * Initialize the free gift manager
    */
   init() {
+    console.log('🎁 CartFreeGifts: Initializing...');
+    
     // Load gift products on page load
     this.loadGiftProducts();
     
     // Listen for cart update events
     document.addEventListener(ThemeEvents.cartUpdate, this.handleCartUpdate.bind(this));
+    console.log('🎁 CartFreeGifts: Listening for cart update events');
     
     // Also check on initial page load if cart exists
     this.checkCartOnLoad();
+    
+    // Also listen for CartAddEvent specifically (cart drawer uses this)
+    document.addEventListener('cart:update', this.handleCartUpdate.bind(this));
+    
+    // Periodic check as fallback (every 2 seconds when cart is open)
+    this.startPeriodicCheck();
+  }
+
+  /**
+   * Start periodic check for cart updates (fallback method)
+   */
+  startPeriodicCheck() {
+    setInterval(async () => {
+      // Only check if cart drawer might be open or if we haven't processed recently
+      const cartDrawer = document.querySelector('cart-drawer-component');
+      if (cartDrawer && cartDrawer.hasAttribute('open')) {
+        const cart = await this.fetchCart();
+        if (cart && cart.item_count > 0) {
+          await this.processCartGifts(cart);
+        }
+      }
+    }, 2000);
   }
 
   /**
@@ -48,12 +73,18 @@ class CartFreeGifts {
    */
   async checkCartOnLoad() {
     try {
+      // Wait a bit for page to fully load
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
       const cart = await this.fetchCart();
+      console.log('🎁 CartFreeGifts: Initial cart check', cart);
+      
       if (cart && cart.item_count > 0) {
+        console.log('🎁 CartFreeGifts: Cart has items, processing gifts...');
         await this.processCartGifts(cart);
       }
     } catch (error) {
-      console.error('Error checking cart on load:', error);
+      console.error('🎁 CartFreeGifts: Error checking cart on load:', error);
     }
   }
 
@@ -138,13 +169,17 @@ class CartFreeGifts {
    * @param {any} event - The cart update event
    */
   async handleCartUpdate(event) {
+    console.log('🎁 CartFreeGifts: Cart update event received', event);
+    
     // Prevent infinite loops by ignoring our own updates
     if (event.detail?.data?.source === 'cart-free-gifts') {
+      console.log('🎁 CartFreeGifts: Ignoring own update');
       return;
     }
 
     // Debounce to avoid multiple rapid calls
     if (this.processing) {
+      console.log('🎁 CartFreeGifts: Already processing, skipping...');
       return;
     }
 
@@ -152,14 +187,16 @@ class CartFreeGifts {
 
     try {
       // Small delay to ensure cart state is updated
-      await new Promise(resolve => setTimeout(resolve, 300));
+      await new Promise(resolve => setTimeout(resolve, 500));
       
       const cart = await this.fetchCart();
+      console.log('🎁 CartFreeGifts: Fetched cart after update', cart);
+      
       if (cart) {
         await this.processCartGifts(cart);
       }
     } catch (error) {
-      console.error('Error handling cart update:', error);
+      console.error('🎁 CartFreeGifts: Error handling cart update:', error);
     } finally {
       this.processing = false;
     }
@@ -170,33 +207,46 @@ class CartFreeGifts {
    * @param {any} cart - The cart object
    */
   async processCartGifts(cart) {
+    console.log('🎁 CartFreeGifts: Processing cart gifts...', {
+      cartTotal: cart.total_price,
+      itemCount: cart.item_count,
+      items: cart.items
+    });
+    
     // Ensure gift products are loaded
     if (!this.giftProducts) {
+      console.log('🎁 CartFreeGifts: Gift products not loaded, loading now...');
       await this.loadGiftProducts();
     }
 
     if (!this.giftProducts) {
-      console.warn('Free gift products not loaded yet');
+      console.warn('🎁 CartFreeGifts: Free gift products not loaded yet');
       return;
     }
 
     const cartTotal = /** @type {number} */ (cart.total_price);
+    console.log('🎁 CartFreeGifts: Cart total:', cartTotal, 'cents (₹' + (cartTotal / 100) + ')');
+    console.log('🎁 CartFreeGifts: Thresholds:', this.thresholds);
     
     // Update tracking of which gifts are in cart
     this.updateGiftsInCart(cart);
+    console.log('🎁 CartFreeGifts: Gifts in cart:', this.giftsInCart);
 
     // Check ₹8,000 threshold first (higher threshold)
     if (cartTotal >= this.thresholds.gift8000) {
+      console.log('🎁 CartFreeGifts: Cart total >= ₹8,000, adding both gifts');
       await this.ensureGiftInCart('gift8000', cart);
       await this.ensureGiftInCart('gift5000', cart);
     } 
     // Check ₹5,000 threshold
     else if (cartTotal >= this.thresholds.gift5000) {
+      console.log('🎁 CartFreeGifts: Cart total >= ₹5,000, adding gift5000');
       await this.ensureGiftInCart('gift5000', cart);
       await this.removeGiftFromCart('gift8000', cart);
     } 
     // Below both thresholds
     else {
+      console.log('🎁 CartFreeGifts: Cart total < ₹5,000, removing all gifts');
       await this.removeGiftFromCart('gift5000', cart);
       await this.removeGiftFromCart('gift8000', cart);
     }
@@ -254,6 +304,8 @@ class CartFreeGifts {
 
     // Add gift to cart
     try {
+      console.log(`🎁 CartFreeGifts: Attempting to add gift ${giftKey} with variant ID: ${gift.variantId}`);
+      
       const formData = new FormData();
       formData.append('id', gift.variantId);
       formData.append('quantity', '1');
@@ -265,18 +317,22 @@ class CartFreeGifts {
         formData.append('properties[_gift_threshold]', threshold.toString());
       }
 
+      console.log('🎁 CartFreeGifts: Sending request to:', Theme.routes.cart_add_url);
+      
+      const fetchCfg = fetchConfig('javascript', { body: formData });
       const response = await fetch(Theme.routes.cart_add_url, {
-        ...fetchConfig('javascript', { body: formData }),
+        ...fetchCfg,
         headers: {
-          ...fetchConfig('javascript', { body: formData }).headers,
+          ...fetchCfg.headers,
           Accept: 'application/json',
         },
       });
 
       const result = await response.json();
+      console.log('🎁 CartFreeGifts: Add to cart response:', result);
 
       if (result.status) {
-        console.error('Error adding free gift:', result.message);
+        console.error('🎁 CartFreeGifts: Error adding free gift:', result.message, result);
         return;
       }
 
@@ -288,9 +344,9 @@ class CartFreeGifts {
         })
       );
 
-      console.log(`Free gift ${giftKey} (variant: ${gift.variantId}) added to cart`);
+      console.log(`✅ CartFreeGifts: Free gift ${giftKey} (variant: ${gift.variantId}) successfully added to cart!`);
     } catch (error) {
-      console.error(`Error adding free gift ${giftKey}:`, error);
+      console.error(`❌ CartFreeGifts: Error adding free gift ${giftKey}:`, error);
     }
   }
 
