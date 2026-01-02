@@ -14,32 +14,30 @@
   - milestone_1, milestone_2, etc. (individual milestone objects)
 {% endcomment %}
 
-{% comment %} Load settings from theme customizer {% endcomment %}
-{% liquid
-  if settings.milestone_rewards_enabled == blank
-    assign milestone_rewards_enabled = true
-  else
-    assign milestone_rewards_enabled = settings.milestone_rewards_enabled
-  endif
-  
-  if settings.milestone_show_progress_bar == blank
-    assign milestone_show_progress = true
-  else
-    assign milestone_show_progress = settings.milestone_show_progress_bar
-  endif
-  
-  if settings.milestone_show_success_banner == blank
-    assign milestone_show_banner = true
-  else
-    assign milestone_show_banner = settings.milestone_show_success_banner
-  endif
-  
-  if settings.milestone_free_item_tag == blank
-    assign milestone_free_tag = 'milestone-reward'
-  else
-    assign milestone_free_tag = settings.milestone_free_item_tag
-  endif
-%}
+{% comment %} Load settings from theme customizer - MUST be outside liquid blocks {% endcomment %}
+{% if settings.milestone_rewards_enabled == blank %}
+  {% assign milestone_rewards_enabled = true %}
+{% else %}
+  {% assign milestone_rewards_enabled = settings.milestone_rewards_enabled %}
+{% endif %}
+
+{% if settings.milestone_show_progress_bar == blank %}
+  {% assign milestone_show_progress = true %}
+{% else %}
+  {% assign milestone_show_progress = settings.milestone_show_progress_bar %}
+{% endif %}
+
+{% if settings.milestone_show_success_banner == blank %}
+  {% assign milestone_show_banner = true %}
+{% else %}
+  {% assign milestone_show_banner = settings.milestone_show_success_banner %}
+{% endif %}
+
+{% if settings.milestone_free_item_tag == blank %}
+  {% assign milestone_free_tag = 'milestone-reward' %}
+{% else %}
+  {% assign milestone_free_tag = settings.milestone_free_item_tag %}
+{% endif %}
 
 {% comment %}
   MILESTONE DEFINITIONS

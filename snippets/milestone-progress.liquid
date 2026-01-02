@@ -53,7 +53,15 @@
   endif
 %}
 
-{% if milestone_rewards_enabled != false and milestone_show_progress != false %}
+{% comment %} Always show if variables exist, default to true if they don't {% endcomment %}
+{% if milestone_rewards_enabled == blank %}
+  {% assign milestone_rewards_enabled = true %}
+{% endif %}
+{% if milestone_show_progress == blank %}
+  {% assign milestone_show_progress = true %}
+{% endif %}
+
+{% if milestone_rewards_enabled and milestone_show_progress %}
   <div class="milestone-progress" data-milestone-progress>
     {% if show_success_banner %}
       <div class="milestone-progress__banner">
