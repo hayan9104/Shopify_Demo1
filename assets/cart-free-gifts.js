@@ -28,6 +28,16 @@ class CartFreeGiftsComponent extends Component {
   connectedCallback() {
     super.connectedCallback();
     
+    // Verify component is configured
+    const gift5000VariantId = this.dataset.gift5000VariantId;
+    const gift8000VariantId = this.dataset.gift8000VariantId;
+    
+    console.log('CartFreeGifts: Component initialized', {
+      gift5000VariantId,
+      gift8000VariantId,
+      element: this,
+    });
+    
     // Listen to cart update events with debouncing
     document.addEventListener(ThemeEvents.cartUpdate, this.#debouncedHandleCartUpdate);
     
@@ -79,18 +89,19 @@ class CartFreeGiftsComponent extends Component {
       return;
     }
 
-    // Debug logging (can be removed in production)
-    if (window.location.search.includes('debug=cart-gifts')) {
-      console.log('CartFreeGifts: Cart data', {
-        total: cartTotal,
-        items: cartItems.length,
-        gift5000VariantId,
-        gift8000VariantId,
-      });
-    }
-
     const cartTotal = cartData.total_price || 0;
     const cartItems = cartData.items || [];
+
+    // Debug logging
+    console.log('CartFreeGifts: Processing cart update', {
+      cartTotal,
+      cartTotalInRupees: cartTotal / 100,
+      itemsCount: cartItems.length,
+      gift5000VariantId,
+      gift8000VariantId,
+      threshold5000: this.#THRESHOLD_5000,
+      threshold8000: this.#THRESHOLD_8000,
+    });
 
     // Check which gifts should be in cart
     const shouldHaveGift5000 = cartTotal >= this.#THRESHOLD_5000 && gift5000VariantId;
@@ -103,15 +114,26 @@ class CartFreeGiftsComponent extends Component {
     // Determine actions needed
     const actions = [];
 
+    console.log('CartFreeGifts: Gift status check', {
+      shouldHaveGift5000,
+      hasGift5000,
+      shouldHaveGift8000,
+      hasGift8000,
+    });
+
     if (shouldHaveGift5000 && !hasGift5000) {
+      console.log('CartFreeGifts: Will add gift for ₹5,000 threshold');
       actions.push({ type: 'add', variantId: gift5000VariantId, threshold: 5000 });
     } else if (!shouldHaveGift5000 && hasGift5000) {
+      console.log('CartFreeGifts: Will remove gift for ₹5,000 threshold');
       actions.push({ type: 'remove', variantId: gift5000VariantId, threshold: 5000 });
     }
 
     if (shouldHaveGift8000 && !hasGift8000) {
+      console.log('CartFreeGifts: Will add gift for ₹8,000 threshold');
       actions.push({ type: 'add', variantId: gift8000VariantId, threshold: 8000 });
     } else if (!shouldHaveGift8000 && hasGift8000) {
+      console.log('CartFreeGifts: Will remove gift for ₹8,000 threshold');
       actions.push({ type: 'remove', variantId: gift8000VariantId, threshold: 8000 });
     }
 
@@ -143,9 +165,24 @@ class CartFreeGiftsComponent extends Component {
    */
   #hasGiftInCart(cartItems, variantId) {
     if (!variantId || !cartItems) return false;
-    return cartItems.some(
-      (item) => item.variant_id && item.variant_id.toString() === variantId.toString()
-    );
+    
+    const variantIdStr = variantId.toString();
+    const found = cartItems.some((item) => {
+      const itemVariantId = item.variant_id?.toString();
+      const matches = itemVariantId === variantIdStr;
+      
+      if (matches) {
+        console.log('CartFreeGifts: Gift already in cart', {
+          variantId: variantIdStr,
+          itemVariantId,
+          itemKey: item.key,
+        });
+      }
+      
+      return matches;
+    });
+    
+    return found;
   }
 
   /**
@@ -179,8 +216,10 @@ class CartFreeGiftsComponent extends Component {
 
       const data = await response.json();
 
+      console.log(`CartFreeGifts: Add gift response for ₹${threshold} threshold:`, data);
+
       if (data.status) {
-        console.warn(`CartFreeGifts: Failed to add gift for ₹${threshold} threshold:`, data.message);
+        console.error(`CartFreeGifts: Failed to add gift for ₹${threshold} threshold:`, data.message, data);
         return;
       }
 
@@ -192,7 +231,7 @@ class CartFreeGiftsComponent extends Component {
         })
       );
 
-      console.log(`CartFreeGifts: Added free gift for ₹${threshold} threshold`);
+      console.log(`CartFreeGifts: Successfully added free gift for ₹${threshold} threshold`);
     } catch (error) {
       if (error.name === 'AbortError') return;
       console.error(`CartFreeGifts: Error adding gift for ₹${threshold} threshold:`, error);
@@ -262,10 +301,28 @@ class CartFreeGiftsComponent extends Component {
    * Checks cart on initial page load
    */
   async #checkCartOnLoad() {
-    if (this.#isProcessing) return;
+    if (this.#isProcessing) {
+      console.log('CartFreeGifts: Already processing, skipping initial check');
+      return;
+    }
+    
+    console.log('CartFreeGifts: Checking cart on initial load...');
     
     const cartData = await this.#fetchCartData();
-    if (!cartData || !cartData.items || cartData.items.length === 0) return;
+    if (!cartData) {
+      console.log('CartFreeGifts: No cart data found on initial load');
+      return;
+    }
+    
+    if (!cartData.items || cartData.items.length === 0) {
+      console.log('CartFreeGifts: Cart is empty on initial load');
+      return;
+    }
+    
+    console.log('CartFreeGifts: Cart found on initial load', {
+      itemCount: cartData.items.length,
+      total: cartData.total_price,
+    });
     
     // Create a synthetic event to trigger the handler
     const syntheticEvent = {
