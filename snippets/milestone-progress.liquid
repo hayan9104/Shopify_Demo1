@@ -10,14 +10,6 @@
 {% liquid
   render 'milestone-config'
   
-  unless milestone_rewards_enabled
-    break
-  endunless
-  
-  unless milestone_show_progress
-    break
-  endunless
-  
   comment
     Calculate eligible cart total (excluding free items)
     For now, we'll use the full cart total. Later we'll filter out free items.
@@ -60,7 +52,7 @@
   endif
 %}
 
-{% if milestone_rewards_enabled and milestone_show_progress %}
+{% if milestone_rewards_enabled != false and milestone_show_progress != false %}
   <div class="milestone-progress" data-milestone-progress>
     {% if show_success_banner %}
       <div class="milestone-progress__banner">

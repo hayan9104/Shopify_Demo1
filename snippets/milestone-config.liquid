@@ -16,10 +16,29 @@
 
 {% comment %} Load settings from theme customizer {% endcomment %}
 {% liquid
-  assign milestone_rewards_enabled = settings.milestone_rewards_enabled | default: true
-  assign milestone_show_progress = settings.milestone_show_progress_bar | default: true
-  assign milestone_show_banner = settings.milestone_show_success_banner | default: true
-  assign milestone_free_tag = settings.milestone_free_item_tag | default: 'milestone-reward'
+  if settings.milestone_rewards_enabled == blank
+    assign milestone_rewards_enabled = true
+  else
+    assign milestone_rewards_enabled = settings.milestone_rewards_enabled
+  endif
+  
+  if settings.milestone_show_progress_bar == blank
+    assign milestone_show_progress = true
+  else
+    assign milestone_show_progress = settings.milestone_show_progress_bar
+  endif
+  
+  if settings.milestone_show_success_banner == blank
+    assign milestone_show_banner = true
+  else
+    assign milestone_show_banner = settings.milestone_show_success_banner
+  endif
+  
+  if settings.milestone_free_item_tag == blank
+    assign milestone_free_tag = 'milestone-reward'
+  else
+    assign milestone_free_tag = settings.milestone_free_item_tag
+  endif
 %}
 
 {% comment %}
