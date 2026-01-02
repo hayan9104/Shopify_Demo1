@@ -2284,46 +2284,5 @@
         "default": "equal-width-buttons"
       }
     ]
-  },
-  {
-    "name": "Milestone Rewards",
-    "settings": [
-      {
-        "type": "header",
-        "content": "Milestone Rewards System"
-      },
-      {
-        "type": "checkbox",
-        "id": "milestone_rewards_enabled",
-        "label": "Enable Milestone Rewards",
-        "default": true,
-        "info": "Enable automatic free product rewards based on cart total"
-      },
-      {
-        "type": "paragraph",
-        "content": "Milestone configuration is stored in config/milestone-rewards.json. Edit that file to modify thresholds and reward products."
-      },
-      {
-        "type": "checkbox",
-        "id": "milestone_show_progress_bar",
-        "label": "Show Progress Bar",
-        "default": true,
-        "info": "Display milestone progress bar in cart"
-      },
-      {
-        "type": "checkbox",
-        "id": "milestone_show_success_banner",
-        "label": "Show Success Banner",
-        "default": true,
-        "info": "Show banner when customer reaches a new milestone"
-      },
-      {
-        "type": "text",
-        "id": "milestone_free_item_tag",
-        "label": "Free Item Tag",
-        "default": "milestone-reward",
-        "info": "Tag used to identify free reward items in cart"
-      }
-    ]
   }
 ]
