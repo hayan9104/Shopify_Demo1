@@ -438,11 +438,104 @@
         "padding-block-start": 48,
         "padding-block-end": 48
       }
+    },
+    "ss_feature_1_DPKneR": {
+      "type": "ss-feature-1",
+      "blocks": {
+        "image_BVBLjU": {
+          "type": "image",
+          "settings": {
+            "feature_title": "Free Shipping",
+            "feature_text": "<p>Order today, receive tomorrow</p>",
+            "feature_url": "https://section.store/",
+            "hide_image": false
+          }
+        },
+        "image_Ggi6eK": {
+          "type": "image",
+          "settings": {
+            "feature_title": "Price-match guarantee",
+            "feature_text": "<p>Safe money when ordering with us</p>",
+            "feature_url": "",
+            "hide_image": false
+          }
+        },
+        "image_prnmtr": {
+          "type": "image",
+          "settings": {
+            "feature_title": "Hassle-free exchange",
+            "feature_text": "<p>Receive a slip for exchanges</p>",
+            "feature_url": "",
+            "hide_image": false
+          }
+        },
+        "image_MkUPtc": {
+          "type": "image",
+          "settings": {
+            "feature_title": "5.0 Google Reviews",
+            "feature_text": "<p>Customer satisfaction #1 priority</p>",
+            "feature_url": "",
+            "hide_image": false
+          }
+        }
+      },
+      "block_order": [
+        "image_BVBLjU",
+        "image_Ggi6eK",
+        "image_prnmtr",
+        "image_MkUPtc"
+      ],
+      "name": "SS - Feature #1",
+      "settings": {
+        "feature_row": 4,
+        "feature_row_mobile": 1,
+        "feature_gap": 20,
+        "feature_gap_mobile": 20,
+        "feature_padding_horizontal": 0,
+        "feature_padding_vertical": 0,
+        "feature_radius": 16,
+        "feature_border_thickness": 0,
+        "feature_shadow": false,
+        "feature_heading_custom": false,
+        "feature_heading_font": "josefin_sans_n4",
+        "feature_heading_size": 14,
+        "feature_heading_size_mobile": 12,
+        "feature_heading_height": 130,
+        "feature_heading_mt": 8,
+        "feature_text_custom": false,
+        "feature_text_font": "josefin_sans_n4",
+        "feature_text_size": 12,
+        "feature_text_size_mobile": 12,
+        "feature_text_height": 130,
+        "feature_text_mt": 4,
+        "feature_icon_size": 42,
+        "feature_icon_size_mobile": 42,
+        "feature_bg": "#FFFFFF",
+        "feature_border_color": "#000000",
+        "feature_shadow_color": "#000000",
+        "feature_heading_color": "#000000",
+        "feature_text_color": "#000000",
+        "feature_icon_color": "#000000",
+        "background_color": "#FFFFFF",
+        "background_gradient": "",
+        "border_color": "#000000",
+        "margin_top": 0,
+        "margin_bottom": 0,
+        "padding_top": 16,
+        "padding_bottom": 16,
+        "padding_horizontal": 5,
+        "padding_horizontal_mobile": 1.5,
+        "full_width": false,
+        "content_width": 120,
+        "border_thickness": 0,
+        "lazy": true
+      }
     }
   },
   "order": [
     "main",
     "product_details_9Q3HbP",
+    "ss_feature_1_DPKneR",
     "hero_ingredient_nNcBGR",
     "product_benefits_daEekB",
     "product_use_wRezRC",
