@@ -13,17 +13,11 @@ class CartFreeGifts {
       gift5000: 500000, // ₹5,000 in cents
       gift8000: 800000, // ₹8,000 in cents
     };
-    this.giftTags = {
-      gift5000: 'free-gift-5000',
-      gift8000: 'free-gift-8000',
-    };
     
-    // Optional: Specific variant IDs - set these if you want to use specific variants
-    // If these are set, they will be used as fallback if tag lookup fails
-    // Set to null to use tag-based lookup only
+    // Fallback variant IDs (in case tag lookup fails)
     this.fallbackVariantIds = {
-      gift5000: 55378709479497, // Variant ID for ₹5,000 gift
-      gift8000: 55378884591689, // Variant ID for ₹8,000 gift
+      gift5000: '55378709479497', // ₹5,000 gift variant ID
+      gift8000: '55378884591689', // ₹8,000 gift variant ID
     };
     
     // Track which gifts are currently in cart (by variant ID)
@@ -76,66 +70,50 @@ class CartFreeGifts {
       
       // Remove any HTML tags that might be present
       const cleanJson = jsonText.replace(/<[^>]*>/g, '').trim();
-      this.giftProducts = JSON.parse(cleanJson);
+      const loadedProducts = JSON.parse(cleanJson);
       
-      // If tag-based lookup didn't find products but fallback IDs are set, use them
-      if (this.fallbackVariantIds.gift5000) {
-        if (!this.giftProducts.gift5000?.variantId) {
-          this.giftProducts.gift5000 = {
-            variantId: this.fallbackVariantIds.gift5000,
-            available: true,
-            productId: null,
-            title: 'Free Gift (₹5,000)',
-            price: 0,
-          };
-        } else if (this.giftProducts.gift5000.variantId !== this.fallbackVariantIds.gift5000) {
-          // Override with specific variant ID if provided
-          this.giftProducts.gift5000.variantId = this.fallbackVariantIds.gift5000;
-        }
-      }
+      // Use loaded products or fallback to hardcoded variant IDs
+      this.giftProducts = {
+        gift5000: {
+          variantId: loadedProducts.gift5000?.variantId || this.fallbackVariantIds.gift5000,
+          available: loadedProducts.gift5000?.available !== false, // Default to true if not specified
+          productId: loadedProducts.gift5000?.productId || null,
+          title: loadedProducts.gift5000?.title || 'Free Gift',
+          price: loadedProducts.gift5000?.price || 0,
+        },
+        gift8000: {
+          variantId: loadedProducts.gift8000?.variantId || this.fallbackVariantIds.gift8000,
+          available: loadedProducts.gift8000?.available !== false, // Default to true if not specified
+          productId: loadedProducts.gift8000?.productId || null,
+          title: loadedProducts.gift8000?.title || 'Free Gift',
+          price: loadedProducts.gift8000?.price || 0,
+        },
+      };
       
-      if (this.fallbackVariantIds.gift8000) {
-        if (!this.giftProducts.gift8000?.variantId) {
-          this.giftProducts.gift8000 = {
-            variantId: this.fallbackVariantIds.gift8000,
-            available: true,
-            productId: null,
-            title: 'Free Gift (₹8,000)',
-            price: 0,
-          };
-        } else if (this.giftProducts.gift8000.variantId !== this.fallbackVariantIds.gift8000) {
-          // Override with specific variant ID if provided
-          this.giftProducts.gift8000.variantId = this.fallbackVariantIds.gift8000;
-        }
-      }
+      // Ensure variant IDs are strings for comparison
+      this.giftProducts.gift5000.variantId = String(this.giftProducts.gift5000.variantId);
+      this.giftProducts.gift8000.variantId = String(this.giftProducts.gift8000.variantId);
       
       console.log('Free gift products loaded:', this.giftProducts);
     } catch (error) {
-      console.error('Error loading free gift products:', error);
-      
-      // If tag lookup fails completely and fallback IDs are set, use them
-      if (this.fallbackVariantIds.gift5000 || this.fallbackVariantIds.gift8000) {
-        this.giftProducts = {
-          gift5000: this.fallbackVariantIds.gift5000 ? {
-            variantId: this.fallbackVariantIds.gift5000,
-            available: true,
-            productId: null,
-            title: 'Free Gift (₹5,000)',
-            price: 0,
-          } : null,
-          gift8000: this.fallbackVariantIds.gift8000 ? {
-            variantId: this.fallbackVariantIds.gift8000,
-            available: true,
-            productId: null,
-            title: 'Free Gift (₹8,000)',
-            price: 0,
-          } : null,
-        };
-        console.log('Using fallback variant IDs:', this.giftProducts);
-      } else {
-        // Retry after a delay if no fallback IDs
-        setTimeout(() => this.loadGiftProducts(), 2000);
-      }
+      console.error('Error loading free gift products, using fallback IDs:', error);
+      // Use fallback variant IDs if lookup fails
+      this.giftProducts = {
+        gift5000: {
+          variantId: this.fallbackVariantIds.gift5000,
+          available: true,
+          productId: null,
+          title: 'Free Gift (₹5,000)',
+          price: 0,
+        },
+        gift8000: {
+          variantId: this.fallbackVariantIds.gift8000,
+          available: true,
+          productId: null,
+          title: 'Free Gift (₹8,000)',
+          price: 0,
+        },
+      };
     }
   }
 
@@ -157,6 +135,7 @@ class CartFreeGifts {
 
   /**
    * Handle cart update events
+   * @param {any} event - The cart update event
    */
   async handleCartUpdate(event) {
     // Prevent infinite loops by ignoring our own updates
@@ -188,6 +167,7 @@ class CartFreeGifts {
 
   /**
    * Process cart and add/remove gifts based on total
+   * @param {any} cart - The cart object
    */
   async processCartGifts(cart) {
     // Ensure gift products are loaded
@@ -200,7 +180,7 @@ class CartFreeGifts {
       return;
     }
 
-    const cartTotal = cart.total_price;
+    const cartTotal = /** @type {number} */ (cart.total_price);
     
     // Update tracking of which gifts are in cart
     this.updateGiftsInCart(cart);
@@ -224,42 +204,52 @@ class CartFreeGifts {
 
   /**
    * Update tracking of which gifts are currently in cart
+   * @param {any} cart - The cart object
    */
   updateGiftsInCart(cart) {
-    if (!cart.items) return;
+    if (!cart.items || !this.giftProducts) return;
 
-    const gift5000VariantId = this.giftProducts?.gift5000?.variantId;
-    const gift8000VariantId = this.giftProducts?.gift8000?.variantId;
+    const items = /** @type {any[]} */ (cart.items);
+    const gift5000VariantId = this.giftProducts.gift5000?.variantId;
+    const gift8000VariantId = this.giftProducts.gift8000?.variantId;
 
-    // Find gifts in cart by variant ID
-    this.giftsInCart.gift5000 = cart.items.find(
-      item => item.variant_id === gift5000VariantId
+    // Find gifts in cart by variant ID (convert to string for comparison)
+    this.giftsInCart.gift5000 = items.find(
+      /** @param {any} item */
+      (item) => String(item.variant_id) === String(gift5000VariantId)
     ) || null;
 
-    this.giftsInCart.gift8000 = cart.items.find(
-      item => item.variant_id === gift8000VariantId
+    this.giftsInCart.gift8000 = items.find(
+      /** @param {any} item */
+      (item) => String(item.variant_id) === String(gift8000VariantId)
     ) || null;
   }
 
   /**
    * Ensure a gift is in the cart (add if not present)
+   * @param {'gift5000' | 'gift8000'} giftKey - The gift key
+   * @param {any} cart - The cart object
    */
   async ensureGiftInCart(giftKey, cart) {
-    const gift = this.giftProducts[giftKey];
+    if (!this.giftProducts) return;
+    const gift = /** @type {any} */ (this.giftProducts)[giftKey];
     
-    if (!gift || !gift.variantId || !gift.available) {
+    if (!gift || !gift.variantId) {
+      console.warn(`Gift ${giftKey} not configured`);
+      return;
+    }
+
+    // Check availability (skip if explicitly false, but allow if undefined/true)
+    if (gift.available === false) {
+      console.warn(`Gift ${giftKey} is not available`);
       return;
     }
 
     // Check if gift is already in cart
-    const giftInCart = this.giftsInCart[giftKey];
+    const giftInCart = /** @type {any} */ (this.giftsInCart)[giftKey];
     
-    if (giftInCart) {
-      // Gift is already in cart, check if it was manually removed
-      // If quantity is 0, it means it was removed, so don't re-add automatically
-      if (giftInCart.quantity > 0) {
-        return; // Already in cart
-      }
+    if (giftInCart && giftInCart.quantity > 0) {
+      return; // Already in cart
     }
 
     // Add gift to cart
@@ -270,7 +260,10 @@ class CartFreeGifts {
       
       // Mark as auto-added gift using properties
       formData.append('properties[_auto_gift]', giftKey);
-      formData.append('properties[_gift_threshold]', this.thresholds[giftKey].toString());
+      const threshold = /** @type {any} */ (this.thresholds)[giftKey];
+      if (threshold) {
+        formData.append('properties[_gift_threshold]', threshold.toString());
+      }
 
       const response = await fetch(Theme.routes.cart_add_url, {
         ...fetchConfig('javascript', { body: formData }),
@@ -295,7 +288,7 @@ class CartFreeGifts {
         })
       );
 
-      console.log(`Free gift ${giftKey} added to cart`);
+      console.log(`Free gift ${giftKey} (variant: ${gift.variantId}) added to cart`);
     } catch (error) {
       console.error(`Error adding free gift ${giftKey}:`, error);
     }
@@ -303,21 +296,27 @@ class CartFreeGifts {
 
   /**
    * Remove a gift from cart if it was auto-added
+   * @param {'gift5000' | 'gift8000'} giftKey - The gift key
+   * @param {any} cart - The cart object
    */
   async removeGiftFromCart(giftKey, cart) {
-    const giftInCart = this.giftsInCart[giftKey];
+    const giftInCart = /** @type {any} */ (this.giftsInCart)[giftKey];
     
-    if (!giftInCart) {
-      return; // Not in cart
+    if (!giftInCart || !this.giftProducts) {
+      return; // Not in cart or products not loaded
     }
 
-    // Only remove if it was auto-added (has the _auto_gift property)
-    // Note: We can't check properties via cart API, so we'll remove if it matches the variant
-    // In a production scenario, you might want to track this differently
-    
     try {
       // Find the line number (1-based index) for this item
-      const lineNumber = cart.items.findIndex(item => item.variant_id === giftInCart.variant_id) + 1;
+      const gift = /** @type {any} */ (this.giftProducts)[giftKey];
+      if (!gift) return;
+      
+      const giftVariantId = String(gift.variantId);
+      const items = /** @type {any[]} */ (cart.items);
+      const lineNumber = items.findIndex(
+        /** @param {any} item */
+        (item) => String(item.variant_id) === giftVariantId
+      ) + 1;
       
       if (lineNumber === 0) {
         return; // Item not found
@@ -351,7 +350,7 @@ class CartFreeGifts {
         })
       );
 
-      console.log(`Free gift ${giftKey} removed from cart`);
+      console.log(`Free gift ${giftKey} (variant: ${giftVariantId}) removed from cart`);
     } catch (error) {
       console.error(`Error removing free gift ${giftKey}:`, error);
     }
@@ -366,3 +365,4 @@ if (document.readyState === 'loading') {
 } else {
   new CartFreeGifts();
 }
+
