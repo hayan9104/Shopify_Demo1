@@ -83,6 +83,11 @@
       type="module"
       fetchpriority="low"
     ></script>
+    <script
+      src="{{ 'cart-free-gifts.js' | asset_url }}"
+      type="module"
+      fetchpriority="low"
+    ></script>
 
     <cart-drawer-component
       class="cart-drawer"
@@ -110,6 +115,7 @@
         cart-summary-sticky="true"
       >
         <div class="cart-drawer__inner">
+          <cart-free-gifts></cart-free-gifts>
           <cart-items-component
             class="cart-items-component"
             data-section-id="{{ section.id }}"
