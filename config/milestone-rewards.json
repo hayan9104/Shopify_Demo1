@@ -1,0 +1,58 @@
+{
+  "enabled": true,
+  "milestones": [
+    {
+      "id": "milestone_1",
+      "threshold": 5999,
+      "reward_product_handle": "steel-shaker",
+      "reward_variant_id": null,
+      "display_name": "Steel Shaker",
+      "description": "Free Steel Shaker when you spend ₹5999 or more",
+      "order": 1
+    },
+    {
+      "id": "milestone_2",
+      "threshold": 14999,
+      "reward_product_handle": "bcaa",
+      "reward_variant_id": null,
+      "display_name": "+BCAA",
+      "description": "Free BCAA when you spend ₹14999 or more",
+      "order": 2
+    },
+    {
+      "id": "milestone_3",
+      "threshold": 24999,
+      "reward_product_handle": "iso-rich-premium-isolate",
+      "reward_variant_id": null,
+      "display_name": "+ISORich",
+      "description": "Free ISORich when you spend ₹24999 or more",
+      "order": 3
+    },
+    {
+      "id": "milestone_4",
+      "threshold": 30000,
+      "reward_product_handle": "amazon-e-gift-card",
+      "reward_variant_id": null,
+      "display_name": "+GC ₹1K",
+      "description": "Free ₹1K Amazon Gift Card when you spend ₹30000 or more",
+      "order": 4
+    },
+    {
+      "id": "milestone_5",
+      "threshold": 100000,
+      "reward_product_handle": "amazon-e-gift-card",
+      "reward_variant_id": null,
+      "display_name": "+GC ₹10K",
+      "description": "Free ₹10K Amazon Gift Card when you spend ₹100000 or more",
+      "order": 5
+    }
+  ],
+  "settings": {
+    "free_item_property_name": "_milestone_reward",
+    "exclude_free_items_from_total": true,
+    "auto_add_rewards": true,
+    "show_progress_bar": true,
+    "show_success_banner": true
+  }
+}
+
