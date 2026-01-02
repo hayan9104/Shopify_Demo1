@@ -173,6 +173,9 @@ class CartItemsComponent extends Component {
         morphSection(this.sectionId, parsedResponseText.sections[this.sectionId]);
 
         this.#updateCartQuantitySelectorButtonStates();
+        
+        // Trigger free gift check after cart update
+        this.#checkFreeGifts(parsedResponseText);
       })
       .catch((error) => {
         console.error(error);
@@ -285,6 +288,34 @@ class CartItemsComponent extends Component {
     for (const selector of document.querySelectorAll('cart-quantity-selector-component')) {
       /** @type {any} */ (selector).updateButtonStates?.();
     }
+  }
+
+  /**
+   * Check and add free gifts based on cart total
+   * @param {Object} cartData - The cart data from the update response
+   */
+  async #checkFreeGifts(cartData) {
+    // Wait a bit for cart to fully update
+    setTimeout(async () => {
+      try {
+        // Trigger free gift check by dispatching a custom event
+        // The free gift manager will listen to this
+        const cartResponse = await fetch(`${Theme.routes.cart_url}.js`);
+        if (cartResponse.ok) {
+          const cart = await cartResponse.json();
+          // Dispatch event that free gift manager listens to
+          document.dispatchEvent(
+            new CartUpdateEvent(cart, 'cart-items-component', {
+              itemCount: cart.item_count,
+              source: 'cart-items-component',
+              triggerFreeGiftCheck: true,
+            })
+          );
+        }
+      } catch (error) {
+        console.error('Error checking free gifts:', error);
+      }
+    }, 500);
   }
 
   /**

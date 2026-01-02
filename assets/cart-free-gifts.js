@@ -189,8 +189,13 @@ class CartFreeGifts {
       // Small delay to ensure cart state is updated
       await new Promise(resolve => setTimeout(resolve, 500));
       
-      const cart = await this.fetchCart();
-      console.log('🎁 CartFreeGifts: Fetched cart after update', cart);
+      // Use cart data from event if available, otherwise fetch
+      let cart = event.detail?.resource;
+      if (!cart || !cart.items) {
+        cart = await this.fetchCart();
+      }
+      
+      console.log('🎁 CartFreeGifts: Processing cart', cart);
       
       if (cart) {
         await this.processCartGifts(cart);
