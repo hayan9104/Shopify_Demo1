@@ -12,12 +12,9 @@
 {%- endcomment -%}
 
 {%- liquid
-  assign gift_5000_variant_id = null
-  assign gift_8000_variant_id = null
-
-  # MANUAL CONFIGURATION: If products are POS-only, uncomment and set these values:
-  # assign gift_5000_variant_id = 'YOUR_VARIANT_ID_HERE'
-  # assign gift_8000_variant_id = 'YOUR_VARIANT_ID_HERE'
+  # MANUAL CONFIGURATION: Variant IDs for POS-only gift products
+  assign gift_5000_variant_id = '15449383501897'
+  assign gift_8000_variant_id = '15449383567433'
 
   # Try to find product with tag "free-gift-5000" (only if not manually configured)
   if gift_5000_variant_id == null
