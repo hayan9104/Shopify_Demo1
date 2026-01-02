@@ -1,6 +1,6 @@
 import { Component } from '@theme/component';
 import { fetchConfig } from '@theme/utilities';
-import { ThemeEvents, CartUpdateEvent, CartAddEvent, DiscountUpdateEvent } from '@theme/events';
+import { ThemeEvents, CartUpdateEvent, CartAddEvent, DiscountUpdateEvent, QuantitySelectorUpdateEvent } from '@theme/events';
 
 /**
  * @typedef {Object} GiftConfig
@@ -56,6 +56,9 @@ class CartFreeGifts extends Component {
     // Listen to cart update events
     document.addEventListener(ThemeEvents.cartUpdate, this.#handleCartUpdate);
     
+    // Listen to quantity selector updates to prevent free gift quantity changes
+    document.addEventListener(ThemeEvents.quantitySelectorUpdate, this.#handleQuantityUpdate);
+    
     // Also check on initial load if cart has items
     this.#checkAndUpdateGifts();
   }
@@ -64,10 +67,74 @@ class CartFreeGifts extends Component {
     super.disconnectedCallback();
     
     document.removeEventListener(ThemeEvents.cartUpdate, this.#handleCartUpdate);
+    document.removeEventListener(ThemeEvents.quantitySelectorUpdate, this.#handleQuantityUpdate);
     
     if (this.#processingTimeout) {
       clearTimeout(this.#processingTimeout);
     }
+  }
+
+  /**
+   * Handles quantity selector updates to prevent free gift quantity changes
+   * @param {QuantitySelectorUpdateEvent} event - The quantity selector update event
+   */
+  #handleQuantityUpdate = async (event) => {
+    // Check if this is a free gift item trying to change quantity
+    const cart = await this.#fetchCart();
+    if (!cart || !cart.items) return;
+
+    const { cartLine: line, quantity } = /** @type {QuantitySelectorUpdateEvent} */ (event).detail || {};
+    if (!line || !quantity) return;
+
+    const cartItem = cart.items[line - 1];
+    if (!cartItem) return;
+
+    // Check if this item is a free gift
+    const isFreeGift = this.#isFreeGiftItem(cartItem);
+    
+    if (isFreeGift && quantity !== 1) {
+      // Prevent quantity change - reset to 1
+      event.preventDefault();
+      event.stopPropagation();
+      
+      // Reset quantity to 1
+      const cartItemsComponents = document.querySelectorAll('cart-items-component');
+      const sectionsToUpdate = new Set();
+      
+      cartItemsComponents.forEach((item) => {
+        if (item instanceof HTMLElement && item.dataset.sectionId) {
+          sectionsToUpdate.add(item.dataset.sectionId);
+        }
+      });
+
+      const body = JSON.stringify({
+        line: line,
+        quantity: 1,
+        sections: Array.from(sectionsToUpdate).join(','),
+        sections_url: window.location.pathname,
+      });
+
+      await fetch(Theme.routes.cart_change_url, {
+        ...fetchConfig('json', { body }),
+      });
+    }
+  };
+
+  /**
+   * Checks if a cart item is a free gift
+   * @param {CartItem} item - Cart item to check
+   * @returns {boolean} True if item is a free gift
+   */
+  #isFreeGiftItem(item) {
+    // Check if item has _auto_gift property
+    // Note: Properties are not directly available in cart.js response
+    // We'll check by variant ID instead
+    const freeGiftVariantIds = [
+      FREE_GIFT_CONFIG.gift5000.variantId,
+      FREE_GIFT_CONFIG.gift8000.variantId,
+    ];
+    
+    return freeGiftVariantIds.includes(item.variant_id.toString());
   }
 
   /**
