@@ -16,6 +16,11 @@
         {%- content_for 'block', id: 'cart-page-title', type: '_cart-title' %}
       </div>
 
+      {% comment %} Milestone Progress Bar {% endcomment %}
+      {% unless cart.empty? %}
+        {% render 'milestone-progress', cart_total: cart.total_price %}
+      {% endunless %}
+
       <div class="cart-page__items">
         {%- content_for 'block', id: 'cart-page-items', type: '_cart-products' %}
       </div>

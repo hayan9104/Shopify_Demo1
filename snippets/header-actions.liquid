@@ -173,6 +173,9 @@
                 aria-label="{{ 'accessibility.cart' | t }}"
                 style="--header-height: 60px;"
               >
+                {% comment %} Milestone Progress Bar {% endcomment %}
+                {% render 'milestone-progress', cart_total: cart.total_price %}
+                
                 <scroll-hint
                   class="cart-drawer__items"
                 >
