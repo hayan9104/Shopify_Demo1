@@ -31,11 +31,14 @@ const FREE_GIFT_CONFIG = {
  * @typedef {Object} CartItem
  * @property {number} variant_id - Variant ID
  * @property {number} [line] - Line number (1-based)
+ * @property {number} [final_line_price] - Final line price in cents
+ * @property {number} [line_price] - Line price in cents
  */
 
 /**
  * @typedef {Object} Cart
  * @property {number} total_price - Cart total in cents
+ * @property {number} [item_count] - Number of items in cart
  * @property {CartItem[]} items - Cart items array
  */
 
@@ -177,7 +180,25 @@ class CartFreeGifts extends Component {
         return;
       }
 
-      const cartTotal = /** @type {Cart} */ (cart).total_price || 0;
+      // If cart is empty, remove all free gifts and return
+      const cartItemCount = /** @type {Cart} */ (cart).item_count || (cart.items ? cart.items.length : 0);
+      if (!cart.items || cart.items.length === 0 || cartItemCount === 0) {
+        // Remove any remaining free gifts
+        await this.#removeAllFreeGifts(cart);
+        this.#isProcessing = false;
+        return;
+      }
+
+      // Calculate cart total excluding free gift items
+      const cartTotal = this.#calculateCartTotalExcludingFreeGifts(cart);
+
+      // Only proceed if there are paid items in the cart
+      if (cartTotal <= 0) {
+        // No paid items, remove all free gifts
+        await this.#removeAllFreeGifts(cart);
+        this.#isProcessing = false;
+        return;
+      }
 
       // Check and handle ₹8,000 gift (higher threshold first)
       await this.#handleGift(cart, FREE_GIFT_CONFIG.gift8000, cartTotal);
@@ -193,20 +214,59 @@ class CartFreeGifts extends Component {
   }
 
   /**
+   * Calculates cart total excluding free gift items
+   * @param {Cart} cart - Cart object
+   * @returns {number} Cart total in cents excluding free gifts
+   */
+  #calculateCartTotalExcludingFreeGifts(cart) {
+    if (!cart.items || !Array.isArray(cart.items)) {
+      return 0;
+    }
+
+    let total = 0;
+    for (const item of cart.items) {
+      const isFreeGift = this.#isFreeGiftItem(item);
+      if (!isFreeGift) {
+        // Add only non-free-gift items to total
+        total += item.final_line_price || item.line_price || 0;
+      }
+    }
+
+    return total;
+  }
+
+  /**
+   * Removes all free gifts from the cart
+   * @param {Cart} cart - Current cart object
+   */
+  async #removeAllFreeGifts(cart) {
+    if (!cart.items || !Array.isArray(cart.items)) {
+      return;
+    }
+
+    // Find all free gift items and remove them
+    for (const item of cart.items) {
+      if (this.#isFreeGiftItem(item)) {
+        await this.#removeGiftFromCart(cart, item.variant_id.toString());
+      }
+    }
+  }
+
+  /**
    * Handles adding or removing a specific gift based on cart total
    * @param {Cart} cart - Current cart object
    * @param {GiftConfig} giftConfig - Gift configuration
-   * @param {number} cartTotal - Current cart total in cents
+   * @param {number} cartTotal - Current cart total in cents (excluding free gifts)
    */
   async #handleGift(cart, giftConfig, cartTotal) {
     const isGiftInCart = this.#isGiftInCart(cart, giftConfig.variantId);
     const shouldHaveGift = cartTotal >= giftConfig.threshold;
 
     if (shouldHaveGift && !isGiftInCart) {
-      // Add gift
+      // Add gift only if cart total meets threshold
       await this.#addGiftToCart(giftConfig.variantId);
     } else if (!shouldHaveGift && isGiftInCart) {
-      // Remove gift (only if it was auto-added)
+      // Remove gift if cart total is below threshold
       await this.#removeGiftFromCart(cart, giftConfig.variantId);
     }
   }
