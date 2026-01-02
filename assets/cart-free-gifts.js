@@ -30,6 +30,31 @@ class CartFreeGiftsComponent extends Component {
     
     // Listen to cart update events with debouncing
     document.addEventListener(ThemeEvents.cartUpdate, this.#debouncedHandleCartUpdate);
+    
+    // Check cart on initial load (in case cart already has items)
+    this.#checkCartOnLoad();
+  }
+
+  /**
+   * Checks cart on initial page load
+   */
+  async #checkCartOnLoad() {
+    // Wait a bit for page to fully load
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    
+    // Fetch current cart and check
+    const cartData = await this.#fetchCartData();
+    if (cartData) {
+      // Create a synthetic event to trigger the handler
+      const syntheticEvent = {
+        detail: {
+          resource: cartData,
+          data: cartData,
+          sourceId: 'initial-load',
+        }
+      };
+      this.#handleCartUpdate(syntheticEvent);
+    }
   }
 
   disconnectedCallback() {
@@ -69,9 +94,17 @@ class CartFreeGiftsComponent extends Component {
     const gift8000VariantId = this.dataset.gift8000VariantId;
 
     if (!gift5000VariantId && !gift8000VariantId) {
-      // Silently return if no gifts configured (products might be POS-only)
+      console.warn('CartFreeGifts: No gift variant IDs configured. Check cart-free-gifts-config.liquid');
       return;
     }
+
+    // Debug logging
+    console.log('CartFreeGifts: Checking cart', {
+      cartTotal: cartData.total_price,
+      gift5000VariantId,
+      gift8000VariantId,
+      itemCount: cartItems.length
+    });
 
     const cartTotal = cartData.total_price || 0;
     const cartItems = cartData.items || [];
@@ -164,7 +197,13 @@ class CartFreeGiftsComponent extends Component {
       const data = await response.json();
 
       if (data.status) {
-        console.warn(`CartFreeGifts: Failed to add gift for ₹${threshold} threshold:`, data.message);
+        console.error(`CartFreeGifts: Failed to add gift for ₹${threshold} threshold:`, {
+          message: data.message,
+          description: data.description,
+          errors: data.errors,
+          variantId: variantId,
+          note: 'If product is POS-only, it may not be addable via storefront API. Check product settings in Shopify Admin.'
+        });
         return;
       }
 
@@ -176,7 +215,10 @@ class CartFreeGiftsComponent extends Component {
         })
       );
 
-      console.log(`CartFreeGifts: Added free gift for ₹${threshold} threshold`);
+      console.log(`CartFreeGifts: Successfully added free gift for ₹${threshold} threshold`, {
+        variantId: variantId,
+        cartTotal: data.total_price
+      });
     } catch (error) {
       if (error.name === 'AbortError') return;
       console.error(`CartFreeGifts: Error adding gift for ₹${threshold} threshold:`, error);
