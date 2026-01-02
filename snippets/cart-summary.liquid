@@ -221,10 +221,23 @@
   {% endif %}
 
   {%- liquid
+    # Calculate total excluding free gift items
+    assign free_gift_total = 0
+    for item in cart.items
+      for property in item.properties
+        if property.first == '_auto_gift' and property.last == 'true'
+          assign free_gift_total = free_gift_total | plus: item.final_line_price
+          break
+        endif
+      endfor
+    endfor
+    
+    assign adjusted_total = cart.total_price | minus: free_gift_total
+    
     if settings.currency_code_enabled_cart_total
-      assign total_price = cart.total_price | money_with_currency
+      assign total_price = adjusted_total | money_with_currency
     else
-      assign total_price = cart.total_price | money
+      assign total_price = adjusted_total | money
     endif
   -%}
 

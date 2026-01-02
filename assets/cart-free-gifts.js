@@ -1,6 +1,6 @@
 import { Component } from '@theme/component';
 import { fetchConfig } from '@theme/utilities';
-import { ThemeEvents, CartUpdateEvent, CartAddEvent } from '@theme/events';
+import { ThemeEvents, CartUpdateEvent, CartAddEvent, DiscountUpdateEvent } from '@theme/events';
 
 /**
  * @typedef {Object} GiftConfig
@@ -202,6 +202,11 @@ class CartFreeGifts extends Component {
         return;
       }
 
+      // Apply 100% discount to make the item free
+      // Note: This requires discount codes to be set up in Shopify Admin
+      // For now, we'll apply a discount code if available
+      await this.#applyFreeGiftDiscount(variantId);
+
       // Dispatch cart update event to refresh UI
       document.dispatchEvent(
         new CartAddEvent(data, 'cart-free-gifts', {
@@ -213,6 +218,80 @@ class CartFreeGifts extends Component {
     } catch (error) {
       console.error('Error adding free gift:', error);
     }
+  }
+
+  /**
+   * Applies a discount to make the free gift item actually free
+   * @param {string} variantId - Variant ID of the gift
+   */
+  async #applyFreeGiftDiscount(variantId) {
+    try {
+      // Get the cart to find the line item
+      const cart = await this.#fetchCart();
+      if (!cart || !cart.items) return;
+
+      const giftItem = cart.items.find(
+        (item) => item.variant_id.toString() === variantId.toString()
+      );
+
+      if (!giftItem) return;
+
+      // Try to apply a discount code if configured
+      // You need to create discount codes in Shopify Admin for free gifts
+      // For example: "FREEGIFT5000" and "FREEGIFT8000"
+      const discountCode = this.#getDiscountCodeForVariant(variantId);
+      
+      if (discountCode) {
+        // Get cart sections to update
+        const cartItemsComponents = document.querySelectorAll('cart-items-component');
+        const sectionsToUpdate = new Set();
+        
+        cartItemsComponents.forEach((item) => {
+          if (item instanceof HTMLElement && item.dataset.sectionId) {
+            sectionsToUpdate.add(item.dataset.sectionId);
+          }
+        });
+
+        // Apply discount code via cart update
+        const body = JSON.stringify({
+          discount: discountCode,
+          sections: Array.from(sectionsToUpdate).join(','),
+        });
+
+        const response = await fetch(Theme.routes.cart_update_url, {
+          ...fetchConfig('json', { body }),
+        });
+
+        const responseText = await response.text();
+        const discountData = JSON.parse(responseText);
+
+        // Dispatch discount update event to refresh UI
+        if (discountData && !discountData.errors) {
+          document.dispatchEvent(
+            new DiscountUpdateEvent(discountData, 'cart-free-gifts')
+          );
+        }
+      }
+    } catch (error) {
+      // Silently fail - discount codes may not be set up
+      console.log('Discount code not applied (may not be configured):', error);
+    }
+  }
+
+  /**
+   * Gets the discount code for a specific variant
+   * @param {string} variantId - Variant ID
+   * @returns {string|null} Discount code or null
+   */
+  #getDiscountCodeForVariant(variantId) {
+    // Map variant IDs to discount codes
+    // You need to create these discount codes in Shopify Admin
+    const discountCodeMap = {
+      '55378709479497': 'FREEGIFT5000', // ₹5,000 threshold
+      '55378884591689': 'FREEGIFT8000', // ₹8,000 threshold
+    };
+
+    return /** @type {Record<string, string>} */ (discountCodeMap)[variantId] || null;
   }
 
   /**
