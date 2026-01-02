@@ -1,0 +1,26 @@
+<div data-pf-editor-version="gen-2" class="sc-jeyqhx jfeuyL __pf __pf_fqP0GlnI" id="__pf"><div data-pf-type="Body" class="sc-djTQOc ejtSSi pf-8_"><div data-pf-type="Layout" class="sc-fatbYi kUsjkM pf-9_"><section data-section-id="pf-bb2a" data-category="Newsletter" data-name="Windsor" data-pf-type="FlexSection" class="sc-gKlDTn jrBPeP pf-29_ pf-color-scheme-1"><div class="sc-jRGIGG bMuAgN pf-flex-section"><div data-pf-type="FlexBlock" class="sc-fYXHKj TqaeK pf-26_"><h3 data-pf-type="Heading2" class="sc-cyRdfs qmQNK pf-11_ pf-heading-1-h3">Contact Us</h3><p class="sc-kUdmUV iejJTZ pf-13_ pf-text-1" data-pf-type="Paragraph3">We are here to help! If you have any questions about our products, please contact us and let us assist you in finding the perfect carpet for your home.</p><div data-pf-type="Form2" class="sc-cuHiig bgYgRc pf-19_">{% form "customer"   %} {% assign isErrorMessaageDisplayed = false %}{% for field in form.errors %}
+				{% if field == "form" %}<p class="sc-kgvFNj fLWima">Sorry, the submission can not be sent! Please try again later!</p>{{ form.errors.messages[field] }}
+				{% endif %}
+				{% if form.errors.messages[field] contains "can't be blank." %}<p class="sc-kgvFNj fLWima">Field can not be blank</p>{% else %}{% if isErrorMessaageDisplayed == false %}<p class="sc-kgvFNj fLWima">Sorry, the submission can not be sent! Please try again later!</p> {% assign isErrorMessaageDisplayed = true %}{% endif %}{% endif %}
+				{% endfor %}
+				{% if form.posted_successfully? %}<p class="sc-kgvFNj fLWima">Thank you for your submissions!</p>{% elsif form.posted_successfully? == false and form.email.size > 0 and form.errors == null  %}<p class="sc-kgvFNj fLWima">Sorry, the submission can not be sent! Please try again later!</p>{% endif %}<div data-pf-type="Form2.Field" class="sc-fnLFuh fOQLST pf-16_"><input name="contact[email]" type="email" placeholder="Your email" required="" data-pf-type="FormInput" id="field-a15a6ef1" class="sc-frWhkP eLxdmp pf-15_ pf-field-1" value=""/></div><button class="sc-cJbiFF glvfXg pf-18_ pf-button-1 pf-no-border" type="submit" data-pf-type="Form2.Button2">Contact Now!</button>{% endform %}</div><h3 data-pf-type="Heading2" class="sc-cyRdfs qmQNK pf-21_ pf-heading-1-h3">Follow us:</h3><div data-pf-type="FlexBlock" class="sc-fYXHKj TqaeK pf-25_"><i class="sc-edLa-Dd cYbUCf pf-22_ pf-icon-1 pfa-brands pfa-facebook-f" data-pf-type="Icon"></i><i class="sc-edLa-Dd cYbUCf pf-23_ pf-icon-1 pfa-brands pfa-instagram" data-pf-type="Icon"></i><i class="sc-edLa-Dd cYbUCf pf-24_ pf-icon-1 pfa-brands pfa-twitter" data-pf-type="Icon"></i></div></div><div data-pf-type="FlexBlock" class="sc-fYXHKj TqaeK pf-28_"><img src="https://cdn.shopify.com/s/files/1/2170/1117/files/il_fullxfull_1_4_49fb36ae-daaa-4677-aff3-e371f180b982_485x.png?v=1690878235" srcSet="https://cdn.shopify.com/s/files/1/2170/1117/files/il_fullxfull_1_4_49fb36ae-daaa-4677-aff3-e371f180b982.png?v=1690878235 1536w" width="1010" height="1092" sizes="(min-width: 1536px) 1536px, (min-width: 1024px) 1280px, (min-width: 640px) 768px, calc(100vw/3)" loading="lazy" data-pf-type="Image3" class="sc-gplwNw cwEcYX pf-27_ pf-image-1"/></div></div></section></div></div></div><script>
+    !function(){
+      window.__pagefly_page_setting__ = {"pageTitle":"Untitled","pageType":"home","pageId":"dcf5534e-8c1d-4870-9904-c315bb453bbe","lazyLoad":true,"forceByPassGoogleLightHouse":false,"imageLazyLoad":true,"useThemeJQ":false,"sectionRootType":"FlexSection","trackingIDs":[]};
+      window.__pagefly_setting__&&(window.__pagefly_setting2__=window.__pagefly_setting__),window.__pagefly_setting__={"baseURL":"https://apps.pagefly.io","analyticsURL":"https://analytics.pagefly.io","isBackend":false,"cdnURL":"https://cdn.pagefly.io","pageflyVersion":"4.25.7","shopDomain":"uanqmj-y1.myshopify.com","elementData":{},"shopifyProxyPath":"/apps/pagefly"},window.__pagefly_setting2__&&(window.__pagefly_setting__=function _(d,b){let c={...d||{}};for(let a of Object.keys(b))b[a]instanceof Object&&(Array.isArray(b[a])&&c[a]?Object.assign(b[a],[...b[a],...c[a]]):Object.assign(b[a],_(c[a],b[a])));return Object.assign(c||{},b),c}(__pagefly_setting2__,__pagefly_setting__),delete window.__pagefly_setting2__),window.__pagefly_setting__.moneyFormat={{shop.money_format|json}}}();
+    </script>
+{% schema %}
+{
+  "name": "PageFly Home Page",
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "For full configuration, [visit PageFly Editor](https://uanqmj-y1.myshopify.com/admin/apps/pagefly/editor?id=dcf5534e-8c1d-4870-9904-c315bb453bbe&type=home)."
+    }
+  ],
+  "blocks": [
+    {
+      "type": "@app"
+    }
+  ]
+}
+{% endschema %}

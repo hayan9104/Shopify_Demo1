@@ -565,12 +565,17 @@
       "settings": {
         "heading": "Lookbook"
       }
+    },
+    "pagefly-home": {
+      "type": "pagefly-home",
+      "settings": {}
     }
   },
   "order": [
     "hero_jVaWmY",
     "slideshow_CyC7dW",
     "product_list_fa6P9H",
-    "lookbook_Fy83r7"
+    "lookbook_Fy83r7",
+    "pagefly-home"
   ]
 }
