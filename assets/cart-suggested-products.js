@@ -84,6 +84,14 @@ class CartSuggestedProducts extends Component {
         }
       });
 
+      const headerActionsSection = document.querySelector('header-actions');
+      if (headerActionsSection && headerActionsSection.id) {
+        const sectionId = headerActionsSection.id.replace('shopify-section-', '');
+        if (sectionId) {
+          sectionsToUpdate.add(sectionId);
+        }
+      }
+
       if (sectionsToUpdate.size > 0) {
         formData.append('sections', Array.from(sectionsToUpdate).join(','));
       }
@@ -111,6 +119,16 @@ class CartSuggestedProducts extends Component {
           sections: data.sections,
         })
       );
+
+      if (data.sections) {
+        const cartItemsComponent = this.closest('cart-items-component');
+        if (cartItemsComponent && cartItemsComponent.dataset.sectionId) {
+          const sectionId = cartItemsComponent.dataset.sectionId;
+          if (data.sections[sectionId]) {
+            await sectionRenderer.renderSection(sectionId, { cache: false });
+          }
+        }
+      }
     } catch (error) {
       console.error('Error adding product to cart:', error);
       button.disabled = false;

@@ -573,6 +573,12 @@
         </table>
       </div>
     </form>
+    
+    {% unless cart.empty? %}
+      <cart-suggested-products>
+        {% render 'cart-suggested-products' %}
+      </cart-suggested-products>
+    {% endunless %}
   {%- endif -%}
 </div>
 
