@@ -113,6 +113,11 @@ class CartFreeGifts extends Component {
   /** @param {CartUpdateEvent | CartAddEvent} event */
   #handleCartUpdate = async (event) => {
     if (event.detail?.sourceId === 'cart-free-gifts' || event.detail?.data?.source === 'cart-free-gifts') {
+      const cart = event.detail?.resource;
+      if (cart) {
+        const cartTotal = this.#calculateCartTotalExcludingFreeGifts(cart);
+        this.#updateMilestones(cartTotal);
+      }
       return;
     }
 
@@ -120,8 +125,13 @@ class CartFreeGifts extends Component {
       clearTimeout(this.#processingTimeout);
     }
 
-    this.#processingTimeout = setTimeout(() => {
-      this.#checkAndUpdateGifts();
+    this.#processingTimeout = setTimeout(async () => {
+      await this.#checkAndUpdateGifts();
+      const cart = await this.#fetchCart();
+      if (cart) {
+        const cartTotal = this.#calculateCartTotalExcludingFreeGifts(cart);
+        this.#updateMilestones(cartTotal);
+      }
     }, 500);
   };
 
@@ -166,11 +176,77 @@ class CartFreeGifts extends Component {
       await this.#handleGift(cart, FREE_GIFT_CONFIG.gift8000, cartTotal);
       await this.#handleGift(cart, FREE_GIFT_CONFIG.gift5000, cartTotal);
 
+      this.#updateMilestones(cartTotal);
+
     } catch (error) {
       console.error('Error managing free gifts:', error);
     } finally {
       this.#isProcessing = false;
     }
+  }
+
+  /** @param {number} cartTotal */
+  #updateMilestones(cartTotal) {
+    const milestoneElements = document.querySelectorAll('.cart-milestones');
+    
+    milestoneElements.forEach((milestoneEl) => {
+      if (!(milestoneEl instanceof HTMLElement)) return;
+      
+      const milestone5000 = 500000;
+      const milestone8000 = 800000;
+      
+      const milestone5000Reached = cartTotal >= milestone5000;
+      const milestone8000Reached = cartTotal >= milestone8000;
+      
+      let progressPercentage = 0;
+      if (cartTotal >= milestone8000) {
+        progressPercentage = 100;
+      } else if (cartTotal >= milestone5000) {
+        progressPercentage = 50;
+      } else {
+        progressPercentage = Math.min((cartTotal / milestone5000) * 50, 50);
+      }
+      
+      const progressFill = milestoneEl.querySelector('.cart-milestones__progress-fill');
+      if (progressFill instanceof HTMLElement) {
+        progressFill.style.width = `${progressPercentage}%`;
+      }
+      
+      const item5000 = milestoneEl.querySelector('.cart-milestones__item:first-child');
+      const item8000 = milestoneEl.querySelector('.cart-milestones__item:last-child');
+      
+      if (item5000) {
+        if (milestone5000Reached) {
+          item5000.classList.add('cart-milestones__item--reached');
+          if (!item5000.querySelector('.cart-milestones__item-checkmark')) {
+            const checkmark = document.createElement('span');
+            checkmark.className = 'cart-milestones__item-checkmark';
+            checkmark.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>';
+            item5000.appendChild(checkmark);
+          }
+        } else {
+          item5000.classList.remove('cart-milestones__item--reached');
+          const checkmark = item5000.querySelector('.cart-milestones__item-checkmark');
+          if (checkmark) checkmark.remove();
+        }
+      }
+      
+      if (item8000) {
+        if (milestone8000Reached) {
+          item8000.classList.add('cart-milestones__item--reached');
+          if (!item8000.querySelector('.cart-milestones__item-checkmark')) {
+            const checkmark = document.createElement('span');
+            checkmark.className = 'cart-milestones__item-checkmark';
+            checkmark.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>';
+            item8000.appendChild(checkmark);
+          }
+        } else {
+          item8000.classList.remove('cart-milestones__item--reached');
+          const checkmark = item8000.querySelector('.cart-milestones__item-checkmark');
+          if (checkmark) checkmark.remove();
+        }
+      }
+    });
   }
 
   /** @param {Cart} cart */
@@ -303,6 +379,12 @@ class CartFreeGifts extends Component {
         })
       );
 
+      const updatedCart = await this.#fetchCart();
+      if (updatedCart) {
+        const cartTotal = this.#calculateCartTotalExcludingFreeGifts(updatedCart);
+        this.#updateMilestones(cartTotal);
+      }
+
     } catch (error) {
       console.error('Error adding free gift:', error);
     }
@@ -417,6 +499,12 @@ class CartFreeGifts extends Component {
           sections: data.sections,
         })
       );
+
+      const updatedCart = await this.#fetchCart();
+      if (updatedCart) {
+        const cartTotal = this.#calculateCartTotalExcludingFreeGifts(updatedCart);
+        this.#updateMilestones(cartTotal);
+      }
 
     } catch (error) {
       console.error('Error removing free gift:', error);
