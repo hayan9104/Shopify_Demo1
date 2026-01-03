@@ -13,9 +13,13 @@
   
   assign milestone_5000 = 500000
   assign milestone_8000 = 800000
+  assign milestone_11000 = 1100000
+  assign milestone_15000 = 1500000
   
   assign milestone_5000_reached = false
   assign milestone_8000_reached = false
+  assign milestone_11000_reached = false
+  assign milestone_15000_reached = false
   
   if cart_total_excluding_gifts >= milestone_5000
     assign milestone_5000_reached = true
@@ -25,21 +29,45 @@
     assign milestone_8000_reached = true
   endif
   
+  if cart_total_excluding_gifts >= milestone_11000
+    assign milestone_11000_reached = true
+  endif
+  
+  if cart_total_excluding_gifts >= milestone_15000
+    assign milestone_15000_reached = true
+  endif
+  
   assign progress_percentage = 0
-  if cart_total_excluding_gifts >= milestone_8000
+  if cart_total_excluding_gifts >= milestone_15000
     assign progress_percentage = 100
-  elsif cart_total_excluding_gifts >= milestone_5000
-    assign amount_after_5000 = cart_total_excluding_gifts | minus: milestone_5000
-    assign remaining_to_8000 = milestone_8000 | minus: milestone_5000
-    assign progress_after_5000 = amount_after_5000 | times: 50 | divided_by: remaining_to_8000
-    assign progress_percentage = 50 | plus: progress_after_5000
+  elsif cart_total_excluding_gifts >= milestone_11000
+    assign amount_after_11000 = cart_total_excluding_gifts | minus: milestone_11000
+    assign remaining_to_15000 = milestone_15000 | minus: milestone_11000
+    assign progress_after_11000 = amount_after_11000 | times: 25 | divided_by: remaining_to_15000
+    assign progress_percentage = 75 | plus: progress_after_11000
     if progress_percentage > 100
       assign progress_percentage = 100
     endif
-  else
-    assign progress_percentage = cart_total_excluding_gifts | times: 50 | divided_by: milestone_5000
+  elsif cart_total_excluding_gifts >= milestone_8000
+    assign amount_after_8000 = cart_total_excluding_gifts | minus: milestone_8000
+    assign remaining_to_11000 = milestone_11000 | minus: milestone_8000
+    assign progress_after_8000 = amount_after_8000 | times: 25 | divided_by: remaining_to_11000
+    assign progress_percentage = 50 | plus: progress_after_8000
+    if progress_percentage > 75
+      assign progress_percentage = 75
+    endif
+  elsif cart_total_excluding_gifts >= milestone_5000
+    assign amount_after_5000 = cart_total_excluding_gifts | minus: milestone_5000
+    assign remaining_to_8000 = milestone_8000 | minus: milestone_5000
+    assign progress_after_5000 = amount_after_5000 | times: 25 | divided_by: remaining_to_8000
+    assign progress_percentage = 25 | plus: progress_after_5000
     if progress_percentage > 50
       assign progress_percentage = 50
+    endif
+  else
+    assign progress_percentage = cart_total_excluding_gifts | times: 25 | divided_by: milestone_5000
+    if progress_percentage > 25
+      assign progress_percentage = 25
     endif
   endif
 %}
@@ -59,12 +87,12 @@
           <div class="cart-milestones__milestone-amount">₹5,000</div>
           <div class="cart-milestones__milestone-icon">
             {% if milestone_5000_reached %}
-              <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <svg width="35" height="35" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M20 2L24.5 8.5L32 10L28 16L28.5 24L20 21L11.5 24L12 16L8 10L15.5 8.5L20 2Z" fill="#22c55e" stroke="#16a34a" stroke-width="1"/>
                 <path d="M15 20L18 23L25 16" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
               </svg>
             {% else %}
-              <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <svg width="35" height="35" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M20 2L24.5 8.5L32 10L28 16L28.5 24L20 21L11.5 24L12 16L8 10L15.5 8.5L20 2Z" fill="#d1fae5" stroke="#a7f3d0" stroke-width="1"/>
               </svg>
             {% endif %}
@@ -76,17 +104,51 @@
           <div class="cart-milestones__milestone-amount">₹8,000</div>
           <div class="cart-milestones__milestone-icon">
             {% if milestone_8000_reached %}
-              <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <svg width="35" height="35" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M20 2L24.5 8.5L32 10L28 16L28.5 24L20 21L11.5 24L12 16L8 10L15.5 8.5L20 2Z" fill="#22c55e" stroke="#16a34a" stroke-width="1"/>
                 <path d="M15 20L18 23L25 16" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
               </svg>
             {% else %}
-              <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <svg width="35" height="35" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M20 2L24.5 8.5L32 10L28 16L28.5 24L20 21L11.5 24L12 16L8 10L15.5 8.5L20 2Z" fill="#d1fae5" stroke="#a7f3d0" stroke-width="1"/>
               </svg>
             {% endif %}
           </div>
           <div class="cart-milestones__milestone-gift">Free Gift 2</div>
+        </div>
+        
+        <div class="cart-milestones__milestone {% if milestone_11000_reached %}cart-milestones__milestone--reached{% endif %}">
+          <div class="cart-milestones__milestone-amount">₹11,000</div>
+          <div class="cart-milestones__milestone-icon">
+            {% if milestone_11000_reached %}
+              <svg width="35" height="35" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M20 2L24.5 8.5L32 10L28 16L28.5 24L20 21L11.5 24L12 16L8 10L15.5 8.5L20 2Z" fill="#22c55e" stroke="#16a34a" stroke-width="1"/>
+                <path d="M15 20L18 23L25 16" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            {% else %}
+              <svg width="35" height="35" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M20 2L24.5 8.5L32 10L28 16L28.5 24L20 21L11.5 24L12 16L8 10L15.5 8.5L20 2Z" fill="#d1fae5" stroke="#a7f3d0" stroke-width="1"/>
+              </svg>
+            {% endif %}
+          </div>
+          <div class="cart-milestones__milestone-gift">Free Gift 3</div>
+        </div>
+        
+        <div class="cart-milestones__milestone {% if milestone_15000_reached %}cart-milestones__milestone--reached{% endif %}">
+          <div class="cart-milestones__milestone-amount">₹15,000</div>
+          <div class="cart-milestones__milestone-icon">
+            {% if milestone_15000_reached %}
+              <svg width="35" height="35" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M20 2L24.5 8.5L32 10L28 16L28.5 24L20 21L11.5 24L12 16L8 10L15.5 8.5L20 2Z" fill="#22c55e" stroke="#16a34a" stroke-width="1"/>
+                <path d="M15 20L18 23L25 16" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            {% else %}
+              <svg width="35" height="35" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M20 2L24.5 8.5L32 10L28 16L28.5 24L20 21L11.5 24L12 16L8 10L15.5 8.5L20 2Z" fill="#d1fae5" stroke="#a7f3d0" stroke-width="1"/>
+              </svg>
+            {% endif %}
+          </div>
+          <div class="cart-milestones__milestone-gift">Free Gift 4</div>
         </div>
       </div>
     </div>
@@ -98,7 +160,7 @@
     margin-bottom: var(--margin-lg);
     margin-top: 0;
     padding: var(--padding-lg);
-    padding-right: calc(var(--padding-lg) + 40px);
+    padding-right: calc(var(--padding-lg) + 50px);
     background-color: #f0fdf4;
     border-radius: var(--style-border-radius-inputs, 12px);
     overflow: visible;
@@ -153,17 +215,25 @@
     transform: translate(-50%, -50%);
   }
 
-  .cart-milestones__milestone:first-child {
+  .cart-milestones__milestone:nth-child(1) {
+    left: 25%;
+  }
+
+  .cart-milestones__milestone:nth-child(2) {
     left: 50%;
   }
 
-  .cart-milestones__milestone:last-child {
+  .cart-milestones__milestone:nth-child(3) {
+    left: 75%;
+  }
+
+  .cart-milestones__milestone:nth-child(4) {
     left: 100%;
   }
 
   .cart-milestones__milestone-amount {
     font-weight: var(--font-weight-bold, 700);
-    font-size: var(--font-size-sm, 0.875rem);
+    font-size: 0.7rem;
     color: var(--color-foreground, #000);
     text-align: center;
     white-space: nowrap;
@@ -173,12 +243,12 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 50px;
-    height: 50px;
+    width: 40px;
+    height: 40px;
     flex-shrink: 0;
     position: relative;
     z-index: 3;
-    margin-top: -3px;
+    margin-top: -8px;
   }
 
   .cart-milestones__milestone-icon svg {
@@ -192,7 +262,7 @@
   }
 
   .cart-milestones__milestone-gift {
-    font-size: var(--font-size-xs, 0.75rem);
+    font-size: 0.65rem;
     color: var(--color-foreground, #000);
     text-align: center;
     font-weight: var(--font-weight-medium, 500);
@@ -212,7 +282,7 @@
   @media screen and (max-width: 749px) {
     .cart-milestones {
       padding: var(--padding-md);
-      padding-right: calc(var(--padding-md) + 40px);
+      padding-right: calc(var(--padding-md) + 50px);
     }
 
     .cart-milestones__items {

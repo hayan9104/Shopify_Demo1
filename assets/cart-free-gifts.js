@@ -32,6 +32,16 @@ const FREE_GIFT_CONFIG = {
     threshold: 800000,
     tag: 'free-gift-8000',
   },
+  gift11000: {
+    variantId: '55378900000000',
+    threshold: 1100000,
+    tag: 'free-gift-11000',
+  },
+  gift15000: {
+    variantId: '55379000000000',
+    threshold: 1500000,
+    tag: 'free-gift-15000',
+  },
 };
 
 class CartFreeGifts extends Component {
@@ -105,6 +115,8 @@ class CartFreeGifts extends Component {
     const freeGiftVariantIds = [
       FREE_GIFT_CONFIG.gift5000.variantId,
       FREE_GIFT_CONFIG.gift8000.variantId,
+      FREE_GIFT_CONFIG.gift11000.variantId,
+      FREE_GIFT_CONFIG.gift15000.variantId,
     ];
     
     return freeGiftVariantIds.includes(item.variant_id.toString());
@@ -173,6 +185,8 @@ class CartFreeGifts extends Component {
         return;
       }
 
+      await this.#handleGift(cart, FREE_GIFT_CONFIG.gift15000, cartTotal);
+      await this.#handleGift(cart, FREE_GIFT_CONFIG.gift11000, cartTotal);
       await this.#handleGift(cart, FREE_GIFT_CONFIG.gift8000, cartTotal);
       await this.#handleGift(cart, FREE_GIFT_CONFIG.gift5000, cartTotal);
 
@@ -194,25 +208,45 @@ class CartFreeGifts extends Component {
       
       const milestone5000 = 500000;
       const milestone8000 = 800000;
+      const milestone11000 = 1100000;
+      const milestone15000 = 1500000;
       
       const milestone5000Reached = cartTotal >= milestone5000;
       const milestone8000Reached = cartTotal >= milestone8000;
+      const milestone11000Reached = cartTotal >= milestone11000;
+      const milestone15000Reached = cartTotal >= milestone15000;
       
       let progressPercentage = 0;
-      if (cartTotal >= milestone8000) {
+      if (cartTotal >= milestone15000) {
         progressPercentage = 100;
-      } else if (cartTotal >= milestone5000) {
-        const amountAfter5000 = cartTotal - milestone5000;
-        const remainingTo8000 = milestone8000 - milestone5000;
-        const progressAfter5000 = (amountAfter5000 / remainingTo8000) * 50;
-        progressPercentage = 50 + progressAfter5000;
+      } else if (cartTotal >= milestone11000) {
+        const amountAfter11000 = cartTotal - milestone11000;
+        const remainingTo15000 = milestone15000 - milestone11000;
+        const progressAfter11000 = (amountAfter11000 / remainingTo15000) * 25;
+        progressPercentage = 75 + progressAfter11000;
         if (progressPercentage > 100) {
           progressPercentage = 100;
         }
-      } else {
-        progressPercentage = (cartTotal / milestone5000) * 50;
+      } else if (cartTotal >= milestone8000) {
+        const amountAfter8000 = cartTotal - milestone8000;
+        const remainingTo11000 = milestone11000 - milestone8000;
+        const progressAfter8000 = (amountAfter8000 / remainingTo11000) * 25;
+        progressPercentage = 50 + progressAfter8000;
+        if (progressPercentage > 75) {
+          progressPercentage = 75;
+        }
+      } else if (cartTotal >= milestone5000) {
+        const amountAfter5000 = cartTotal - milestone5000;
+        const remainingTo8000 = milestone8000 - milestone5000;
+        const progressAfter5000 = (amountAfter5000 / remainingTo8000) * 25;
+        progressPercentage = 25 + progressAfter5000;
         if (progressPercentage > 50) {
           progressPercentage = 50;
+        }
+      } else {
+        progressPercentage = (cartTotal / milestone5000) * 25;
+        if (progressPercentage > 25) {
+          progressPercentage = 25;
         }
       }
       
@@ -221,22 +255,43 @@ class CartFreeGifts extends Component {
         progressFill.style.width = `${progressPercentage}%`;
       }
       
-      const milestone5000El = milestoneEl.querySelector('.cart-milestones__milestone:first-child');
-      const milestone8000El = milestoneEl.querySelector('.cart-milestones__milestone:last-child');
-      
-      if (milestone5000El) {
-        if (milestone5000Reached) {
-          milestone5000El.classList.add('cart-milestones__milestone--reached');
-        } else {
-          milestone5000El.classList.remove('cart-milestones__milestone--reached');
+      const milestones = milestoneEl.querySelectorAll('.cart-milestones__milestone');
+      if (milestones.length >= 4) {
+        const milestone0 = milestones[0];
+        const milestone1 = milestones[1];
+        const milestone2 = milestones[2];
+        const milestone3 = milestones[3];
+        
+        if (milestone0) {
+          if (milestone5000Reached) {
+            milestone0.classList.add('cart-milestones__milestone--reached');
+          } else {
+            milestone0.classList.remove('cart-milestones__milestone--reached');
+          }
         }
-      }
-      
-      if (milestone8000El) {
-        if (milestone8000Reached) {
-          milestone8000El.classList.add('cart-milestones__milestone--reached');
-        } else {
-          milestone8000El.classList.remove('cart-milestones__milestone--reached');
+        
+        if (milestone1) {
+          if (milestone8000Reached) {
+            milestone1.classList.add('cart-milestones__milestone--reached');
+          } else {
+            milestone1.classList.remove('cart-milestones__milestone--reached');
+          }
+        }
+        
+        if (milestone2) {
+          if (milestone11000Reached) {
+            milestone2.classList.add('cart-milestones__milestone--reached');
+          } else {
+            milestone2.classList.remove('cart-milestones__milestone--reached');
+          }
+        }
+        
+        if (milestone3) {
+          if (milestone15000Reached) {
+            milestone3.classList.add('cart-milestones__milestone--reached');
+          } else {
+            milestone3.classList.remove('cart-milestones__milestone--reached');
+          }
         }
       }
     });
