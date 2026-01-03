@@ -1,30 +1,44 @@
 {% comment %}
   Cart Suggested Products Section
   Displays cross-sell products based on collection-based rules
+  
+  Collections expected:
+  - "Whey Protein" (handle: whey-protein)
+  - "Essentials" (handle: essentials)
+  - "Pre-workout" (handle: pre-workout)
+  
+  Products must have tag: "best-offer"
 {% endcomment %}
 
 {% liquid
-  assign suggested_collections = blank
-  assign cart_collections = blank
+  assign cart_collection_handles = blank
   
   for item in cart.items
-    for collection in item.product.collections
-      assign cart_collections = cart_collections | append: collection.handle | append: ','
-    endfor
+    if item.product and item.product.collections
+      for collection in item.product.collections
+        assign cart_collection_handles = cart_collection_handles | append: collection.handle | append: ','
+      endfor
+    endif
   endfor
   
-  assign cart_collections_array = cart_collections | split: ','
+  assign cart_collections_array = cart_collection_handles | split: ','
   
   assign has_whey_protein = false
   assign has_pre_workout = false
   assign has_essentials = false
   
   for collection_handle in cart_collections_array
-    if collection_handle == 'whey-protein'
+    if collection_handle == blank
+      continue
+    endif
+    assign handle_lower = collection_handle | downcase | strip
+    assign handle_normalized = handle_lower | replace: ' ', '-' | replace: '_', '-'
+    
+    if handle_normalized == 'whey-protein' or handle_lower contains 'whey' and handle_lower contains 'protein'
       assign has_whey_protein = true
-    elsif collection_handle == 'pre-workout'
+    elsif handle_normalized == 'pre-workout' or handle_lower contains 'pre' and handle_lower contains 'workout'
       assign has_pre_workout = true
-    elsif collection_handle == 'essentials'
+    elsif handle_normalized == 'essentials' or handle_lower == 'essentials'
       assign has_essentials = true
     endif
   endfor
@@ -32,7 +46,8 @@
   assign collections_to_show = blank
   
   if has_whey_protein
-    assign collections_to_show = collections_to_show | append: 'essentials,pre-workout,'
+    assign collections_to_show = collections_to_show | append: 'essentials,'
+    assign collections_to_show = collections_to_show | append: 'pre-workout,'
   endif
   
   if has_pre_workout
@@ -47,96 +62,93 @@
   
   assign cart_product_ids = blank
   for item in cart.items
-    assign cart_product_ids = cart_product_ids | append: item.product.id | append: ','
+    if item.product and item.product.id
+      assign cart_product_ids = cart_product_ids | append: item.product.id | append: ','
+    endif
   endfor
   assign cart_product_ids_array = cart_product_ids | split: ','
   
-  assign suggested_products = blank
   assign product_count = 0
   assign max_products = 6
-  
-  for collection_handle in collections_array
-    if collection_handle == blank
-      continue
-    endif
-    
-    assign target_collection = collections[collection_handle]
-    if target_collection == blank
-      continue
-    endif
-    
-    for product in target_collection.products limit: 20
-      if product_count >= max_products
-        break
-      endif
-      
-      assign is_in_cart = false
-      for cart_product_id in cart_product_ids_array
-        if cart_product_id == product.id
-          assign is_in_cart = true
-          break
-        endif
-      endfor
-      
-      if is_in_cart
-        continue
-      endif
-      
-      assign has_best_offer_tag = false
-      for tag in product.tags
-        if tag == 'best-offer'
-          assign has_best_offer_tag = true
-          break
-        endif
-      endfor
-      
-      if has_best_offer_tag
-        assign product_already_added = false
-        assign suggested_products_string = suggested_products | split: '|'
-        for existing_product_string in suggested_products_string
-          if existing_product_string contains product.id
-            assign product_already_added = true
-            break
-          endif
-        endfor
-        
-        unless product_already_added
-          assign suggested_products = suggested_products | append: product.id | append: '|'
-          assign product_count = product_count | plus: 1
-        endunless
-      endif
-    endfor
-    
-    if product_count >= max_products
-      break
-    endif
-  endfor
+  assign seen_product_ids = blank
 %}
 
 <div class="cart-suggested-products" data-cart-suggested-products>
-  {% if suggested_products != blank %}
-    {% assign suggested_product_ids = suggested_products | split: '|' %}
-    
-    <div class="cart-suggested-products__header">
-      <h3 class="cart-suggested-products__title h5">{{ 'content.suggested_products' | t | default: 'Suggested Products' }}</h3>
-    </div>
-    
-    <div class="cart-suggested-products__list" data-suggested-products-list>
-      {% for product_id_string in suggested_product_ids %}
-        {% if product_id_string == blank %}
+  {% if collections_array.size > 0 %}
+    {% capture suggested_products_html %}
+      {% for collection_handle in collections_array %}
+        {% if collection_handle == blank %}
           {% continue %}
         {% endif %}
         
-        {% assign product_id = product_id_string | plus: 0 %}
-        {% assign suggested_product = all_products[product_id] %}
+        {% if product_count >= max_products %}
+          {% break %}
+        {% endif %}
         
-        {% if suggested_product == blank %}
+        {% assign target_collection = collections[collection_handle] %}
+        {% if target_collection == blank or target_collection.products == blank %}
           {% continue %}
         {% endif %}
         
-        {% render 'cart-suggested-product-item', product: suggested_product %}
+        {% for product in target_collection.products limit: 50 %}
+          {% if product_count >= max_products %}
+            {% break %}
+          {% endif %}
+          
+          {% assign product_id_string = product.id | append: '' %}
+          {% assign is_in_cart = false %}
+          {% for cart_product_id in cart_product_ids_array %}
+            {% if cart_product_id == product_id_string %}
+              {% assign is_in_cart = true %}
+              {% break %}
+            {% endif %}
+          {% endfor %}
+          
+          {% if is_in_cart %}
+            {% continue %}
+          {% endif %}
+          
+          {% assign has_best_offer_tag = false %}
+          {% if product.tags %}
+            {% for tag in product.tags %}
+              {% assign tag_lower = tag | downcase %}
+              {% if tag_lower == 'best-offer' or tag_lower == 'best offer' or tag_lower == 'best_offer' %}
+                {% assign has_best_offer_tag = true %}
+                {% break %}
+              {% endif %}
+            {% endfor %}
+          {% endif %}
+          
+          {% if has_best_offer_tag %}
+            {% assign product_id_check = product.id | append: '' %}
+            {% assign already_seen = false %}
+            {% assign seen_ids_array = seen_product_ids | split: '|' %}
+            {% for seen_id in seen_ids_array %}
+              {% if seen_id == product_id_check %}
+                {% assign already_seen = true %}
+                {% break %}
+              {% endif %}
+            {% endfor %}
+            
+            {% unless already_seen %}
+              {% render 'cart-suggested-product-item', product: product %}
+              {% assign seen_product_ids = seen_product_ids | append: product.id | append: '|' %}
+              {% assign product_count = product_count | plus: 1 %}
+            {% endunless %}
+          {% endif %}
+        {% endfor %}
       {% endfor %}
-    </div>
+    {% endcapture %}
+    
+    {% if product_count > 0 %}
+      <div class="cart-suggested-products__header">
+        <h3 class="cart-suggested-products__title h5">Suggested Products</h3>
+      </div>
+      
+      <div class="cart-suggested-products__list" data-suggested-products-list>
+        {{ suggested_products_html }}
+      </div>
+    {% endif %}
   {% endif %}
 </div>
 
