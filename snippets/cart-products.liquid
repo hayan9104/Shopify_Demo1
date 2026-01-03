@@ -357,10 +357,13 @@
                 >
                   {%- liquid
                     assign is_free_gift_item = false
+                    assign is_from_suggested = false
                     for property in item.properties
                       if property.first == '_auto_gift' and property.last == 'true'
                         assign is_free_gift_item = true
                         break
+                      elsif property.first == '_from_suggested' and property.last == 'true'
+                        assign is_from_suggested = true
                       endif
                     endfor
                     
@@ -377,6 +380,9 @@
                   {% if is_free_gift_item %}
                     <text-component value="FREE!" style="font-weight: bold; color: var(--color-success, #22c55e);">FREE!</text-component>
                     <s style="margin-left: 0.5rem; color: var(--color-foreground-rgb, 0.5);">{{ item.original_line_price | money }}</s>
+                  {% elsif is_from_suggested and item.original_line_price > item.final_line_price %}
+                    <text-component value="{{ price | strip_html }}" style="font-weight: bold; color: var(--color-success, #22c55e);">{{ price }}</text-component>
+                    <s style="margin-left: 0.5rem; color: rgb(var(--color-foreground-rgb) / 0.5);">{{ item.original_line_price | money }}</s>
                   {% else %}
                     <text-component value="{{ price | strip_html }}">{{ price }}</text-component>
                   {% endif %}
