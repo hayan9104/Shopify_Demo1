@@ -18,11 +18,16 @@
   assign product_available = product.available
   assign product_price = variant.price
   assign compare_at_price = variant.compare_at_price
+  
+  assign discount_percentage = 5
+  assign discount_amount = product_price | times: discount_percentage | divided_by: 100
+  assign discounted_price = product_price | minus: discount_amount
 %}
 
 <div class="cart-suggested-product" data-product-id="{{ product.id }}" data-variant-id="{{ variant.id }}">
   <div class="cart-suggested-product__image">
     {% if product_image != blank %}
+      <div class="cart-suggested-product__badge">5% OFF</div>
       <img
         src="{{ product_image | image_url: width: 90 }}"
         alt="{{ product_image.alt | escape }}"
@@ -45,12 +50,8 @@
     </h4>
     
     <div class="cart-suggested-product__price">
-      {% if compare_at_price > product_price %}
-        <span class="cart-suggested-product__price-compare">{{ compare_at_price | money }}</span>
-        <span class="cart-suggested-product__price-current">{{ product_price | money }}</span>
-      {% else %}
-        <span class="cart-suggested-product__price-current">{{ product_price | money }}</span>
-      {% endif %}
+      <span class="cart-suggested-product__price-original">{{ product_price | money }}</span>
+      <span class="cart-suggested-product__price-current">{{ discounted_price | money }}</span>
     </div>
     
     <button

@@ -1,6 +1,6 @@
 import { Component } from '@theme/component';
 import { fetchConfig } from '@theme/utilities';
-import { ThemeEvents, CartUpdateEvent, CartAddEvent } from '@theme/events';
+import { ThemeEvents, CartUpdateEvent, CartAddEvent, DiscountUpdateEvent } from '@theme/events';
 import { sectionRenderer } from '@theme/section-renderer';
 
 /**
@@ -120,6 +120,8 @@ class CartSuggestedProducts extends Component {
         })
       );
 
+      await this.#applySuggestedProductDiscount();
+
       if (data.sections) {
         const cartItemsComponent = this.closest('cart-items-component');
         if (cartItemsComponent && cartItemsComponent.dataset.sectionId) {
@@ -137,6 +139,46 @@ class CartSuggestedProducts extends Component {
       this.#isProcessing = false;
     }
   };
+
+  /**
+   * Applies 5% discount code for suggested products
+   */
+  async #applySuggestedProductDiscount() {
+    try {
+      const discountCode = 'SUGGESTED5';
+      
+      const cartItemsComponents = document.querySelectorAll('cart-items-component');
+      const sectionsToUpdate = new Set();
+      
+      cartItemsComponents.forEach((item) => {
+        if (item instanceof HTMLElement && item.dataset.sectionId) {
+          sectionsToUpdate.add(item.dataset.sectionId);
+        }
+      });
+
+      if (sectionsToUpdate.size === 0) return;
+
+      const body = JSON.stringify({
+        discount: discountCode,
+        sections: Array.from(sectionsToUpdate).join(','),
+      });
+
+      const response = await fetch(Theme.routes.cart_update_url, {
+        ...fetchConfig('json', { body }),
+      });
+
+      const responseText = await response.text();
+      const discountData = JSON.parse(responseText);
+
+      if (discountData && !discountData.errors) {
+        document.dispatchEvent(
+          new DiscountUpdateEvent(discountData, 'cart-suggested-products')
+        );
+      }
+    } catch (error) {
+      console.log('Discount code not applied (may not be configured):', error);
+    }
+  }
 
 }
 
