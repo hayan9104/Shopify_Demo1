@@ -24,11 +24,11 @@
   <div class="cart-suggested-product__image">
     {% if product_image != blank %}
       <img
-        src="{{ product_image | image_url: width: 120 }}"
+        src="{{ product_image | image_url: width: 90 }}"
         alt="{{ product_image.alt | escape }}"
         loading="lazy"
-        width="120"
-        height="120"
+        width="90"
+        height="90"
       >
     {% else %}
       <div class="cart-suggested-product__placeholder">
