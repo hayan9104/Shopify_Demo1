@@ -113,7 +113,7 @@ class CartFreeGifts extends Component {
   /** @param {CartUpdateEvent | CartAddEvent} event */
   #handleCartUpdate = async (event) => {
     if (event.detail?.sourceId === 'cart-free-gifts' || event.detail?.data?.source === 'cart-free-gifts') {
-      const cart = event.detail?.resource;
+      const cart = /** @type {Cart | undefined} */ (event.detail?.resource);
       if (cart) {
         const cartTotal = this.#calculateCartTotalExcludingFreeGifts(cart);
         this.#updateMilestones(cartTotal);
@@ -212,38 +212,22 @@ class CartFreeGifts extends Component {
         progressFill.style.width = `${progressPercentage}%`;
       }
       
-      const item5000 = milestoneEl.querySelector('.cart-milestones__item:first-child');
-      const item8000 = milestoneEl.querySelector('.cart-milestones__item:last-child');
+      const milestone5000El = milestoneEl.querySelector('.cart-milestones__milestone:first-child');
+      const milestone8000El = milestoneEl.querySelector('.cart-milestones__milestone:last-child');
       
-      if (item5000) {
+      if (milestone5000El) {
         if (milestone5000Reached) {
-          item5000.classList.add('cart-milestones__item--reached');
-          if (!item5000.querySelector('.cart-milestones__item-checkmark')) {
-            const checkmark = document.createElement('span');
-            checkmark.className = 'cart-milestones__item-checkmark';
-            checkmark.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>';
-            item5000.appendChild(checkmark);
-          }
+          milestone5000El.classList.add('cart-milestones__milestone--reached');
         } else {
-          item5000.classList.remove('cart-milestones__item--reached');
-          const checkmark = item5000.querySelector('.cart-milestones__item-checkmark');
-          if (checkmark) checkmark.remove();
+          milestone5000El.classList.remove('cart-milestones__milestone--reached');
         }
       }
       
-      if (item8000) {
+      if (milestone8000El) {
         if (milestone8000Reached) {
-          item8000.classList.add('cart-milestones__item--reached');
-          if (!item8000.querySelector('.cart-milestones__item-checkmark')) {
-            const checkmark = document.createElement('span');
-            checkmark.className = 'cart-milestones__item-checkmark';
-            checkmark.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>';
-            item8000.appendChild(checkmark);
-          }
+          milestone8000El.classList.add('cart-milestones__milestone--reached');
         } else {
-          item8000.classList.remove('cart-milestones__item--reached');
-          const checkmark = item8000.querySelector('.cart-milestones__item-checkmark');
-          if (checkmark) checkmark.remove();
+          milestone8000El.classList.remove('cart-milestones__milestone--reached');
         }
       }
     });

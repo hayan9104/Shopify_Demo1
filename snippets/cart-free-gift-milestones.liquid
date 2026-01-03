@@ -36,40 +36,50 @@
 %}
 
 <div class="cart-milestones" data-cart-total="{{ cart_total_excluding_gifts }}">
-  <div class="cart-milestones__progress-bar">
-    <div 
-      class="cart-milestones__progress-fill" 
-      style="width: {{ progress_percentage }}%"
-    ></div>
-  </div>
-  
-  <div class="cart-milestones__list">
-    <div class="cart-milestones__item {% if milestone_5000_reached %}cart-milestones__item--reached{% endif %}">
-      <div class="cart-milestones__item-content">
-        <span class="cart-milestones__item-amount">₹5,000</span>
-        <span class="cart-milestones__item-gift">Free Gift 1</span>
+  <div class="cart-milestones__container">
+    <div class="cart-milestones__progress-wrapper">
+      <div class="cart-milestones__progress-bar">
+        <div 
+          class="cart-milestones__progress-fill" 
+          style="width: {{ progress_percentage }}%"
+        ></div>
       </div>
-      {% if milestone_5000_reached %}
-        <span class="cart-milestones__item-checkmark">
-          <svg width="16" height="16" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M16.6667 5L7.50004 14.1667L3.33337 10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-        </span>
-      {% endif %}
-    </div>
-    
-    <div class="cart-milestones__item {% if milestone_8000_reached %}cart-milestones__item--reached{% endif %}">
-      <div class="cart-milestones__item-content">
-        <span class="cart-milestones__item-amount">₹8,000</span>
-        <span class="cart-milestones__item-gift">Free Gift 2</span>
+      
+      <div class="cart-milestones__items">
+        <div class="cart-milestones__milestone {% if milestone_5000_reached %}cart-milestones__milestone--reached{% endif %}">
+          <div class="cart-milestones__milestone-amount">₹5,000</div>
+          <div class="cart-milestones__milestone-icon">
+            {% if milestone_5000_reached %}
+              <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M20 2L24.5 8.5L32 10L28 16L28.5 24L20 21L11.5 24L12 16L8 10L15.5 8.5L20 2Z" fill="#22c55e" stroke="#16a34a" stroke-width="1"/>
+                <path d="M15 20L18 23L25 16" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            {% else %}
+              <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M20 2L24.5 8.5L32 10L28 16L28.5 24L20 21L11.5 24L12 16L8 10L15.5 8.5L20 2Z" fill="#d1fae5" stroke="#a7f3d0" stroke-width="1"/>
+              </svg>
+            {% endif %}
+          </div>
+          <div class="cart-milestones__milestone-gift">Free Gift 1</div>
+        </div>
+        
+        <div class="cart-milestones__milestone {% if milestone_8000_reached %}cart-milestones__milestone--reached{% endif %}">
+          <div class="cart-milestones__milestone-amount">₹8,000</div>
+          <div class="cart-milestones__milestone-icon">
+            {% if milestone_8000_reached %}
+              <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M20 2L24.5 8.5L32 10L28 16L28.5 24L20 21L11.5 24L12 16L8 10L15.5 8.5L20 2Z" fill="#22c55e" stroke="#16a34a" stroke-width="1"/>
+                <path d="M15 20L18 23L25 16" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            {% else %}
+              <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M20 2L24.5 8.5L32 10L28 16L28.5 24L20 21L11.5 24L12 16L8 10L15.5 8.5L20 2Z" fill="#d1fae5" stroke="#a7f3d0" stroke-width="1"/>
+              </svg>
+            {% endif %}
+          </div>
+          <div class="cart-milestones__milestone-gift">Free Gift 2</div>
+        </div>
       </div>
-      {% if milestone_8000_reached %}
-        <span class="cart-milestones__item-checkmark">
-          <svg width="16" height="16" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M16.6667 5L7.50004 14.1667L3.33337 10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-        </span>
-      {% endif %}
     </div>
   </div>
 </div>
@@ -78,108 +88,143 @@
   .cart-milestones {
     margin-bottom: var(--margin-lg);
     margin-top: 0;
-    padding: var(--padding-md);
-    background-color: var(--color-background-secondary, rgb(var(--color-background-rgb) / 0.5));
-    border-radius: var(--style-border-radius-inputs, 8px);
+    padding: var(--padding-lg);
+    background-color: #f0fdf4;
+    border-radius: var(--style-border-radius-inputs, 12px);
   }
   
   .cart-items__wrapper > .cart-milestones:first-child {
     margin-top: 0;
   }
 
-  .cart-milestones__progress-bar {
+  .cart-milestones__container {
     width: 100%;
-    height: 8px;
-    background-color: var(--color-border, #e5e5e5);
-    border-radius: 4px;
-    overflow: hidden;
-    margin-bottom: var(--margin-md);
+  }
+
+  .cart-milestones__progress-wrapper {
     position: relative;
+    width: 100%;
+  }
+
+  .cart-milestones__progress-bar {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    height: 6px;
+    background-color: #d1fae5;
+    border-radius: 3px;
+    transform: translateY(-50%);
+    z-index: 1;
   }
 
   .cart-milestones__progress-fill {
     height: 100%;
     background: linear-gradient(90deg, #22c55e 0%, #16a34a 100%);
-    border-radius: 4px;
-    transition: width 0.3s ease;
+    border-radius: 3px;
+    transition: width 0.5s ease;
   }
 
-  .cart-milestones__list {
+  .cart-milestones__items {
+    position: relative;
     display: flex;
     justify-content: space-between;
-    gap: var(--gap-sm);
-    flex-wrap: wrap;
-  }
-
-  .cart-milestones__item {
-    flex: 1;
-    min-width: 120px;
-    display: flex;
     align-items: center;
-    justify-content: space-between;
-    padding: var(--padding-sm);
-    border-radius: var(--style-border-radius-inputs, 8px);
-    background-color: var(--color-background);
-    border: 2px solid var(--color-border, #e5e5e5);
-    transition: all 0.3s ease;
+    gap: var(--gap-md);
+    z-index: 2;
+    padding: var(--padding-sm) 0;
   }
 
-  .cart-milestones__item--reached {
-    border-color: #22c55e;
-    background-color: rgb(34 197 94 / 0.1);
-  }
-
-  .cart-milestones__item-content {
+  .cart-milestones__milestone {
+    flex: 1;
     display: flex;
     flex-direction: column;
-    gap: var(--gap-3xs);
+    align-items: center;
+    gap: var(--gap-xs);
+    min-width: 0;
   }
 
-  .cart-milestones__item-amount {
-    font-weight: var(--font-weight-bold, 600);
+  .cart-milestones__milestone-amount {
+    font-weight: var(--font-weight-bold, 700);
     font-size: var(--font-size-sm, 0.875rem);
-    color: var(--color-foreground);
+    color: var(--color-foreground, #000);
+    text-align: center;
+    white-space: nowrap;
   }
 
-  .cart-milestones__item-gift {
-    font-size: var(--font-size-xs, 0.75rem);
-    color: rgb(var(--color-foreground-rgb) / 0.7);
-  }
-
-  .cart-milestones__item--reached .cart-milestones__item-amount {
-    color: #22c55e;
-  }
-
-  .cart-milestones__item-checkmark {
+  .cart-milestones__milestone-icon {
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 24px;
-    height: 24px;
-    border-radius: 50%;
-    background-color: #22c55e;
-    color: white;
+    width: 50px;
+    height: 50px;
     flex-shrink: 0;
+    position: relative;
+    z-index: 3;
   }
 
-  .cart-milestones__item-checkmark .svg-wrapper {
-    width: 16px;
-    height: 16px;
-  }
-
-  .cart-milestones__item-checkmark svg {
+  .cart-milestones__milestone-icon svg {
     width: 100%;
     height: 100%;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+  }
+
+  .cart-milestones__milestone--reached .cart-milestones__milestone-icon svg {
+    filter: drop-shadow(0 2px 6px rgba(34, 197, 94, 0.3));
+  }
+
+  .cart-milestones__milestone-gift {
+    font-size: var(--font-size-xs, 0.75rem);
+    color: var(--color-foreground, #000);
+    text-align: center;
+    font-weight: var(--font-weight-medium, 500);
+    white-space: nowrap;
+  }
+
+  .cart-milestones__milestone--reached .cart-milestones__milestone-amount {
+    color: #22c55e;
+  }
+
+  .cart-milestones__milestone--reached .cart-milestones__milestone-gift {
+    color: #16a34a;
+    font-weight: var(--font-weight-semibold, 600);
   }
 
   @media screen and (max-width: 749px) {
-    .cart-milestones__list {
-      flex-direction: column;
+    .cart-milestones {
+      padding: var(--padding-md);
     }
 
-    .cart-milestones__item {
-      min-width: 100%;
+    .cart-milestones__items {
+      gap: var(--gap-sm);
+    }
+
+    .cart-milestones__milestone-icon {
+      width: 40px;
+      height: 40px;
+    }
+
+    .cart-milestones__milestone-amount {
+      font-size: var(--font-size-xs, 0.75rem);
+    }
+
+    .cart-milestones__milestone-gift {
+      font-size: 0.7rem;
+    }
+  }
+
+  @media screen and (max-width: 480px) {
+    .cart-milestones__items {
+      flex-direction: column;
+      gap: var(--gap-md);
+    }
+
+    .cart-milestones__progress-bar {
+      display: none;
+    }
+
+    .cart-milestones__milestone {
+      width: 100%;
     }
   }
 {% endstylesheet %}
-
