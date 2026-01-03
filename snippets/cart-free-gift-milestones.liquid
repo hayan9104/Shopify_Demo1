@@ -98,8 +98,10 @@
     margin-bottom: var(--margin-lg);
     margin-top: 0;
     padding: var(--padding-lg);
+    padding-right: calc(var(--padding-lg) + 40px);
     background-color: #f0fdf4;
     border-radius: var(--style-border-radius-inputs, 12px);
+    overflow: visible;
   }
   
   .cart-items__wrapper > .cart-milestones:first-child {
@@ -156,7 +158,7 @@
   }
 
   .cart-milestones__milestone:last-child {
-    left: 100%;
+    left: calc(100% - 20px);
   }
 
   .cart-milestones__milestone-amount {
@@ -210,6 +212,7 @@
   @media screen and (max-width: 749px) {
     .cart-milestones {
       padding: var(--padding-md);
+      padding-right: calc(var(--padding-md) + 40px);
     }
 
     .cart-milestones__items {
