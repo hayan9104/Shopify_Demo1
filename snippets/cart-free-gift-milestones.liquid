@@ -29,24 +29,33 @@
   if cart_total_excluding_gifts >= milestone_8000
     assign progress_percentage = 100
   elsif cart_total_excluding_gifts >= milestone_5000
-    assign progress_percentage = 50
+    assign amount_after_5000 = cart_total_excluding_gifts | minus: milestone_5000
+    assign remaining_to_8000 = milestone_8000 | minus: milestone_5000
+    assign progress_after_5000 = amount_after_5000 | times: 50 | divided_by: remaining_to_8000
+    assign progress_percentage = 50 | plus: progress_after_5000
+    if progress_percentage > 100
+      assign progress_percentage = 100
+    endif
   else
-    assign progress_percentage = 0
+    assign progress_percentage = cart_total_excluding_gifts | times: 50 | divided_by: milestone_5000
+    if progress_percentage > 50
+      assign progress_percentage = 50
+    endif
   endif
 %}
 
 <div class="cart-milestones" data-cart-total="{{ cart_total_excluding_gifts }}">
   <div class="cart-milestones__container">
     <div class="cart-milestones__progress-wrapper">
-      <div class="cart-milestones__progress-bar">
+      <div class="cart-milestones__progress-track">
         <div 
           class="cart-milestones__progress-fill" 
           style="width: {{ progress_percentage }}%"
         ></div>
       </div>
       
-      <div class="cart-milestones__items">
-        <div class="cart-milestones__milestone {% if milestone_5000_reached %}cart-milestones__milestone--reached{% endif %}">
+      <div class="cart-milestones__milestones">
+        <div class="cart-milestones__milestone {% if milestone_5000_reached %}cart-milestones__milestone--reached{% endif %}" style="left: 15%;">
           <div class="cart-milestones__milestone-amount">₹5,000</div>
           <div class="cart-milestones__milestone-icon">
             {% if milestone_5000_reached %}
@@ -63,7 +72,7 @@
           <div class="cart-milestones__milestone-gift">Free Gift 1</div>
         </div>
         
-        <div class="cart-milestones__milestone {% if milestone_8000_reached %}cart-milestones__milestone--reached{% endif %}">
+        <div class="cart-milestones__milestone {% if milestone_8000_reached %}cart-milestones__milestone--reached{% endif %}" style="left: 100%;">
           <div class="cart-milestones__milestone-amount">₹8,000</div>
           <div class="cart-milestones__milestone-icon">
             {% if milestone_8000_reached %}
@@ -104,31 +113,44 @@
   .cart-milestones__progress-wrapper {
     position: relative;
     width: 100%;
+    padding: 20px 0 40px;
   }
 
-  .cart-milestones__progress-bar {
+  .cart-milestones__progress-track {
     position: absolute;
     top: 50%;
     left: 0;
     right: 0;
-    height: 6px;
+    height: 8px;
     background-color: #d1fae5;
-    border-radius: 3px;
+    border-radius: 4px;
     transform: translateY(-50%);
     z-index: 1;
+    overflow: hidden;
   }
 
   .cart-milestones__progress-fill {
     height: 100%;
     background: linear-gradient(90deg, #22c55e 0%, #16a34a 100%);
-    border-radius: 3px;
-    transition: width 0.5s ease;
+    border-radius: 4px;
+    transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
   }
 
-  .cart-milestones__items {
+  .cart-milestones__progress-fill::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 20px;
+    height: 100%;
+    background: linear-gradient(90deg, transparent 0%, rgba(34, 197, 94, 0.3) 100%);
+  }
+
+  .cart-milestones__milestones {
     position: relative;
     width: 100%;
-    height: 80px;
+    height: 100%;
     z-index: 2;
   }
 
@@ -137,17 +159,9 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: var(--gap-xs);
+    gap: 8px;
     transform: translateX(-50%);
-  }
-
-  .cart-milestones__milestone:first-child {
-    left: 15%;
-  }
-
-  .cart-milestones__milestone:last-child {
-    left: 100%;
-    transform: translateX(-50%);
+    transition: all 0.3s ease;
   }
 
   .cart-milestones__milestone-amount {
@@ -156,6 +170,7 @@
     color: var(--color-foreground, #000);
     text-align: center;
     white-space: nowrap;
+    transition: color 0.3s ease;
   }
 
   .cart-milestones__milestone-icon {
@@ -167,16 +182,22 @@
     flex-shrink: 0;
     position: relative;
     z-index: 3;
+    transition: transform 0.3s ease;
   }
 
   .cart-milestones__milestone-icon svg {
     width: 100%;
     height: 100%;
     filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+    transition: filter 0.3s ease;
+  }
+
+  .cart-milestones__milestone--reached .cart-milestones__milestone-icon {
+    transform: scale(1.1);
   }
 
   .cart-milestones__milestone--reached .cart-milestones__milestone-icon svg {
-    filter: drop-shadow(0 2px 6px rgba(34, 197, 94, 0.3));
+    filter: drop-shadow(0 4px 8px rgba(34, 197, 94, 0.4));
   }
 
   .cart-milestones__milestone-gift {
@@ -185,6 +206,7 @@
     text-align: center;
     font-weight: var(--font-weight-medium, 500);
     white-space: nowrap;
+    transition: color 0.3s ease, font-weight 0.3s ease;
   }
 
   .cart-milestones__milestone--reached .cart-milestones__milestone-amount {
@@ -201,8 +223,8 @@
       padding: var(--padding-md);
     }
 
-    .cart-milestones__items {
-      gap: var(--gap-sm);
+    .cart-milestones__progress-wrapper {
+      padding: 15px 0 35px;
     }
 
     .cart-milestones__milestone-icon {
@@ -220,17 +242,20 @@
   }
 
   @media screen and (max-width: 480px) {
-    .cart-milestones__items {
-      flex-direction: column;
-      gap: var(--gap-md);
-    }
-
-    .cart-milestones__progress-bar {
-      display: none;
+    .cart-milestones__progress-wrapper {
+      padding: 10px 0 30px;
     }
 
     .cart-milestones__milestone {
-      width: 100%;
+      gap: 6px;
+    }
+
+    .cart-milestones__milestone:first-child {
+      left: 12% !important;
+    }
+
+    .cart-milestones__milestone:last-child {
+      left: 100% !important;
     }
   }
 {% endstylesheet %}
