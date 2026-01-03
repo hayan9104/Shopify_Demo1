@@ -1,0 +1,142 @@
+{% comment %}
+  Cart Suggested Products Section
+  Displays cross-sell products based on collection-based rules
+{% endcomment %}
+
+{% liquid
+  assign suggested_collections = blank
+  assign cart_collections = blank
+  
+  for item in cart.items
+    for collection in item.product.collections
+      assign cart_collections = cart_collections | append: collection.handle | append: ','
+    endfor
+  endfor
+  
+  assign cart_collections_array = cart_collections | split: ','
+  
+  assign has_whey_protein = false
+  assign has_pre_workout = false
+  assign has_essentials = false
+  
+  for collection_handle in cart_collections_array
+    if collection_handle == 'whey-protein'
+      assign has_whey_protein = true
+    elsif collection_handle == 'pre-workout'
+      assign has_pre_workout = true
+    elsif collection_handle == 'essentials'
+      assign has_essentials = true
+    endif
+  endfor
+  
+  assign collections_to_show = blank
+  
+  if has_whey_protein
+    assign collections_to_show = collections_to_show | append: 'essentials,pre-workout,'
+  endif
+  
+  if has_pre_workout
+    assign collections_to_show = collections_to_show | append: 'whey-protein,'
+  endif
+  
+  if has_essentials
+    assign collections_to_show = collections_to_show | append: 'whey-protein,'
+  endif
+  
+  assign collections_array = collections_to_show | split: ',' | uniq
+  
+  assign cart_product_ids = blank
+  for item in cart.items
+    assign cart_product_ids = cart_product_ids | append: item.product.id | append: ','
+  endfor
+  assign cart_product_ids_array = cart_product_ids | split: ','
+  
+  assign suggested_products = blank
+  assign product_count = 0
+  assign max_products = 6
+  
+  for collection_handle in collections_array
+    if collection_handle == blank
+      continue
+    endif
+    
+    assign target_collection = collections[collection_handle]
+    if target_collection == blank
+      continue
+    endif
+    
+    for product in target_collection.products limit: 20
+      if product_count >= max_products
+        break
+      endif
+      
+      assign is_in_cart = false
+      for cart_product_id in cart_product_ids_array
+        if cart_product_id == product.id
+          assign is_in_cart = true
+          break
+        endif
+      endfor
+      
+      if is_in_cart
+        continue
+      endif
+      
+      assign has_best_offer_tag = false
+      for tag in product.tags
+        if tag == 'best-offer'
+          assign has_best_offer_tag = true
+          break
+        endif
+      endfor
+      
+      if has_best_offer_tag
+        assign product_already_added = false
+        assign suggested_products_string = suggested_products | split: '|'
+        for existing_product_string in suggested_products_string
+          if existing_product_string contains product.id
+            assign product_already_added = true
+            break
+          endif
+        endfor
+        
+        unless product_already_added
+          assign suggested_products = suggested_products | append: product.id | append: '|'
+          assign product_count = product_count | plus: 1
+        endunless
+      endif
+    endfor
+    
+    if product_count >= max_products
+      break
+    endif
+  endfor
+%}
+
+<div class="cart-suggested-products" data-cart-suggested-products>
+  {% if suggested_products != blank %}
+    {% assign suggested_product_ids = suggested_products | split: '|' %}
+    
+    <div class="cart-suggested-products__header">
+      <h3 class="cart-suggested-products__title h5">{{ 'content.suggested_products' | t | default: 'Suggested Products' }}</h3>
+    </div>
+    
+    <div class="cart-suggested-products__list" data-suggested-products-list>
+      {% for product_id_string in suggested_product_ids %}
+        {% if product_id_string == blank %}
+          {% continue %}
+        {% endif %}
+        
+        {% assign product_id = product_id_string | plus: 0 %}
+        {% assign suggested_product = all_products[product_id] %}
+        
+        {% if suggested_product == blank %}
+          {% continue %}
+        {% endif %}
+        
+        {% render 'cart-suggested-product-item', product: suggested_product %}
+      {% endfor %}
+    </div>
+  {% endif %}
+</div>
+

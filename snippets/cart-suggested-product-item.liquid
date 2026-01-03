@@ -1,0 +1,73 @@
+{% comment %}
+  Individual Suggested Product Item
+  Renders a single product card for the suggested products section
+{% endcomment %}
+
+{% liquid
+  assign product = product | default: null
+  if product == blank
+    assign product = closest.product
+  endif
+  
+  assign variant = product.selected_or_first_available_variant
+  assign product_image = variant.featured_image
+  if product_image == blank
+    assign product_image = product.featured_media.preview_image
+  endif
+  
+  assign product_available = product.available
+  assign product_price = variant.price
+  assign compare_at_price = variant.compare_at_price
+%}
+
+<div class="cart-suggested-product" data-product-id="{{ product.id }}" data-variant-id="{{ variant.id }}">
+  <div class="cart-suggested-product__image">
+    {% if product_image != blank %}
+      <img
+        src="{{ product_image | image_url: width: 200 }}"
+        alt="{{ product_image.alt | escape }}"
+        loading="lazy"
+        width="200"
+        height="200"
+      >
+    {% else %}
+      <div class="cart-suggested-product__placeholder">
+        {{ 'image' | placeholder_svg_tag: 'placeholder' }}
+      </div>
+    {% endif %}
+  </div>
+  
+  <div class="cart-suggested-product__content">
+    <h4 class="cart-suggested-product__title">
+      <a href="{{ product.url }}" class="cart-suggested-product__link">
+        {{ product.title }}
+      </a>
+    </h4>
+    
+    <div class="cart-suggested-product__price">
+      {% if compare_at_price > product_price %}
+        <span class="cart-suggested-product__price-compare">{{ compare_at_price | money }}</span>
+        <span class="cart-suggested-product__price-current">{{ product_price | money }}</span>
+      {% else %}
+        <span class="cart-suggested-product__price-current">{{ product_price | money }}</span>
+      {% endif %}
+    </div>
+    
+    <button
+      type="button"
+      class="button button--primary cart-suggested-product__add-button"
+      data-add-to-cart
+      data-variant-id="{{ variant.id }}"
+      data-product-id="{{ product.id }}"
+      {% unless product_available %}disabled{% endunless %}
+      aria-label="{{ 'actions.add_to_cart' | t | default: 'Add to cart' }}"
+    >
+      {% if product_available %}
+        {{ 'actions.add' | t | default: '+ ADD' }}
+      {% else %}
+        {{ 'products.product.sold_out' | t | default: 'Sold Out' }}
+      {% endif %}
+    </button>
+  </div>
+</div>
+
