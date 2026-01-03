@@ -2,52 +2,38 @@ import { Component } from '@theme/component';
 import { fetchConfig } from '@theme/utilities';
 import { ThemeEvents, CartUpdateEvent, CartAddEvent, DiscountUpdateEvent, QuantitySelectorUpdateEvent } from '@theme/events';
 
-/**
- * @typedef {Object} GiftConfig
- * @property {string} variantId - Variant ID of the gift
- * @property {number} threshold - Cart total threshold in cents
- * @property {string} tag - Product tag for the gift
+/** @typedef {Object} GiftConfig
+ * @property {string} variantId
+ * @property {number} threshold
+ * @property {string} tag
  */
 
-/**
- * Free Gift Configuration
- * Variant IDs for free gifts at different thresholds
- * @type {{gift5000: GiftConfig, gift8000: GiftConfig}}
+/** @typedef {Object} CartItem
+ * @property {number} variant_id
+ * @property {number} [line]
+ * @property {number} [final_line_price]
+ * @property {number} [line_price]
  */
+
+/** @typedef {Object} Cart
+ * @property {number} total_price
+ * @property {number} [item_count]
+ * @property {CartItem[]} items
+ */
+
 const FREE_GIFT_CONFIG = {
   gift5000: {
-    variantId: '55378709479497', // ₹5,000 threshold gift
-    threshold: 500000, // ₹5,000 in cents (₹5,000 * 100)
+    variantId: '55378709479497',
+    threshold: 500000,
     tag: 'free-gift-5000',
   },
   gift8000: {
-    variantId: '55378884591689', // ₹8,000 threshold gift
-    threshold: 800000, // ₹8,000 in cents (₹8,000 * 100)
+    variantId: '55378884591689',
+    threshold: 800000,
     tag: 'free-gift-8000',
   },
 };
 
-/**
- * @typedef {Object} CartItem
- * @property {number} variant_id - Variant ID
- * @property {number} [line] - Line number (1-based)
- * @property {number} [final_line_price] - Final line price in cents
- * @property {number} [line_price] - Line price in cents
- */
-
-/**
- * @typedef {Object} Cart
- * @property {number} total_price - Cart total in cents
- * @property {number} [item_count] - Number of items in cart
- * @property {CartItem[]} items - Cart items array
- */
-
-/**
- * A custom element that manages automatic free gift addition based on cart total.
- * 
- * Listens to cart update events and automatically adds/removes free gifts
- * when cart total crosses defined thresholds.
- */
 class CartFreeGifts extends Component {
   #isProcessing = false;
   /** @type {ReturnType<typeof setTimeout> | null} */
@@ -56,13 +42,9 @@ class CartFreeGifts extends Component {
   connectedCallback() {
     super.connectedCallback();
     
-    // Listen to cart update events
     document.addEventListener(ThemeEvents.cartUpdate, this.#handleCartUpdate);
-    
-    // Listen to quantity selector updates to prevent free gift quantity changes
     document.addEventListener(ThemeEvents.quantitySelectorUpdate, this.#handleQuantityUpdate);
     
-    // Check on initial load after a short delay to ensure cart is loaded
     setTimeout(() => {
       this.#checkAndUpdateGifts();
     }, 100);
@@ -79,12 +61,8 @@ class CartFreeGifts extends Component {
     }
   }
 
-  /**
-   * Handles quantity selector updates to prevent free gift quantity changes
-   * @param {QuantitySelectorUpdateEvent} event - The quantity selector update event
-   */
+  /** @param {QuantitySelectorUpdateEvent} event */
   #handleQuantityUpdate = async (event) => {
-    // Check if this is a free gift item trying to change quantity
     const cart = await this.#fetchCart();
     if (!cart || !cart.items) return;
 
@@ -94,15 +72,12 @@ class CartFreeGifts extends Component {
     const cartItem = cart.items[line - 1];
     if (!cartItem) return;
 
-    // Check if this item is a free gift
     const isFreeGift = this.#isFreeGiftItem(cartItem);
     
     if (isFreeGift && quantity !== 1) {
-      // Prevent quantity change - reset to 1
       event.preventDefault();
       event.stopPropagation();
       
-      // Reset quantity to 1
       const cartItemsComponents = document.querySelectorAll('cart-items-component');
       const sectionsToUpdate = new Set();
       
@@ -125,15 +100,8 @@ class CartFreeGifts extends Component {
     }
   };
 
-  /**
-   * Checks if a cart item is a free gift
-   * @param {CartItem} item - Cart item to check
-   * @returns {boolean} True if item is a free gift
-   */
+  /** @param {CartItem} item */
   #isFreeGiftItem(item) {
-    // Check if item has _auto_gift property
-    // Note: Properties are not directly available in cart.js response
-    // We'll check by variant ID instead
     const freeGiftVariantIds = [
       FREE_GIFT_CONFIG.gift5000.variantId,
       FREE_GIFT_CONFIG.gift8000.variantId,
@@ -142,31 +110,22 @@ class CartFreeGifts extends Component {
     return freeGiftVariantIds.includes(item.variant_id.toString());
   }
 
-  /**
-   * Handles cart update events
-   * @param {CartUpdateEvent | CartAddEvent} event - The cart update event
-   */
+  /** @param {CartUpdateEvent | CartAddEvent} event */
   #handleCartUpdate = async (event) => {
-    // Skip if this event came from this component to avoid infinite loops
     if (event.detail?.sourceId === 'cart-free-gifts' || event.detail?.data?.source === 'cart-free-gifts') {
       return;
     }
 
-    // Debounce to avoid multiple rapid updates
     if (this.#processingTimeout) {
       clearTimeout(this.#processingTimeout);
     }
 
     this.#processingTimeout = setTimeout(() => {
       this.#checkAndUpdateGifts();
-    }, 500); // Wait 500ms after cart update
+    }, 500);
   };
 
-  /**
-   * Checks cart total and adds/removes free gifts accordingly
-   */
   async #checkAndUpdateGifts() {
-    // Prevent concurrent processing
     if (this.#isProcessing) {
       return;
     }
@@ -174,7 +133,6 @@ class CartFreeGifts extends Component {
     this.#isProcessing = true;
 
     try {
-      // Fetch current cart state
       const cart = await this.#fetchCart();
       
       if (!cart) {
@@ -182,40 +140,30 @@ class CartFreeGifts extends Component {
         return;
       }
 
-      // If cart is empty, remove all free gifts and return
       const cartItemCount = /** @type {Cart} */ (cart).item_count || (cart.items ? cart.items.length : 0);
       if (!cart.items || cart.items.length === 0 || cartItemCount === 0) {
-        // Remove any remaining free gifts
         await this.#removeAllFreeGifts(cart);
         this.#isProcessing = false;
         return;
       }
 
-      // Check if cart has any paid (non-free-gift) items
       const hasPaidItems = this.#hasPaidItems(cart);
       
       if (!hasPaidItems) {
-        // No paid items in cart, remove all free gifts
         await this.#removeAllFreeGifts(cart);
         this.#isProcessing = false;
         return;
       }
 
-      // Calculate cart total excluding free gift items
       const cartTotal = this.#calculateCartTotalExcludingFreeGifts(cart);
 
-      // Double check: if total is 0 or negative, remove all free gifts
       if (cartTotal <= 0) {
         await this.#removeAllFreeGifts(cart);
         this.#isProcessing = false;
         return;
       }
 
-      // Only add gifts if cart total meets thresholds
-      // Check and handle ₹8,000 gift (higher threshold first)
       await this.#handleGift(cart, FREE_GIFT_CONFIG.gift8000, cartTotal);
-      
-      // Check and handle ₹5,000 gift
       await this.#handleGift(cart, FREE_GIFT_CONFIG.gift5000, cartTotal);
 
     } catch (error) {
@@ -225,32 +173,23 @@ class CartFreeGifts extends Component {
     }
   }
 
-  /**
-   * Checks if cart has any paid (non-free-gift) items
-   * @param {Cart} cart - Cart object
-   * @returns {boolean} True if cart has paid items
-   */
+  /** @param {Cart} cart */
   #hasPaidItems(cart) {
     if (!cart.items || !Array.isArray(cart.items) || cart.items.length === 0) {
       return false;
     }
 
-    // Check if there's at least one item that is NOT a free gift
     for (const item of cart.items) {
       const isFreeGift = this.#isFreeGiftItem(item);
       if (!isFreeGift) {
-        return true; // Found a paid item
+        return true;
       }
     }
 
-    return false; // Only free gifts or empty
+    return false;
   }
 
-  /**
-   * Calculates cart total excluding free gift items
-   * @param {Cart} cart - Cart object
-   * @returns {number} Cart total in cents excluding free gifts
-   */
+  /** @param {Cart} cart */
   #calculateCartTotalExcludingFreeGifts(cart) {
     if (!cart.items || !Array.isArray(cart.items)) {
       return 0;
@@ -260,7 +199,6 @@ class CartFreeGifts extends Component {
     for (const item of cart.items) {
       const isFreeGift = this.#isFreeGiftItem(item);
       if (!isFreeGift) {
-        // Add only non-free-gift items to total
         const linePrice = /** @type {CartItem} */ (item).final_line_price || 
                          /** @type {CartItem} */ (item).line_price || 0;
         total += linePrice;
@@ -270,27 +208,21 @@ class CartFreeGifts extends Component {
     return total;
   }
 
-  /**
-   * Removes all free gifts from the cart
-   * @param {Cart} cart - Current cart object
-   */
+  /** @param {Cart} cart */
   async #removeAllFreeGifts(cart) {
     if (!cart.items || !Array.isArray(cart.items) || cart.items.length === 0) {
       return;
     }
 
-    // Find all free gift items and remove them one by one
-    const freeGiftItems = cart.items.filter(item => this.#isFreeGiftItem(item));
+    const freeGiftItems = cart.items.filter(/** @param {CartItem} item */ (item) => this.#isFreeGiftItem(item));
     
     if (freeGiftItems.length === 0) {
-      return; // No free gifts to remove
+      return;
     }
 
-    // Remove each free gift sequentially to avoid race conditions
     for (const item of freeGiftItems) {
       try {
         await this.#removeGiftFromCart(cart, item.variant_id.toString());
-        // Small delay between removals to avoid overwhelming the API
         await new Promise(resolve => setTimeout(resolve, 100));
       } catch (error) {
         console.error('Error removing free gift:', error);
@@ -298,30 +230,23 @@ class CartFreeGifts extends Component {
     }
   }
 
-  /**
-   * Handles adding or removing a specific gift based on cart total
-   * @param {Cart} cart - Current cart object
-   * @param {GiftConfig} giftConfig - Gift configuration
-   * @param {number} cartTotal - Current cart total in cents (excluding free gifts)
+  /** @param {Cart} cart
+   * @param {GiftConfig} giftConfig
+   * @param {number} cartTotal
    */
   async #handleGift(cart, giftConfig, cartTotal) {
     const isGiftInCart = this.#isGiftInCart(cart, giftConfig.variantId);
     const shouldHaveGift = cartTotal >= giftConfig.threshold;
 
     if (shouldHaveGift && !isGiftInCart) {
-      // Add gift only if cart total meets threshold
       await this.#addGiftToCart(giftConfig.variantId);
     } else if (!shouldHaveGift && isGiftInCart) {
-      // Remove gift if cart total is below threshold
       await this.#removeGiftFromCart(cart, giftConfig.variantId);
     }
   }
 
-  /**
-   * Checks if a gift variant is already in the cart
-   * @param {Cart} cart - Cart object
-   * @param {string} variantId - Variant ID to check
-   * @returns {boolean} True if gift is in cart
+  /** @param {Cart} cart
+   * @param {string} variantId
    */
   #isGiftInCart(cart, variantId) {
     if (!cart.items || !Array.isArray(cart.items)) {
@@ -333,20 +258,14 @@ class CartFreeGifts extends Component {
     );
   }
 
-  /**
-   * Adds a free gift to the cart
-   * @param {string} variantId - Variant ID of the gift to add
-   */
+  /** @param {string} variantId */
   async #addGiftToCart(variantId) {
     try {
       const formData = new FormData();
       formData.append('id', variantId);
       formData.append('quantity', '1');
-      
-      // Mark as auto-added gift using properties
       formData.append('properties[_auto_gift]', 'true');
 
-      // Get cart sections to update
       const cartItemsComponents = document.querySelectorAll('cart-items-component');
       const sectionsToUpdate = new Set();
       
@@ -375,12 +294,8 @@ class CartFreeGifts extends Component {
         return;
       }
 
-      // Apply 100% discount to make the item free
-      // Note: This requires discount codes to be set up in Shopify Admin
-      // For now, we'll apply a discount code if available
       await this.#applyFreeGiftDiscount(variantId);
 
-      // Dispatch cart update event to refresh UI
       document.dispatchEvent(
         new CartAddEvent(data, 'cart-free-gifts', {
           source: 'cart-free-gifts',
@@ -393,29 +308,21 @@ class CartFreeGifts extends Component {
     }
   }
 
-  /**
-   * Applies a discount to make the free gift item actually free
-   * @param {string} variantId - Variant ID of the gift
-   */
+  /** @param {string} variantId */
   async #applyFreeGiftDiscount(variantId) {
     try {
-      // Get the cart to find the line item
       const cart = await this.#fetchCart();
       if (!cart || !cart.items) return;
 
       const giftItem = cart.items.find(
-        (item) => item.variant_id.toString() === variantId.toString()
+        /** @param {CartItem} item */ (item) => item.variant_id.toString() === variantId.toString()
       );
 
       if (!giftItem) return;
 
-      // Try to apply a discount code if configured
-      // You need to create discount codes in Shopify Admin for free gifts
-      // For example: "FREEGIFT5000" and "FREEGIFT8000"
       const discountCode = this.#getDiscountCodeForVariant(variantId);
       
       if (discountCode) {
-        // Get cart sections to update
         const cartItemsComponents = document.querySelectorAll('cart-items-component');
         const sectionsToUpdate = new Set();
         
@@ -425,7 +332,6 @@ class CartFreeGifts extends Component {
           }
         });
 
-        // Apply discount code via cart update
         const body = JSON.stringify({
           discount: discountCode,
           sections: Array.from(sectionsToUpdate).join(','),
@@ -438,7 +344,6 @@ class CartFreeGifts extends Component {
         const responseText = await response.text();
         const discountData = JSON.parse(responseText);
 
-        // Dispatch discount update event to refresh UI
         if (discountData && !discountData.errors) {
           document.dispatchEvent(
             new DiscountUpdateEvent(discountData, 'cart-free-gifts')
@@ -446,35 +351,25 @@ class CartFreeGifts extends Component {
         }
       }
     } catch (error) {
-      // Silently fail - discount codes may not be set up
       console.log('Discount code not applied (may not be configured):', error);
     }
   }
 
-  /**
-   * Gets the discount code for a specific variant
-   * @param {string} variantId - Variant ID
-   * @returns {string|null} Discount code or null
-   */
+  /** @param {string} variantId */
   #getDiscountCodeForVariant(variantId) {
-    // Map variant IDs to discount codes
-    // You need to create these discount codes in Shopify Admin
     const discountCodeMap = {
-      '55378709479497': 'FREEGIFT5000', // ₹5,000 threshold
-      '55378884591689': 'FREEGIFT8000', // ₹8,000 threshold
+      '55378709479497': 'FREEGIFT5000',
+      '55378884591689': 'FREEGIFT8000',
     };
 
     return /** @type {Record<string, string>} */ (discountCodeMap)[variantId] || null;
   }
 
-  /**
-   * Removes a free gift from the cart
-   * @param {Cart} cart - Current cart object
-   * @param {string} variantId - Variant ID of the gift to remove
+  /** @param {Cart} cart
+   * @param {string} variantId
    */
   async #removeGiftFromCart(cart, variantId) {
     try {
-      // Find the line item for this variant
       const giftItemIndex = cart.items.findIndex(
         (item) => /** @type {CartItem} */ (item).variant_id.toString() === variantId.toString()
       );
@@ -485,7 +380,6 @@ class CartFreeGifts extends Component {
 
       const giftItem = /** @type {CartItem} */ (cart.items[giftItemIndex]);
 
-      // Get cart sections to update
       const cartItemsComponents = document.querySelectorAll('cart-items-component');
       const sectionsToUpdate = new Set();
       
@@ -495,7 +389,6 @@ class CartFreeGifts extends Component {
         }
       });
 
-      // Line numbers are 1-based. Use 'line' property if available, otherwise use array index + 1
       const lineNumber = giftItem.line || (giftItemIndex + 1);
 
       const body = JSON.stringify({
@@ -517,7 +410,6 @@ class CartFreeGifts extends Component {
         return;
       }
 
-      // Dispatch cart update event to refresh UI
       document.dispatchEvent(
         new CartUpdateEvent(data, 'cart-free-gifts', {
           source: 'cart-free-gifts',
@@ -531,10 +423,6 @@ class CartFreeGifts extends Component {
     }
   }
 
-  /**
-   * Fetches the current cart state
-   * @returns {Promise<Cart|null>} Cart object or null if error
-   */
   async #fetchCart() {
     try {
       const response = await fetch('/cart.js');
