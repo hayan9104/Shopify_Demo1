@@ -5,10 +5,6 @@
 {%- enddoc -%}
 
 <div class="cart__summary-totals">
-  {% unless cart.empty? %}
-    {% render 'cart-free-gift-milestones' %}
-  {% endunless %}
-  
   {% # We need to keep this node in place to allow morphing to work properly # %}
   <div class="cart__original-total-container cart-primary-typography">
     {%- if cart.cart_level_discount_applications.size > 0 -%}

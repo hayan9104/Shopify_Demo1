@@ -77,9 +77,14 @@
 {% stylesheet %}
   .cart-milestones {
     margin-bottom: var(--margin-lg);
+    margin-top: 0;
     padding: var(--padding-md);
     background-color: var(--color-background-secondary, rgb(var(--color-background-rgb) / 0.5));
     border-radius: var(--style-border-radius-inputs, 8px);
+  }
+  
+  .cart-items__wrapper > .cart-milestones:first-child {
+    margin-top: 0;
   }
 
   .cart-milestones__progress-bar {

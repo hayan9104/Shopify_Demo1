@@ -25,6 +25,10 @@
     style="--product-title-case: uppercase;"
   {% endif %}
 >
+  {% unless cart.empty? %}
+    {% render 'cart-free-gift-milestones' %}
+  {% endunless %}
+  
   {% if cart.empty? %}
     {%- if shop.customer_accounts_enabled and customer == null -%}
       <p>
