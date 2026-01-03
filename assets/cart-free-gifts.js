@@ -204,7 +204,7 @@ class CartFreeGifts extends Component {
       } else if (cartTotal >= milestone5000) {
         progressPercentage = 50;
       } else {
-        progressPercentage = Math.min((cartTotal / milestone5000) * 50, 50);
+        progressPercentage = 0;
       }
       
       const progressFill = milestoneEl.querySelector('.cart-milestones__progress-fill');

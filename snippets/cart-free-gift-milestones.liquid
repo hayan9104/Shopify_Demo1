@@ -31,7 +31,7 @@
   elsif cart_total_excluding_gifts >= milestone_5000
     assign progress_percentage = 50
   else
-    assign progress_percentage = cart_total_excluding_gifts | times: 50 | divided_by: milestone_5000
+    assign progress_percentage = 0
   endif
 %}
 
