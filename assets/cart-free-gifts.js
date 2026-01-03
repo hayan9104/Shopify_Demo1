@@ -198,19 +198,20 @@ class CartFreeGifts extends Component {
       const milestone5000Reached = cartTotal >= milestone5000;
       const milestone8000Reached = cartTotal >= milestone8000;
       
-      const steps = Math.floor(cartTotal / 100000);
       let progressPercentage = 0;
       
       if (cartTotal >= milestone8000) {
         progressPercentage = 100;
       } else if (cartTotal >= milestone5000) {
-        const stepsAfter5000 = steps - 5;
-        progressPercentage = 50 + (stepsAfter5000 * (50 / 3));
+        const amountAfter5000 = cartTotal - milestone5000;
+        const remainingTo8000 = milestone8000 - milestone5000;
+        const progressAfter5000 = (amountAfter5000 / remainingTo8000) * 50;
+        progressPercentage = 50 + progressAfter5000;
         if (progressPercentage > 100) {
           progressPercentage = 100;
         }
       } else {
-        progressPercentage = (steps * 50) / 5;
+        progressPercentage = (cartTotal / milestone5000) * 50;
         if (progressPercentage > 50) {
           progressPercentage = 50;
         }
