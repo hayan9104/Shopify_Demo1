@@ -26,12 +26,21 @@
   endif
   
   assign progress_percentage = 0
+  assign steps = cart_total_excluding_gifts | divided_by: 100000
+  
   if cart_total_excluding_gifts >= milestone_8000
     assign progress_percentage = 100
   elsif cart_total_excluding_gifts >= milestone_5000
-    assign progress_percentage = 50
+    assign steps_after_5000 = steps | minus: 5
+    assign progress_percentage = 50 | plus: steps_after_5000 | times: 50 | divided_by: 3
+    if progress_percentage > 100
+      assign progress_percentage = 100
+    endif
   else
-    assign progress_percentage = 0
+    assign progress_percentage = steps | times: 50 | divided_by: 5
+    if progress_percentage > 50
+      assign progress_percentage = 50
+    endif
   endif
 %}
 

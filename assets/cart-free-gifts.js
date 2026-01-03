@@ -198,13 +198,22 @@ class CartFreeGifts extends Component {
       const milestone5000Reached = cartTotal >= milestone5000;
       const milestone8000Reached = cartTotal >= milestone8000;
       
+      const steps = Math.floor(cartTotal / 100000);
       let progressPercentage = 0;
+      
       if (cartTotal >= milestone8000) {
         progressPercentage = 100;
       } else if (cartTotal >= milestone5000) {
-        progressPercentage = 50;
+        const stepsAfter5000 = steps - 5;
+        progressPercentage = 50 + (stepsAfter5000 * (50 / 3));
+        if (progressPercentage > 100) {
+          progressPercentage = 100;
+        }
       } else {
-        progressPercentage = 0;
+        progressPercentage = (steps * 50) / 5;
+        if (progressPercentage > 50) {
+          progressPercentage = 50;
+        }
       }
       
       const progressFill = milestoneEl.querySelector('.cart-milestones__progress-fill');
