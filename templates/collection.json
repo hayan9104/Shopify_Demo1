@@ -234,14 +234,18 @@
         "item_ybYdQq": {
           "type": "item",
           "settings": {
-            "lbbanner": "shopify://shop_images/71vS6L1H2sL._AC_UY1100.jpg",
+            "lbbanner": "shopify://shop_images/Choco_Muffin_2_kg_fb82eaa6-fe99-49ec-8f05-66200dea210d.webp",
             "lbbanner_heading": "Selected Look",
             "lbbuttonlink": "shopify://collections/all",
             "lbbutton": "Buy The Look",
-            "product_1": "fashion-frill-necklace-set-for-women",
-            "product_2": "women-set-of-2-rose-gold-white-rose-gold-plated-kada-bracelet",
+            "product_1": "iso-rich-premium-isolate",
+            "product_2": "whey-pro-trustified™-primary-isolate-concenterate-blend",
             "product_3": "",
-            "product_4": ""
+            "product_4": "",
+            "desktop_offset_top": 0,
+            "desktop_offset_bottom": 0,
+            "mobile_offset_top": 0,
+            "mobile_offset_bottom": 0
           }
         }
       },
