@@ -2,36 +2,70 @@ import { Component } from '@theme/component';
 import { fetchConfig } from '@theme/utilities';
 import { ThemeEvents, CartUpdateEvent, CartAddEvent, DiscountUpdateEvent, QuantitySelectorUpdateEvent } from '@theme/events';
 
+/**
+ * @typedef {Object} GiftConfig
+ * @property {string} variantId - Variant ID of the gift
+ * @property {number} threshold - Cart total threshold in cents
+ * @property {string} tag - Product tag for the gift
+ */
+
+/**
+ * Free Gift Configuration
+ * Variant IDs for free gifts at different thresholds
+ * @type {{gift5000: GiftConfig, gift8000: GiftConfig}}
+ */
 const FREE_GIFT_CONFIG = {
   gift5000: {
-    variantId: '55378709479497', 
-    threshold: 500000, 
+    variantId: '55378709479497', // ₹5,000 threshold gift
+    threshold: 500000, // ₹5,000 in cents (₹5,000 * 100)
     tag: 'free-gift-5000',
   },
   gift8000: {
-    variantId: '55378884591689', 
-    threshold: 800000, 
+    variantId: '55378884591689', // ₹8,000 threshold gift
+    threshold: 800000, // ₹8,000 in cents (₹8,000 * 100)
     tag: 'free-gift-8000',
   },
 };
 
+/**
+ * @typedef {Object} CartItem
+ * @property {number} variant_id - Variant ID
+ * @property {number} [line] - Line number (1-based)
+ * @property {number} [final_line_price] - Final line price in cents
+ * @property {number} [line_price] - Line price in cents
+ */
 
+/**
+ * @typedef {Object} Cart
+ * @property {number} total_price - Cart total in cents
+ * @property {number} [item_count] - Number of items in cart
+ * @property {CartItem[]} items - Cart items array
+ */
+
+/**
+ * A custom element that manages automatic free gift addition based on cart total.
+ * 
+ * Listens to cart update events and automatically adds/removes free gifts
+ * when cart total crosses defined thresholds.
+ */
 class CartFreeGifts extends Component {
   #isProcessing = false;
-
+  /** @type {ReturnType<typeof setTimeout> | null} */
   #processingTimeout = null;
 
   connectedCallback() {
     super.connectedCallback();
     
-
+    // Listen to cart update events
     document.addEventListener(ThemeEvents.cartUpdate, this.#handleCartUpdate);
     
-   
+    // Listen to quantity selector updates to prevent free gift quantity changes
     document.addEventListener(ThemeEvents.quantitySelectorUpdate, this.#handleQuantityUpdate);
     
-    
-    this.#checkAndUpdateGifts();
+    // Check on initial load after a short delay to ensure cart is loaded
+    setTimeout(() => {
+      this.#checkAndUpdateGifts();
+    }, 100);
   }
 
   disconnectedCallback() {
@@ -45,7 +79,10 @@ class CartFreeGifts extends Component {
     }
   }
 
-
+  /**
+   * Handles quantity selector updates to prevent free gift quantity changes
+   * @param {QuantitySelectorUpdateEvent} event - The quantity selector update event
+   */
   #handleQuantityUpdate = async (event) => {
     // Check if this is a free gift item trying to change quantity
     const cart = await this.#fetchCart();
@@ -57,11 +94,11 @@ class CartFreeGifts extends Component {
     const cartItem = cart.items[line - 1];
     if (!cartItem) return;
 
-    
+    // Check if this item is a free gift
     const isFreeGift = this.#isFreeGiftItem(cartItem);
     
     if (isFreeGift && quantity !== 1) {
-      
+      // Prevent quantity change - reset to 1
       event.preventDefault();
       event.stopPropagation();
       
@@ -88,9 +125,15 @@ class CartFreeGifts extends Component {
     }
   };
 
- 
+  /**
+   * Checks if a cart item is a free gift
+   * @param {CartItem} item - Cart item to check
+   * @returns {boolean} True if item is a free gift
+   */
   #isFreeGiftItem(item) {
-
+    // Check if item has _auto_gift property
+    // Note: Properties are not directly available in cart.js response
+    // We'll check by variant ID instead
     const freeGiftVariantIds = [
       FREE_GIFT_CONFIG.gift5000.variantId,
       FREE_GIFT_CONFIG.gift8000.variantId,
@@ -99,25 +142,31 @@ class CartFreeGifts extends Component {
     return freeGiftVariantIds.includes(item.variant_id.toString());
   }
 
-
+  /**
+   * Handles cart update events
+   * @param {CartUpdateEvent | CartAddEvent} event - The cart update event
+   */
   #handleCartUpdate = async (event) => {
-
+    // Skip if this event came from this component to avoid infinite loops
     if (event.detail?.sourceId === 'cart-free-gifts' || event.detail?.data?.source === 'cart-free-gifts') {
       return;
     }
 
+    // Debounce to avoid multiple rapid updates
     if (this.#processingTimeout) {
       clearTimeout(this.#processingTimeout);
     }
 
     this.#processingTimeout = setTimeout(() => {
       this.#checkAndUpdateGifts();
-    }, 500); 
+    }, 500); // Wait 500ms after cart update
   };
 
- 
+  /**
+   * Checks cart total and adds/removes free gifts accordingly
+   */
   async #checkAndUpdateGifts() {
-
+    // Prevent concurrent processing
     if (this.#isProcessing) {
       return;
     }
@@ -125,7 +174,7 @@ class CartFreeGifts extends Component {
     this.#isProcessing = true;
 
     try {
-      
+      // Fetch current cart state
       const cart = await this.#fetchCart();
       
       if (!cart) {
@@ -133,7 +182,7 @@ class CartFreeGifts extends Component {
         return;
       }
 
-
+      // If cart is empty, remove all free gifts and return
       const cartItemCount = /** @type {Cart} */ (cart).item_count || (cart.items ? cart.items.length : 0);
       if (!cart.items || cart.items.length === 0 || cartItemCount === 0) {
         // Remove any remaining free gifts
@@ -142,19 +191,31 @@ class CartFreeGifts extends Component {
         return;
       }
 
-    
-      const cartTotal = this.#calculateCartTotalExcludingFreeGifts(cart);
-
+      // Check if cart has any paid (non-free-gift) items
+      const hasPaidItems = this.#hasPaidItems(cart);
       
-      if (cartTotal <= 0) {
-        // No paid items, remove all free gifts
+      if (!hasPaidItems) {
+        // No paid items in cart, remove all free gifts
         await this.#removeAllFreeGifts(cart);
         this.#isProcessing = false;
         return;
       }
 
+      // Calculate cart total excluding free gift items
+      const cartTotal = this.#calculateCartTotalExcludingFreeGifts(cart);
+
+      // Double check: if total is 0 or negative, remove all free gifts
+      if (cartTotal <= 0) {
+        await this.#removeAllFreeGifts(cart);
+        this.#isProcessing = false;
+        return;
+      }
+
+      // Only add gifts if cart total meets thresholds
+      // Check and handle ₹8,000 gift (higher threshold first)
       await this.#handleGift(cart, FREE_GIFT_CONFIG.gift8000, cartTotal);
-   
+      
+      // Check and handle ₹5,000 gift
       await this.#handleGift(cart, FREE_GIFT_CONFIG.gift5000, cartTotal);
 
     } catch (error) {
@@ -164,34 +225,85 @@ class CartFreeGifts extends Component {
     }
   }
 
+  /**
+   * Checks if cart has any paid (non-free-gift) items
+   * @param {Cart} cart - Cart object
+   * @returns {boolean} True if cart has paid items
+   */
+  #hasPaidItems(cart) {
+    if (!cart.items || !Array.isArray(cart.items) || cart.items.length === 0) {
+      return false;
+    }
+
+    // Check if there's at least one item that is NOT a free gift
+    for (const item of cart.items) {
+      const isFreeGift = this.#isFreeGiftItem(item);
+      if (!isFreeGift) {
+        return true; // Found a paid item
+      }
+    }
+
+    return false; // Only free gifts or empty
+  }
+
+  /**
+   * Calculates cart total excluding free gift items
+   * @param {Cart} cart - Cart object
+   * @returns {number} Cart total in cents excluding free gifts
+   */
+  #calculateCartTotalExcludingFreeGifts(cart) {
+    if (!cart.items || !Array.isArray(cart.items)) {
+      return 0;
+    }
 
     let total = 0;
     for (const item of cart.items) {
       const isFreeGift = this.#isFreeGiftItem(item);
       if (!isFreeGift) {
         // Add only non-free-gift items to total
-        total += item.final_line_price || item.line_price || 0;
+        const linePrice = /** @type {CartItem} */ (item).final_line_price || 
+                         /** @type {CartItem} */ (item).line_price || 0;
+        total += linePrice;
       }
     }
 
     return total;
   }
 
- 
+  /**
+   * Removes all free gifts from the cart
+   * @param {Cart} cart - Current cart object
+   */
   async #removeAllFreeGifts(cart) {
-    if (!cart.items || !Array.isArray(cart.items)) {
+    if (!cart.items || !Array.isArray(cart.items) || cart.items.length === 0) {
       return;
     }
 
-    // Find all free gift items and remove them
-    for (const item of cart.items) {
-      if (this.#isFreeGiftItem(item)) {
+    // Find all free gift items and remove them one by one
+    const freeGiftItems = cart.items.filter(item => this.#isFreeGiftItem(item));
+    
+    if (freeGiftItems.length === 0) {
+      return; // No free gifts to remove
+    }
+
+    // Remove each free gift sequentially to avoid race conditions
+    for (const item of freeGiftItems) {
+      try {
         await this.#removeGiftFromCart(cart, item.variant_id.toString());
+        // Small delay between removals to avoid overwhelming the API
+        await new Promise(resolve => setTimeout(resolve, 100));
+      } catch (error) {
+        console.error('Error removing free gift:', error);
       }
     }
   }
 
-
+  /**
+   * Handles adding or removing a specific gift based on cart total
+   * @param {Cart} cart - Current cart object
+   * @param {GiftConfig} giftConfig - Gift configuration
+   * @param {number} cartTotal - Current cart total in cents (excluding free gifts)
+   */
   async #handleGift(cart, giftConfig, cartTotal) {
     const isGiftInCart = this.#isGiftInCart(cart, giftConfig.variantId);
     const shouldHaveGift = cartTotal >= giftConfig.threshold;
