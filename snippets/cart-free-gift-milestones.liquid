@@ -26,22 +26,12 @@
   endif
   
   assign progress_percentage = 0
-  
   if cart_total_excluding_gifts >= milestone_8000
     assign progress_percentage = 100
   elsif cart_total_excluding_gifts >= milestone_5000
-    assign amount_after_5000 = cart_total_excluding_gifts | minus: milestone_5000
-    assign remaining_to_8000 = milestone_8000 | minus: milestone_5000
-    assign progress_after_5000 = amount_after_5000 | times: 50 | divided_by: remaining_to_8000
-    assign progress_percentage = 50 | plus: progress_after_5000
-    if progress_percentage > 100
-      assign progress_percentage = 100
-    endif
+    assign progress_percentage = 50
   else
-    assign progress_percentage = cart_total_excluding_gifts | times: 50 | divided_by: milestone_5000
-    if progress_percentage > 50
-      assign progress_percentage = 50
-    endif
+    assign progress_percentage = 0
   endif
 %}
 
@@ -137,21 +127,27 @@
 
   .cart-milestones__items {
     position: relative;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: var(--gap-md);
+    width: 100%;
+    height: 80px;
     z-index: 2;
-    padding: var(--padding-sm) 0;
   }
 
   .cart-milestones__milestone {
-    flex: 1;
+    position: absolute;
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: var(--gap-xs);
-    min-width: 0;
+    transform: translateX(-50%);
+  }
+
+  .cart-milestones__milestone:first-child {
+    left: 15%;
+  }
+
+  .cart-milestones__milestone:last-child {
+    left: 100%;
+    transform: translateX(-50%);
   }
 
   .cart-milestones__milestone-amount {
